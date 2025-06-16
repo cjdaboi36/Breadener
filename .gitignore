@@ -2,4 +2,4 @@
 config.json
 .env
 env
-testing.js
+testing.ts

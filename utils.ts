@@ -1,5 +1,7 @@
 import "dotenv/config";
 
+// For all your exportation and header functional purposes
+
 export async function DiscordRequest(endpoint, options) {
   // append endpoint to root API URL
   const url = "https://discord.com/api/v10/" + endpoint;
@@ -37,6 +39,11 @@ export async function InstallGlobalCommands(appId, commands) {
   }
 }
 
-export function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+// Simple method that returns a random emoji from list
+export function randomNumber(min: number, max: number) {
+  return Math.floor(Math.random() * max - min) + min;
+}
+
+export function capitalize(input: string) {
+  return input.charAt(0).toUpperCase() + input.slice(1);
 }

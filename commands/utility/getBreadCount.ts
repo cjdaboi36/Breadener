@@ -13,9 +13,9 @@ export const data = new SlashCommandBuilder()
   );
 
 export async function execute(interaction) {
-  const username = interaction.options.getString("username");
+  const username: string = interaction.options.getString("username");
 
-  let broodTeller;
+  let broodTeller: number | undefined;
   for (const person of Object.entries(jsonData.userObject)) {
     if (person[0] === username) {
       broodTeller = person[1];
@@ -23,10 +23,12 @@ export async function execute(interaction) {
     }
   }
 
-  let message = `${username} infected ${broodTeller} people!`;
+  let message: string = `${username} infected ${broodTeller} people!`;
+  let logMessage: string = `"${username}" breaded ${broodTeller} people. Requested by "${interaction.user.username}"`;
 
   if (broodTeller === undefined) {
     message = `It doesn't seem like ${username} is in the database. If you are sure it should be, leave an issue on my repository!`;
+    logMessage = `"${username}" isn't in the database. Requested by "${interaction.user.username}"`;
   }
 
   await interaction
@@ -34,10 +36,6 @@ export async function execute(interaction) {
       content: message,
       withResponse: true,
     })
-    .then((response) =>
-      console.log(
-        `${interaction.user.username} breaded ${broodTeller} people.`,
-      ),
-    )
+    .then((response) => console.log(logMessage))
     .catch(console.error);
 }

@@ -1,4 +1,4 @@
-name: Github Actions to our DC webhook
+name: Notify Discord
 
 on:
   push:
@@ -11,6 +11,7 @@ jobs:
     steps:
       - name: Discord notification
         uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          message: 'The project ${{ github.repository }} has been deployed.'
+          args: 'The project ${{ github.repository }} has been deployed.'

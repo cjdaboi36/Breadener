@@ -1,0 +1,13 @@
+{
+  "Baguette": {
+    "ingredients": [
+      ["first", "amount 1"],
+      ["second", "amount 2"],
+      ["third", "amount 3"]
+    ],
+    "expectedTime": 666,
+    "instructions": ["Thing 1", "Thing 2", "Thing 3"]
+  },
+  "Pulla": {},
+  "Tigerbread": {}
+}

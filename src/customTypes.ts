@@ -4,8 +4,8 @@ export type ingredient = {
 };
 
 export type breadRecipe = {
-  _breadName: string;
-  _ingredients: ingredient[];
-  _expectedTime: number;
-  _instructions: string[];
+  breadName: string;
+  ingredients: string[][];
+  expectedTime: number;
+  instructions: string[];
 };

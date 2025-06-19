@@ -1,13 +1,30 @@
 {
   "Baguette": {
     "ingredients": [
-      ["first", "amount 1"],
-      ["second", "amount 2"],
-      ["third", "amount 3"]
+      ["Flour", "g"],
+      ["Water", "120 ml"],
+      ["Salt", "ts"],
+      ["Yeast", "g"]
     ],
     "expectedTime": 666,
-    "instructions": ["Thing 1", "Thing 2", "Thing 3"]
+    "instructions": ["Instruction 1", "Instruction 2", "Instruction 3"]
   },
-  "Pulla": {},
-  "Tigerbread": {}
+  "Pulla": {
+    "ingredients": [
+      ["Ingredient 1", "amount"],
+      ["Ingredient 2", "amount"],
+      ["Ingredient 3", "amount"]
+    ],
+    "expectedTime": 666,
+    "instructions": ["Instruction 1", "Instruction 2", "Instruction 3"]
+  },
+  "Tigerbread": {
+    "ingredients": [
+      ["Ingredient 1", "amount"],
+      ["Ingredient 2", "amount"],
+      ["Ingredient 3", "amount"]
+    ],
+    "expectedTime": 666,
+    "instructions": ["Instruction 1", "Instruction 2", "Instruction 3"]
+  }
 }

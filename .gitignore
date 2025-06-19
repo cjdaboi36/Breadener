@@ -4,3 +4,4 @@ config.json
 env
 testing.ts
 src/TESTING.ts
+src/testing.ts

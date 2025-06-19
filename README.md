@@ -5,11 +5,11 @@ The official discord bot of *The Breadening* server!
 
 Remember to run
 ```
-npm install
+deno i --jsr
 ```
 or a variation of that if necessary to install all the dependencies before coding!
 
 To run the bot, run
 ```
-deno index.ts && deno deploy-commands.ts
+deno run deploy && deno run dev
 ```

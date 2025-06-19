@@ -1,10 +1,5 @@
-export type ingredient = {
-  ingredient: string;
-  amount: number;
-};
-
 export type breadRecipe = {
-  breadName: string;
+  breadName: string | undefined;
   ingredients: string[][];
   expectedTime: number;
   instructions: string[];

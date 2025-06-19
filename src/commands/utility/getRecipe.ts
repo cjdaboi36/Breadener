@@ -1,18 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
-import recipeData from "../../../importantFiles/breadRecipies.json" with { type: "json" };
-import { ingredient, breadRecipe } from "../../customTypes";
-
-function parseRecipe(data: JSON, breadType: string): void {
-  console.log("Thing");
-  let returnValue: breadRecipe;
-
-  for (const focusedData in Object.entries(data)) {
-    console.log(focusedData);
-  }
-
-  // Grenzgänger
-  // Iemand die iemands grenzen opzoekt.
-}
+import { breadRecipe } from "../../customTypes.ts";
+import { parseRecipe } from "../../functions.ts";
 
 export const data = new SlashCommandBuilder()
   .setName("get-recipes")
@@ -26,18 +14,29 @@ export const data = new SlashCommandBuilder()
   );
 
 export async function execute(interaction) {
-  const breadType: string = interaction.options.getString("bread-type");
+  const requestedBreadType: string =
+    interaction.options.getString("bread-type");
+  const breadType: breadRecipe = parseRecipe(requestedBreadType);
+  const ingredientsLength: number = breadType.ingredients.length;
+  const instructionsLength: number = breadType.instructions.length;
 
-  let message: string = `
-    # Recipe for ${2 + 2}
+  let message: string = `# Recipe for ${breadType.breadName}! \nIngredients: \n`;
 
+  for (let i: number = 0; i <= ingredientsLength - 1; i++) {
+    message += `${i + 1}. ${breadType.ingredients[i][1]} of ${breadType.ingredients[i][0]};\n`;
+  }
 
-  `;
-  let logMessage: string;
+  message += "## Instructions\n";
 
-  if (broodTeller === undefined) {
-    message = `It doesn't seem like ${username} is in the database. If you are sure it should be, leave an issue on my repository!`;
-    logMessage = `"${username}" isn't in the database. Requested by "${interaction.user.username}"`;
+  for (let i: number = 0; i <= instructionsLength - 1; i++) {
+    message += `${i + 1}. ${breadType.instructions[i]};\n`;
+  }
+
+  let logMessage: string = `${interaction.user.username} requested the ${requestedBreadType}-recipe.`;
+
+  if (!breadType.breadName) {
+    message = `It doesn't seem like we have a recipe for ${requestedBreadType}. Maybe you misspelled it, or we just dont have it yet!\nDon't feel bad, if you can think of a recipe, make a pull request on my repository!`;
+    logMessage = `${interaction.user.username} requested a ${requestedBreadType}-recipe, but none were found.`;
   }
 
   await interaction

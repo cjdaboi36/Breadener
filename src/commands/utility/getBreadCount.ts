@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
 import jsonData from "../../../importantFiles/breadCount.json" with { type: "json" };
-import { getPrimaryContent } from "../../functions.ts";
+import { getPrimaryContent } from "../../utils.ts";
 
 export const data = new SlashCommandBuilder()
   .setName("get-bread-count")

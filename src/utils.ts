@@ -1,4 +1,6 @@
-import "dotenv/config";
+import "../node_modules/dotenv/config.d.ts";
+import { breadRecipe } from "./customTypes.ts";
+import recipeData from "../importantFiles/breadRecipies.json" with { type: "json" };
 
 // For all your exportation and header functional purposes
 
@@ -46,4 +48,40 @@ export function randomNumber(min: number, max: number) {
 
 export function capitalize(input: string) {
   return input.charAt(0).toUpperCase() + input.slice(1);
+}
+
+export function getRandomEmoji(): string {
+  const smileys: string[] = [":)", ":D", ":3", ":P"];
+  return smileys[randomNumber(0, smileys.length)];
+}
+
+export function parseRecipe(breadType: string): breadRecipe {
+  for (const focusedData of Object.entries(recipeData)) {
+    if (focusedData[0] === breadType) {
+      return {
+        breadName: breadType,
+        ingredients: focusedData[1].ingredients,
+        expectedTime: focusedData[1].expectedTime,
+        instructions: focusedData[1].instructions,
+      };
+    }
+  }
+
+  // Bitch im 21 but still walk around with fake id
+
+  return {
+    breadName: undefined,
+    ingredients: [["", ""]],
+    expectedTime: 0,
+    instructions: [""],
+  };
+}
+
+export function getPrimaryContent(data: object): string[] {
+  let array: string[] = [];
+  for (const i of Object.entries(data)) {
+    array.push(i[0]);
+  }
+
+  return array;
 }

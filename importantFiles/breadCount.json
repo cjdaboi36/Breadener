@@ -3,5 +3,13 @@
     "definitely_not_a_dolphin": 4,
     "kaznov": 1,
     "tempname.exe_": 18
+  },
+  "usertree": {
+    "kaznov": {
+      "definitely_not_a_dolphin": {}
+    },
+    "tempname.exe_": {
+      "v3ncodev": {}
+    }
   }
 }

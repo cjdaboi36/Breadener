@@ -1,7 +1,7 @@
-import { REST, Routes } from "discord.js";
-import config from "./../config.json" with { type: "json" };
 import fs from "node:fs";
 import path from "node:path";
+import { REST, Routes } from "discord.js";
+import config from "./../config.json" with { type: "json" };
 
 const commands = [];
 // Grab all the command folders from the commands directory you created earlier

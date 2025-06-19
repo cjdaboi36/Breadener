@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
 import jsonData from "../../../importantFiles/breadCount.json" with { type: "json" };
+import { getPrimaryContent } from "../../functions.ts";
 
 export const data = new SlashCommandBuilder()
   .setName("get-bread-count")
@@ -9,8 +10,18 @@ export const data = new SlashCommandBuilder()
       .setName("username")
       .setDescription("give the preferred username")
       .setRequired(true)
-      .setAutocomplete(false),
+      .setAutocomplete(true),
   );
+
+export async function autocomplete(interaction) {
+  const focusedValue = interaction.options.getFocused();
+  const filtered = getPrimaryContent(jsonData.userObject).filter((choice) =>
+    choice.startsWith(focusedValue),
+  );
+  await interaction.respond(
+    filtered.map((choice) => ({ name: choice, value: choice })),
+  );
+}
 
 export async function execute(interaction) {
   const username: string = interaction.options.getString("username");

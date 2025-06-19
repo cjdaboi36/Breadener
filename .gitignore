@@ -2,6 +2,4 @@
 config.json
 .env
 env
-testing.ts
-src/TESTING.ts
-src/testing.ts
+/testing

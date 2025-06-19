@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
+import recipeData from "../../../importantFiles/breadRecipies.json" with { type: "json" };
 import { breadRecipe } from "../../customTypes.ts";
-import { parseRecipe } from "../../functions.ts";
+import { parseRecipe, getPrimaryContent } from "../../functions.ts";
 
 export const data = new SlashCommandBuilder()
   .setName("get-recipes")
@@ -10,8 +11,19 @@ export const data = new SlashCommandBuilder()
       .setName("bread-type")
       .setDescription("give a type of bread")
       .setRequired(true)
-      .setAutocomplete(false),
+      .setAutocomplete(true),
   );
+
+export async function autocomplete(interaction) {
+  const focusedValue = interaction.options.getFocused();
+  // getPrimaryContent(recipeData) is the array with breadTypes
+  const filtered = getPrimaryContent(recipeData).filter((choice) =>
+    choice.startsWith(focusedValue),
+  );
+  await interaction.respond(
+    filtered.map((choice) => ({ name: choice, value: choice })),
+  );
+}
 
 export async function execute(interaction) {
   const requestedBreadType: string =
@@ -20,7 +32,7 @@ export async function execute(interaction) {
   const ingredientsLength: number = breadType.ingredients.length;
   const instructionsLength: number = breadType.instructions.length;
 
-  let message: string = `# Recipe for ${breadType.breadName}! \nIngredients: \n`;
+  let message: string = `# Recipe for ${breadType.breadName}! \nIngredients:\n`;
 
   for (let i: number = 0; i <= ingredientsLength - 1; i++) {
     message += `${i + 1}. ${breadType.ingredients[i][1]} of ${breadType.ingredients[i][0]};\n`;

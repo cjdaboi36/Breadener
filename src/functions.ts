@@ -22,3 +22,12 @@ export function parseRecipe(breadType: string): breadRecipe {
     instructions: [""],
   };
 }
+
+export function getPrimaryContent(data: object): string[] {
+  let array: string[] = [];
+  for (const i of Object.entries(data)) {
+    array.push(i[0]);
+  }
+
+  return array;
+}

@@ -63,6 +63,7 @@ export function parseRecipe(breadType: string): breadRecipe {
         ingredients: focusedData[1].ingredients,
         expectedTime: focusedData[1].expectedTime,
         instructions: focusedData[1].instructions,
+        recipeLink: focusedData[1].recipeLink,
       };
     }
   }
@@ -74,6 +75,7 @@ export function parseRecipe(breadType: string): breadRecipe {
     ingredients: [["", ""]],
     expectedTime: 0,
     instructions: [""],
+    recipeLink: ""
   };
 }
 

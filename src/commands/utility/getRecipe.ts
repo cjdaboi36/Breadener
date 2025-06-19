@@ -31,18 +31,23 @@ export async function execute(interaction) {
   const breadType: breadRecipe = parseRecipe(requestedBreadType);
   const ingredientsLength: number = breadType.ingredients.length;
   const instructionsLength: number = breadType.instructions.length;
+  const recipeLink: string = breadType.recipeLink;
 
   let message: string = `# Recipe for ${breadType.breadName}! \nIngredients:\n`;
 
   for (let i: number = 0; i <= ingredientsLength - 1; i++) {
-    message += `${i + 1}. ${breadType.ingredients[i][1]} of ${breadType.ingredients[i][0]};\n`;
+    message += `${i + 1}. ${breadType.ingredients[i][1]} of ${breadType.ingredients[i][0]}\n`;
   }
 
   message += "## Instructions\n";
 
   for (let i: number = 0; i <= instructionsLength - 1; i++) {
-    message += `${i + 1}. ${breadType.instructions[i]};\n`;
+    message += `${i + 1}. ${breadType.instructions[i]}\n`;
   }
+
+  message += "## Recipe Link\n";
+  message += `${recipeLink}\n`;
+
 
   let logMessage: string = `${interaction.user.username} requested the ${requestedBreadType}-recipe.`;
 

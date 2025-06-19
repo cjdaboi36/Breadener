@@ -3,4 +3,5 @@ export type breadRecipe = {
   ingredients: string[][];
   expectedTime: number;
   instructions: string[];
+  recipeLink: string;
 };

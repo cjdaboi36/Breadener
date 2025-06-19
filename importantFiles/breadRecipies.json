@@ -7,7 +7,8 @@
       ["Yeast", "g"]
     ],
     "expectedTime": 666,
-    "instructions": ["Instruction 1", "Instruction 2", "Instruction 3"]
+    "instructions": ["Instruction 1", "Instruction 2", "Instruction 3"],
+    "recipeLink": "https://www.example.com/tigerbread"
   },
   "Pulla": {
     "ingredients": [
@@ -16,7 +17,8 @@
       ["Ingredient 3", "amount"]
     ],
     "expectedTime": 666,
-    "instructions": ["Instruction 1", "Instruction 2", "Instruction 3"]
+    "instructions": ["Instruction 1", "Instruction 2", "Instruction 3"],
+    "recipeLink": "https://www.example.com/tigerbread"
   },
   "Tigerbread": {
     "ingredients": [
@@ -25,6 +27,30 @@
       ["Ingredient 3", "amount"]
     ],
     "expectedTime": 666,
-    "instructions": ["Instruction 1", "Instruction 2", "Instruction 3"]
+    "instructions": ["Instruction 1", "Instruction 2", "Instruction 3"],
+    "recipeLink": "https://www.example.com/tigerbread"
+  },
+  "Authentic Baguette (ATK)": {
+    "ingredients": [
+      ["Whole-Wheat Flour", "38g"],
+      ["All-Purpose Flour", "425g"],
+      ["Salt", "1.5 tsp"],
+      ["Instant Yeast", "1 tsp"],
+      ["Diastatic Malt Powder", "1 tsp (opt)"],
+      ["Water", "340g"]
+    ],
+    "expectedTime": 1885,
+    "instructions": [
+      "Mix flours, salt, yeast, (malt opt). Add water, knead 5-7 min. Cover, rest 30 min.",
+      "Fold dough 8x, cover, rest 30 min. Repeat 3x (4 sets total). Cover, chill 24-72h.",
+      "On floured counter, gently pat dough to 8\" square. Divide in half, then each half in 2. Rest 45 min.",
+      "Roll each piece into a loose log, rest 30 min.",
+      "Shape: Flatten, fold top to center, rotate, fold again. Fold in half, seal. Roll to 15\" with pointed ends.",
+      "Place seam-up on floured couche, cover, proof 45-60 min.",
+      "Preheat oven to 260°C/500°F with baking stone.",
+      "Transfer loaves seam-down to parchment. Slash 3 times at 30° angle.",
+      "Bake on stone, cover with inverted pans 5 min. Remove pans, bake 12-15 min until browned. Cool 20 min."
+    ],
+    "recipeLink": "https://www.americastestkitchen.com/recipes/8048-authentic-baguettes-at-home"
   }
 }

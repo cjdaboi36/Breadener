@@ -1,0 +1,11 @@
+{
+  "tasks": {
+    "dev": "deno run --watch -A src/index.ts",
+    "prod": "deno run -A src/index.ts",
+    "deploy": "deno run -A src/deploy-commands.ts"
+  },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@1"
+  }
+}
+

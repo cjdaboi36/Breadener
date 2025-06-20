@@ -1,15 +1,4 @@
 {
-  "Baguette": {
-    "ingredients": [
-      ["Flour", "g"],
-      ["Water", "120 ml"],
-      ["Salt", "ts"],
-      ["Yeast", "g"]
-    ],
-    "expectedTime": 666,
-    "instructions": ["Instruction 1", "Instruction 2", "Instruction 3"],
-    "recipeLink": "https://www.example.com/tigerbread"
-  },
   "Pulla": {
     "ingredients": [
       ["Ingredient 1", "amount"],
@@ -30,27 +19,46 @@
     "instructions": ["Instruction 1", "Instruction 2", "Instruction 3"],
     "recipeLink": "https://www.example.com/tigerbread"
   },
-  "Authentic Baguette (ATK)": {
+  "Authentic Homemade Baguette": {
     "ingredients": [
-      ["Whole-Wheat Flour", "38g"],
-      ["All-Purpose Flour", "425g"],
+      ["Whole-wheat flour", "38g (1/4 cup)"],
+      ["All-purpose flour (or bread flour)", "425g (3 cups)"],
       ["Salt", "1.5 tsp"],
-      ["Instant Yeast", "1 tsp"],
-      ["Diastatic Malt Powder", "1 tsp (opt)"],
-      ["Water", "340g"]
+      ["Instant or rapid-rise yeast", "1 tsp"],
+      ["Diastatic malt powder (optional)", "1 tsp"],
+      ["Water (room temperature)", "340g (1.5 cups)"]
     ],
-    "expectedTime": 1885,
+    "expectedTime": 2880,
     "instructions": [
-      "Mix flours, salt, yeast, (malt opt). Add water, knead 5-7 min. Cover, rest 30 min.",
-      "Fold dough 8x, cover, rest 30 min. Repeat 3x (4 sets total). Cover, chill 24-72h.",
-      "On floured counter, gently pat dough to 8\" square. Divide in half, then each half in 2. Rest 45 min.",
-      "Roll each piece into a loose log, rest 30 min.",
-      "Shape: Flatten, fold top to center, rotate, fold again. Fold in half, seal. Roll to 15\" with pointed ends.",
-      "Place seam-up on floured couche, cover, proof 45-60 min.",
-      "Preheat oven to 260°C/500°F with baking stone.",
-      "Transfer loaves seam-down to parchment. Slash 3 times at 30° angle.",
-      "Bake on stone, cover with inverted pans 5 min. Remove pans, bake 12-15 min until browned. Cool 20 min."
+      "Sift whole-wheat flour, discard bran. Add all-purpose flour, salt, yeast, and malt powder if using. Add water, knead with dough hook on low until cohesive, 5-7 min. Transfer to oiled bowl, cover, rest 30 min.",
+      "Fold dough over itself 8 times, turning bowl each time. Cover, rise 30 min. Repeat folding and rising 3 more times (4 sets total). Cover tightly, refrigerate 24-72 hours.",
+      "On floured counter, pat dough into 8-inch square (don't deflate), divide in half. Wrap one half and refrigerate. Divide remaining half in two, place on floured baking sheet, cover, rest 45 min.",
+      "Roll each piece into a loose 3-4 inch log, cover, rest 30 min.",
+      "Mist couche, dust with flour. Press dough into 6x4-inch rectangle. Fold top quarter to center, seal. Rotate, repeat fold to form 8x2-inch rectangle.",
+      "Fold in half toward you, seal with heel of hand. Roll gently to tighten, then roll to 15 inches long, forming pointed ends.",
+      "Place seam-up on floured couche, pleat sides, cover with plastic bag.",
+      "Repeat shaping for second piece. Fold couche over loaves, close bag.",
+      "Let rise until nearly doubled, 45-60 min. Preheat oven to 500°F (260°C) with baking stone.",
+      "Line peel with parchment. Flip loaves seam-down onto peel, straighten, leave space between.",
+      "Slash each loaf 3 times at 30° angle.",
+      "Bake on stone, cover with inverted pans 5 min. Remove pans, bake 12-15 min more until browned. Cool at least 20 min. Best eaten within 4 hours."
     ],
     "recipeLink": "https://www.americastestkitchen.com/recipes/8048-authentic-baguettes-at-home"
+  },
+  "Sourdough Starter": {
+    "ingredients": [
+      ["Bread or King Arthur All-Purpose Flour", "1.5 cups"],
+      ["Whole-wheat or rye flour", "1.5 cups"],
+      ["Bottled or filtered water (70-80°F)", "as needed"]
+    ],
+    "expectedTime": 10080,
+    "instructions": [
+      "Create a flour mixture by combining bread or all-purpose flour with whole-wheat or rye flour in a sealable container. In a small jar, mix 4 teaspoons (10g) flour mixture and 2.5 teaspoons (10g) water. Cover with plastic wrap or a loose lid and let sit at warm room temperature (70-80°F) for 1 to 3 days. The starter should become bubbly, wet-looking, and fragrant.",
+      "Once daily, stir the starter and transfer 2 teaspoons (10g) to a clean jar. Add 4 teaspoons (10g) flour mixture and 2.5 teaspoons (10g) water, mixing until no dry flour remains. Cover and let sit at warm room temperature for 24 hours. Repeat every 24 hours for 4 to 10 days. The starter is ready for the next step when it is bubbly and fragrant less than 12 hours after feeding.",
+      "Refresh the starter every 12 hours as before. Save leftover starter in a jar in the refrigerator for other uses. If the starter slows down, return to once daily feedings. The starter is mature and ready for baking when it doubles or triples in volume within 12 hours and smells yeasty, bready, or yogurty.",
+      "To check if the starter is ready, drop a blob of starter in water. If it floats, it is ready for baking.",
+      "To store and maintain, measure 1.5 tablespoons (28g) mature starter into a clean bowl. Add 7 tablespoons (57g) all-purpose flour and 1/4 cup (57g) water, mixing until no dry flour remains. Place in a jar, cover loosely, and let sit at room temperature until doubled in volume, 3 to 6 hours. Transfer to the refrigerator. Repeat this process every 7 to 14 days."
+    ],
+    "recipeLink": "https://www.americastestkitchen.com/recipes/9075-sourdough-starter"
   }
 }

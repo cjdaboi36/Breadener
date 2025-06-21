@@ -4,3 +4,5 @@ config.json
 env
 /testing
 overwrite_config.py
+/.vscode
+/token_backup

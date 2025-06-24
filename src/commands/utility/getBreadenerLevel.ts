@@ -53,8 +53,7 @@ export async function execute(interaction) {
 
     if (!nextLevel) {
       progressText =
-        `📊 You are at the maximum level!\n` +
-        `📈 ${"█".repeat(levelProgress)} 100%\n`;
+        `📊 You are at the maximum level!\n` + `📈 ${"█".repeat(12)} 100%\n`;
     }
 
     message =

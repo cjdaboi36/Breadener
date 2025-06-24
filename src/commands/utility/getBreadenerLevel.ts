@@ -42,29 +42,24 @@ export async function execute(interaction) {
     const { level, nextLevel, emoji, threshold } =
       _getBreadenerData(breadCount);
 
-    if (!threshold) {
-      await interaction
-        .reply({
-          content:
-            `**${usernameIn}** is a **${level}**!\n` +
-            `🍞 Total breaded: **${breadCount}** people`,
-          withResponse: true,
-        })
-        .then((_response) => console.log(logMessage))
-        .catch(console.error);
-      return;
-    }
-
     const progress: string = `${breadCount}/${threshold}`;
-    const actualProcress: number = (breadCount - threshold - 12) / threshold;
+    const levelProgress: number = breadCount % 12;
+    const progressBar =
+      "█".repeat(levelProgress) + "░".repeat(12 - levelProgress);
 
-    const filledBars = Math.floor(actualProcress * 10);
-    const progressBar = "█".repeat(filledBars) + "░".repeat(10 - filledBars);
+    let progressText: string =
+      `📊 Progress: ${progress} until ${nextLevel}\n` +
+      `📈 ${progressBar} ${Math.floor((levelProgress / 12) * 100)}%\n`;
+
+    if (!nextLevel) {
+      progressText =
+        `📊 You are at the maximum level!\n` +
+        `📈 ${"█".repeat(levelProgress)} 100%\n`;
+    }
 
     message =
       `**${usernameIn}** is a **${emoji} ${level}**!\n` +
-      `📊 Progress: ${progress}\n` +
-      `📈 ${progressBar} ${actualProcress * 100}%\n` +
+      `${progressText}` +
       `🍞 Total breaded: **${breadCount}** people`;
 
     logMessage = `"${usernameIn}" level checked - ${level} (${breadCount} breaded). Requested by "${interaction.user.username}"`;

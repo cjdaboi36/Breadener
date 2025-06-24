@@ -32,7 +32,13 @@ export const breadenerLevels = [
 ];
 
 export function _getBreadenerData(breadCount: number): breadenerLevel {
-  const receivedData = breadenerLevels[Math.floor(breadCount / 12)];
+  let index: number = Math.floor(breadCount / 12);
+
+  if (49 <= breadCount) {
+    index = 4;
+  }
+
+  const receivedData = breadenerLevels[index];
 
   return {
     level: receivedData.level,

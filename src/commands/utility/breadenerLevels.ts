@@ -9,13 +9,13 @@ export async function execute(interaction) {
   let message = "🍞 **Breadener Levels** 🍞\n\n";
 
   for (let i = 0; i < breadenerLevels.length; i++) {
-    const level = breadenerLevels[i];
+    const breadLevel = breadenerLevels[i];
 
-    if (level.threshold) {
-      message += `${level.emoji} ${level}: ${level.threshold - 12} - ${level.threshold} people Breadened!\n`;
+    if (breadLevel.threshold) {
+      message += `${breadLevel.emoji} ${breadLevel.level}: ${breadLevel.threshold - 12} - ${breadLevel.threshold} people Breadened!\n`;
       continue;
     }
-    message += `${level.emoji} ${level}: Max Level!\n`;
+    message += `${breadLevel.emoji} ${breadLevel.level}: 48+ people Breadened!\n`;
   }
 
   message +=

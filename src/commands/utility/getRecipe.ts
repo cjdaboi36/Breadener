@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "discord.js";
-import recipeData from "../../../importantFiles/breadRecipies.json" with { type: "json" };
+import breadRecipies from "../../../importantFiles/breadRecipies.json" with { type: "json" };
 import { breadRecipe } from "../../customTypes.ts";
 import { parseRecipe, getPrimaryContent } from "../../utils.ts";
 
@@ -17,7 +17,7 @@ export const data = new SlashCommandBuilder()
 export async function autocomplete(interaction) {
   const focusedValue = interaction.options.getFocused();
   // getPrimaryContent(recipeData) is the array with breadTypes
-  const filtered = getPrimaryContent(recipeData).filter((choice) =>
+  const filtered = getPrimaryContent(breadRecipies).filter((choice) =>
     choice.startsWith(focusedValue),
   );
   await interaction.respond(
@@ -47,7 +47,6 @@ export async function execute(interaction) {
 
   message += "## Recipe Link\n";
   message += `${recipeLink}\n`;
-
 
   let logMessage: string = `${interaction.user.username} requested the ${requestedBreadType}-recipe.`;
 

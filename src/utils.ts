@@ -1,6 +1,7 @@
 import "../node_modules/dotenv/config.d.ts";
-import { breadRecipe } from "./customTypes.ts";
+import { breadenerLevel, breadRecipe } from "./customTypes.ts";
 import recipeData from "../importantFiles/breadRecipies.json" with { type: "json" };
+import breadenerLevels from "../importantFiles/breadenerLevels.json" with { type: "json" };
 
 // For all your exportation and header functional purposes
 
@@ -75,7 +76,7 @@ export function parseRecipe(breadType: string): breadRecipe {
     ingredients: [["", ""]],
     expectedTime: 0,
     instructions: [""],
-    recipeLink: ""
+    recipeLink: "",
   };
 }
 
@@ -86,4 +87,21 @@ export function getPrimaryContent(data: object): string[] {
   }
 
   return array;
+}
+export function getBreadenerData(breadCount: number): breadenerLevel {
+  let index: number = Math.floor(breadCount / 12);
+
+  if (49 <= breadCount) {
+    index = 4;
+  }
+
+  const receivedData = breadenerLevels[index];
+
+  return {
+    level: receivedData.level,
+    nextLevel: receivedData.nextLevel,
+    breadCount: breadCount,
+    emoji: receivedData.emoji,
+    threshold: receivedData.threshold,
+  };
 }

@@ -1,7 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
-import jsonData from "../../../importantFiles/breadCount.json" with { type: "json" };
-import { getPrimaryContent } from "../../utils.ts";
-import { _getBreadenerData } from "../../levelingSystem.ts";
+import breadCount from "../../../importantFiles/breadCount.json" with { type: "json" };
+import { getBreadenerData, getPrimaryContent } from "../../utils.ts";
 
 export const data = new SlashCommandBuilder()
   .setName("get-breadener-level")
@@ -16,7 +15,7 @@ export const data = new SlashCommandBuilder()
 
 export async function autocomplete(interaction) {
   const focusedValue = interaction.options.getFocused();
-  const filtered = getPrimaryContent(jsonData.userObject).filter((choice) =>
+  const filtered = getPrimaryContent(breadCount.userObject).filter((choice) =>
     choice.startsWith(focusedValue),
   );
   await interaction.respond(
@@ -27,10 +26,10 @@ export async function autocomplete(interaction) {
 export async function execute(interaction) {
   const usernameIn: string = interaction.options.getString("username");
 
-  let breadCount: number | undefined;
-  for (const person of Object.entries(jsonData.userObject)) {
+  let _breadCount: number | undefined;
+  for (const person of Object.entries(breadCount.userObject)) {
     if (person[0] === usernameIn) {
-      breadCount = person[1];
+      _breadCount = person[1];
       break;
     }
   }
@@ -38,12 +37,12 @@ export async function execute(interaction) {
   let message: string;
   let logMessage: string;
 
-  if (breadCount) {
+  if (_breadCount) {
     const { level, nextLevel, emoji, threshold } =
-      _getBreadenerData(breadCount);
+      getBreadenerData(_breadCount);
 
-    const progress: string = `${breadCount}/${threshold}`;
-    const levelProgress: number = breadCount % 12;
+    const progress: string = `${_breadCount}/${threshold}`;
+    const levelProgress: number = _breadCount % 12;
     const progressBar =
       "█".repeat(levelProgress) + "░".repeat(12 - levelProgress);
 

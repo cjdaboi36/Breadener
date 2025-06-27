@@ -1,0 +1,35 @@
+import json
+
+DEV_CONFIG = {
+  "clientId": "You know what to put here",
+  "guildId": "You know what to put here",
+  "token": "You know what to put here"
+}
+
+PROD_CONFIG = {
+  "clientId": "You know what to put here",
+  "guildId": "You know what to put here",
+  "token": "You know what to put here"
+}
+
+CONFIG_PATH = "./config.json"  # Update this path for your own use ofc but it shouldn't change
+
+def write_config(config):
+    with open(CONFIG_PATH, "w") as f:
+        json.dump(config, f, indent=4)
+
+def main():
+    use_dev = input("Use DEV token? (y/n): ").strip().lower()
+    if use_dev == "y":
+        write_config(DEV_CONFIG)
+        print("Config overwritten with DEV version.")
+    else:
+        revert_prod = input("Revert to PROD version? (y/n): ").strip().lower()
+        if revert_prod == "y":
+            write_config(PROD_CONFIG)
+            print("Config overwritten with PROD version.")
+        else:
+            print("No changes made.")
+
+if __name__ == "__main__":
+    main()

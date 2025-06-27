@@ -1,0 +1,30 @@
+[
+  {
+    "level": "Breadener I",
+    "emoji": "🌾",
+    "threshold": 12,
+    "nextLevel": "Breadener II"
+  },
+  {
+    "level": "Breadener II",
+    "emoji": "🍚",
+    "threshold": 24,
+    "nextLevel": "Breadener III"
+  },
+  {
+    "level": "Breadener III",
+    "emoji": "🥐",
+    "threshold": 36,
+    "nextLevel": "Breadener IV"
+  },
+  {
+    "level": "Breadener VI",
+    "emoji": "🍞",
+    "threshold": 48,
+    "nextLevel": "Breadener V"
+  },
+  {
+    "level": "Breadener V",
+    "emoji": "🥖"
+  }
+]

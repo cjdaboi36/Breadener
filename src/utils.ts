@@ -5,6 +5,17 @@ import breadenerLevels from "../importantFiles/breadenerLevels.json" with { type
 
 // For all your exportation and header functional purposes
 
+export function coolBanner(): void {
+  console.log(
+    "  ____                     _                      \n" +
+      " |  _ \\                   | |                     \n" +
+      " | |_) |_ __ ___  __ _  __| | ___ _ __   ___ _ __\n" +
+      " |  _ <| '__/ _ \\\/ _` |/ _` |/ _ \ '_ \\ / _ \\ '__|\n" +
+      " | |_) | | |  __/ (_| | (_| |  __/ | | |  __/ |   \n" +
+      " |____/|_|  \\\___|\\\__,_|\\\__,_|\\\___|_| |_|\\\___|_|🍞",
+  );
+}
+
 export async function DiscordRequest(endpoint, options) {
   // append endpoint to root API URL
   const url = "https://discord.com/api/v10/" + endpoint;

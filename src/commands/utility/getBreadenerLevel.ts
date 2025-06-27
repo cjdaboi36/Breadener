@@ -58,9 +58,9 @@ export async function execute(interaction) {
     message =
       `**${usernameIn}** is a **${emoji} ${level}**!\n` +
       `${progressText}` +
-      `🍞 Total breaded: **${breadCount}** people`;
+      `🍞 Total breaded: **${_breadCount}** people`;
 
-    logMessage = `"${usernameIn}" level checked - ${level} (${breadCount} breaded). Requested by "${interaction.user.username}"`;
+    logMessage = `"${usernameIn}" level checked - ${level} (${_breadCount} breaded). Requested by "${interaction.user.username}"`;
   } else {
     message = `It doesn't seem like ${usernameIn} is in the database. If you are sure it should be, leave an issue on my repository!`;
     logMessage = `"${usernameIn}" isn't in the database. Requested by "${interaction.user.username}"`;

@@ -1,17 +1,28 @@
 import fs from "node:fs";
 import path from "node:path";
-import { Client, Collection, GatewayIntentBits } from "discord.js";
-import config from "./../config.json" with { type: "json" };
+import {
+  Client,
+  Collection,
+  GatewayIntentBits,
+  REST,
+  Routes,
+} from "discord.js";
+import config from "../../Breadener-token/prodBot.json" with { type: "json" };
 import { coolBanner } from "./utils.ts";
 
-coolBanner();
-
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-
-client.commands = new Collection();
+const commands = [];
+// Grab all the command folders from the commands directory you created earlier
 const foldersPath = path.join(import.meta.dirname, "commands");
 const commandFolders = fs.readdirSync(foldersPath);
 
+const client = new Client({
+  intents: [GatewayIntentBits.Guilds],
+  /* commands: [] */
+});
+
+client.commands = new Collection();
+
+// Grabs all files in commands/utility
 for (const folder of commandFolders) {
   const commandsPath = path.join(foldersPath, folder);
   const commandFiles = fs
@@ -23,6 +34,7 @@ for (const folder of commandFolders) {
     const command = await import(`file:///${filePath}`);
 
     if ("data" in command && "execute" in command) {
+      commands.push(command.data.toJSON());
       client.commands.set(command.data.name, command);
     } else {
       console.log(
@@ -31,6 +43,34 @@ for (const folder of commandFolders) {
     }
   }
 }
+
+// Construct and prepare an instance of the REST module
+const rest = new REST().setToken(config.token);
+
+// and deploy your commands!
+(async () => {
+  try {
+    console.log(
+      `Started refreshing ${commands.length} application (/) commands.`,
+    );
+
+    // The put method is used to fully refresh all commands in the guild with the current set
+    const data: any = await rest.put(
+      Routes.applicationCommands(config.clientId),
+      {
+        body: commands,
+      },
+    );
+
+    console.log(
+      `Successfully reloaded ${data.length} application (/) commands.`,
+    );
+  } catch (error) {
+    console.error(error);
+  }
+})();
+
+coolBanner();
 
 const eventsPath = path.join(import.meta.dirname, "events");
 const eventFiles = fs

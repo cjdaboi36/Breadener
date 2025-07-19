@@ -6,3 +6,4 @@ env
 overwrite_config.py
 /.vscode
 /token_backup
+secretData.json

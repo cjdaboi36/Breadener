@@ -1,7 +1,7 @@
 import "../node_modules/dotenv/config.d.ts";
 import { breadenerLevel, breadRecipe } from "./customTypes.ts";
-import recipeData from "../importantFiles/breadRecipies.json" with { type: "json" };
-import breadenerLevels from "../importantFiles/breadenerLevels.json" with { type: "json" };
+import recipeData from "../static/breadRecipies.json" with { type: "json" };
+import breadenerLevels from "../static/breadenerLevels.json" with { type: "json" };
 
 // For all your exportation and header functional purposes
 
@@ -14,6 +14,18 @@ export function coolBanner(): void {
       " | |_) | | |  __/ (_| | (_| |  __/ | | |  __/ |   \n" +
       " |____/|_|  \\\___|\\\__,_|\\\__,_|\\\___|_| |_|\\\___|_|🍞",
   );
+}
+
+export function removeWhiteSpace(str: string): string {
+  while (str[0] === " " || str[0] === "\n") {
+    str = str.slice();
+  }
+
+  while (str[str.length - 1] === " " || str[str.length - 1] === "\n") {
+    str = str.substring(0, str.length - 1);
+  }
+
+  return str;
 }
 
 export async function DiscordRequest(endpoint, options) {
@@ -99,6 +111,7 @@ export function getPrimaryContent(data: object): string[] {
 
   return array;
 }
+
 export function getBreadenerData(breadCount: number): breadenerLevel {
   let index: number = Math.floor(breadCount / 12);
 

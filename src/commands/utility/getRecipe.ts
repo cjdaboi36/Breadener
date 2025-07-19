@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "discord.js";
-import breadRecipies from "../../../importantFiles/breadRecipies.json" with { type: "json" };
+import breadRecipies from "../../../static/breadRecipies.json" with { type: "json" };
 import { breadRecipe } from "../../customTypes.ts";
 import { parseRecipe, getPrimaryContent } from "../../utils.ts";
 

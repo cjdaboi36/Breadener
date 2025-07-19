@@ -158,6 +158,15 @@
     "dependencies": [
       "jsr:@std/assert@1",
       "npm:discord.js@^14.20.0"
-    ]
+    ],
+    "packageJson": {
+      "dependencies": [
+        "npm:discord-interactions@^4.3.0",
+        "npm:discord.js@^14.21.0",
+        "npm:dotenv@^17.2.0",
+        "npm:express@^5.1.0",
+        "npm:octokit@^5.0.3"
+      ]
+    }
   }
 }

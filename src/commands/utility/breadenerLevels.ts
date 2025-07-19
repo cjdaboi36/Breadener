@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "discord.js";
-import breadenerLevels from "../../../importantFiles/breadenerLevels.json" with { type: "json" };
+import breadenerLevels from "../../../static/breadenerLevels.json" with { type: "json" };
 
 export const data = new SlashCommandBuilder()
   .setName("breadener-levels")

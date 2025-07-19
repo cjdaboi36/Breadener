@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "discord.js";
-import breadCount from "../../../importantFiles/breadCount.json" with { type: "json" };
+import breadCount from "../../../static/breadCount.json" with { type: "json" };
 import { getPrimaryContent } from "../../utils.ts";
 
 export const data = new SlashCommandBuilder()

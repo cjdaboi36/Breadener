@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
 import type { OctokitData } from "../../customTypes.ts";
-import secretData from "../../../secretData.json" with { type: "json" };
+import secretData from "../../../../Breadener-token/prodBot.json" with { type: "json" };
 import { Octokit } from "octokit";
 
 export const data = new SlashCommandBuilder()

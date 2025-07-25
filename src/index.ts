@@ -7,7 +7,7 @@ import {
   REST,
   Routes,
 } from "discord.js";
-import config from "../../Breadener-token/prodBot.json" with { type: "json" };
+import secretData from "../../Breadener-token/prodBot.json" with { type: "json" };
 import { coolBanner } from "./utils.ts";
 
 const commands = [];
@@ -45,7 +45,7 @@ for (const folder of commandFolders) {
 }
 
 // Construct and prepare an instance of the REST module
-const rest = new REST().setToken(config.token);
+const rest = new REST().setToken(secretData.token);
 
 // and deploy your commands!
 (async () => {
@@ -56,7 +56,7 @@ const rest = new REST().setToken(config.token);
 
     // The put method is used to fully refresh all commands in the guild with the current set
     const data: any = await rest.put(
-      Routes.applicationCommands(config.clientId),
+      Routes.applicationCommands(secretData.clientId),
       {
         body: commands,
       },
@@ -88,4 +88,4 @@ for (const file of eventFiles) {
   }
 }
 
-client.login(config.token);
+client.login(secretData.token);

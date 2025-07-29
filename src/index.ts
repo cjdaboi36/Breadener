@@ -3,6 +3,7 @@ import path from "node:path";
 import {
   Client,
   Collection,
+  Events,
   GatewayIntentBits,
   REST,
   Routes,
@@ -16,7 +17,11 @@ const foldersPath = path.join(import.meta.dirname, "commands");
 const commandFolders = fs.readdirSync(foldersPath);
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds],
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
   /* commands: [] */
 });
 
@@ -88,4 +93,10 @@ for (const file of eventFiles) {
   }
 }
 
+client.on(Events.MessageCreate, async (message) => {
+  console.log(message.content);
+  // Parse stuff
+});
+
+// Dit runt
 client.login(secretData.token);

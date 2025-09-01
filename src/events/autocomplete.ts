@@ -1,3 +1,4 @@
+/*
 import { Events, MessageFlags } from "discord.js";
 
 export const name = Events.InteractionCreate;
@@ -28,3 +29,5 @@ export async function execute(interaction) {
     }
   }
 }
+
+*/

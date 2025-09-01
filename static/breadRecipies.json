@@ -1,24 +1,4 @@
 {
-  "Pulla": {
-    "ingredients": [
-      ["Ingredient 1", "amount"],
-      ["Ingredient 2", "amount"],
-      ["Ingredient 3", "amount"]
-    ],
-    "expectedTime": 666,
-    "instructions": ["Instruction 1", "Instruction 2", "Instruction 3"],
-    "recipeLink": "https://www.example.com/tigerbread"
-  },
-  "Tigerbread": {
-    "ingredients": [
-      ["Ingredient 1", "amount"],
-      ["Ingredient 2", "amount"],
-      ["Ingredient 3", "amount"]
-    ],
-    "expectedTime": 666,
-    "instructions": ["Instruction 1", "Instruction 2", "Instruction 3"],
-    "recipeLink": "https://www.example.com/tigerbread"
-  },
   "Authentic Homemade Baguette": {
     "ingredients": [
       ["Whole-wheat flour", "38g (1/4 cup)"],

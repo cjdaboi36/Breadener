@@ -111,21 +111,3 @@ export function getPrimaryContent(data: object): string[] {
 
   return array;
 }
-
-export function getBreadenerData(breadCount: number): breadenerLevel {
-  let index: number = Math.floor(breadCount / 12);
-
-  if (49 <= breadCount) {
-    index = 4;
-  }
-
-  const receivedData = breadenerLevels[index];
-
-  return {
-    level: receivedData.level,
-    nextLevel: receivedData.nextLevel,
-    breadCount: breadCount,
-    emoji: receivedData.emoji,
-    threshold: receivedData.threshold,
-  };
-}

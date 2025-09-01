@@ -8,7 +8,7 @@ import {
   REST,
   Routes,
 } from "discord.js";
-import secretData from "../../Breadener-token/prodBot.json" with { type: "json" };
+import secretData from "../../Breadener-token/devBot.json" with { type: "json" };
 import { coolBanner } from "./utils.ts";
 
 const commands = [];
@@ -94,8 +94,14 @@ for (const file of eventFiles) {
 }
 
 client.on(Events.MessageCreate, async (message) => {
-  console.log(message.content);
   // Parse stuff
+  if (message.content === ".ping") {
+    message.channel.send("Pong!");
+  }
+
+  if (message.content.includes("🍞")) {
+    message.react("🍞");
+  }
 });
 
 // Dit runt

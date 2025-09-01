@@ -8,7 +8,7 @@ import {
   REST,
   Routes,
 } from "discord.js";
-import secretData from "../../Breadener-token/devBot.json" with { type: "json" };
+import secretData from "../../Breadener-token/prodBot.json" with { type: "json" };
 import { coolBanner } from "./utils.ts";
 
 const commands = [];

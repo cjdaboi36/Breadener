@@ -14,45 +14,31 @@ export const data = new SlashCommandBuilder()
 export async function execute(interaction) {
   const person = interaction.options.getUser("username");
 
-  let a: boolean = true;
+  if (person.id === interaction.user.id) {
+    await interaction
+      .reply({
+        content: "You can't register yourself as your own infector buddy!", // sounds like the other sentences so i'll go with it.
+        flags: [4096],
+        withResponse: true,
+      })
+      .then((response) => console.log(logMessage))
+      .catch(console.error);
+  }
 
-  await new Promise<void>((resolve, reject) => {
-    let thing = db
-      .prepare("SELECT COUNT(*) FROM infections WHERE infected_id = ?")
-      .get(interaction.user.id, (err, total: JSON) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        // console.log(`During the bullshit: ${total["COUNT(*)"]}`);
-        if (total["COUNT(*)"] !== 0) {
-          a = false;
-        }
-        resolve();
-      });
-  }).catch((err) => console.log(err));
+  const thing: { "COUNT(*)": number } = db
+    .prepare("SELECT COUNT(*) FROM infections WHERE infected_id = ?")
+    .get(interaction.user.id) ?? { "COUNT(*)": 0 };
 
   let message = "You can't register an infector twice buddy!";
   let logMessage = `${interaction.user.username} tried to fool the system, but turned out to be one themself`;
 
-  if (a) {
+  if (thing["COUNT(*)"] > 1) {
     message = `Registered "${person.username}" as the infector of "${interaction.user.username}".`;
     logMessage = `Registered "${person.username}" as the infector of "${interaction.user.username}".`;
 
-    const TheresreallynohardlimittohowlongtheseachievementnamescanbeandtobequitehonestImrathercurioustoseehowfarwecangoAdolphusWGreen18441917startedasthePrincipaloftheGrotonSchoolin1864By1865hebecamesecondassistantlibrarianattheNewYorkMercantileLibraryfrom1867to1869hewaspromotedtofulllibrarianFrom1869to1873heworkedforEvartsSouthmaydChoatealawfirmcofoundedbyWilliamMEvartsCharlesFerdinandSouthmaydandJosephHodgesChoateHewasadmittedtotheNewYorkStateBarAssociationin1873 =
-      db
-        .prepare(
-          "INSERT INTO infections (infector_id, infected_id) VALUES (?, ?)",
-        )
-        .run(person.id, interaction.user.id);
-
-    db.all("SELECT * FROM infections", (err, row) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      console.log(row);
-    });
+    db.prepare(
+      "INSERT INTO infections (infector_id, infected_id) VALUES (?, ?)",
+    ).run(person.id, interaction.user.id);
   }
 
   await interaction

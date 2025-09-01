@@ -1,9 +1,6 @@
-import path from "node:path";
-import sqlite3 from "sqlite3";
+import { Database } from "@db/sqlite";
 
-export const db = new sqlite3.Database(
-  path.join(import.meta.dirname ?? "", "../daataabaasaa.db"),
-);
+export const db = new Database(new URL("../daataabaasaa.db", import.meta.url));
 
 db.exec(`
         CREATE TABLE IF NOT EXISTS infections (

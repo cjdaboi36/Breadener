@@ -46,22 +46,12 @@ const breadenerLevels = [
 export async function execute(interaction) {
   const username = interaction.options.getUser("username");
 
-  let breadCount: number = 0;
+  let thing: { "COUNT(*)": number } | undefined = db
+    .prepare("SELECT COUNT(*) FROM infections WHERE infector_id = ?")
+    .get(username.id);
+  thing = thing ?? { "COUNT(*)": 0 }; // if it can't find anything, use 0
 
-  await new Promise<void>((resolve, reject) => {
-    let thing = db
-      .prepare("SELECT COUNT(*) FROM infections WHERE infector_id = ?")
-      .get(username.id, (err, total: JSON) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        breadCount = total["COUNT(*)"];
-        // console.log(`During the bullshit: ${breadCount}`);
-        resolve();
-      });
-  }).catch((err) => console.log(err));
-
+  const breadCount = thing["COUNT(*)"];
   let index: number = Math.floor(breadCount / 12);
 
   if (49 <= breadCount) {
@@ -76,12 +66,12 @@ export async function execute(interaction) {
     `📊 Progress: ${breadCount}/${breadenerLevels[index].threshold} until ${breadenerLevels[index].nextLevel}\n` +
     `📈 ${progressBar} ${Math.floor((levelProgress / 12) * 100)}%\n`;
 
-  let message =
+  const message =
     `**${username}** is a **${breadenerLevels[index].emoji} ${breadenerLevels[index].level}**!\n` +
     `${progressText}` +
     `🍞 Total breaded: **${breadCount}** people`;
 
-  let logMessage = `"${username}" level checked - ${breadenerLevels[index].level} (${breadCount} breaded). Requested by "${interaction.user.username}"`;
+  const logMessage = `"${username}" level checked - ${breadenerLevels[index].level} (${breadCount} breaded). Requested by "${interaction.user.username}"`;
 
   if (!breadenerLevels[index].nextLevel) {
     progressText =

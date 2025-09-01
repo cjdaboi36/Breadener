@@ -99,6 +99,10 @@ client.on(Events.MessageCreate, async (message) => {
     message.channel.send("Pong!");
   }
 
+  if (message.content === "Is <@1383534555960442880> up?") {
+    message.channel.send("Yes sir!")
+  }
+
   if (message.content.includes("🍞")) {
     message.react("🍞");
   }

@@ -8,3 +8,4 @@ overwrite_config.py
 /token_backup
 secretData.json
 daataabaasaa.db
+.direnv

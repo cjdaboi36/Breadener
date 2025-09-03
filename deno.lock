@@ -5,6 +5,8 @@
     "jsr:@denosaurs/plug@1": "1.1.0",
     "jsr:@std/assert@0.217": "0.217.0",
     "jsr:@std/assert@1": "1.0.13",
+    "jsr:@std/dotenv@*": "0.225.5",
+    "jsr:@std/dotenv@~0.225.5": "0.225.5",
     "jsr:@std/encoding@1": "1.0.10",
     "jsr:@std/fmt@1": "1.0.8",
     "jsr:@std/fs@1": "1.0.18",
@@ -14,7 +16,6 @@
     "jsr:@std/path@^1.1.0": "1.1.0",
     "npm:discord-interactions@^4.3.0": "4.3.0",
     "npm:discord.js@^14.21.0": "14.21.0",
-    "npm:dotenv@^17.2.1": "17.2.1",
     "npm:express@^5.1.0": "5.1.0",
     "npm:octokit@^5.0.3": "5.0.3_@octokit+core@7.0.3"
   },
@@ -43,6 +44,9 @@
       "dependencies": [
         "jsr:@std/internal"
       ]
+    },
+    "@std/dotenv@0.225.5": {
+      "integrity": "9ce6f9d0ec3311f74a32535aa1b8c62ed88b1ab91b7f0815797d77a6f60c922f"
     },
     "@std/encoding@1.0.10": {
       "integrity": "8783c6384a2d13abd5e9e87a7ae0520a30e9f56aeeaa3bdf910a3eaaf5c811a1"
@@ -440,9 +444,6 @@
         "undici"
       ]
     },
-    "dotenv@17.2.1": {
-      "integrity": "sha512-kQhDYKZecqnM0fCnzI5eIv5L4cAe/iRI+HqMbO/hbRdTAeXDG+M9FjipUxNfbARuEg4iHIbhnhs78BCHNbSxEQ=="
-    },
     "dunder-proto@1.0.1": {
       "integrity": "sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==",
       "dependencies": [
@@ -827,9 +828,9 @@
     "dependencies": [
       "jsr:@db/sqlite@0.12",
       "jsr:@std/assert@1",
+      "jsr:@std/dotenv@~0.225.5",
       "npm:discord-interactions@^4.3.0",
       "npm:discord.js@^14.21.0",
-      "npm:dotenv@^17.2.1",
       "npm:express@^5.1.0",
       "npm:octokit@^5.0.3"
     ]

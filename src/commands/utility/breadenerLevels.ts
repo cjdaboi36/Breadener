@@ -1,33 +1,40 @@
 import { SlashCommandBuilder } from "discord.js";
 import breadenerLevels from "../../../static/breadenerLevels.json" with { type: "json" };
+import { SlashCommand } from "../../customTypes.ts";
 
-export const data = new SlashCommandBuilder()
-  .setName("breadener-levels")
-  .setDescription("Show all available breadener levels and their requirements");
+const command: SlashCommand = {
+  data: new SlashCommandBuilder()
+    .setName("breadener-levels")
+    .setDescription(
+      "Show all available breadener levels and their requirements",
+    ),
 
-export async function execute(interaction) {
-  let message = "🍞 **Breadener Levels** 🍞\n\n";
+  execute: async (interaction) => {
+    let message = "🍞 **Breadener Levels** 🍞\n\n";
 
-  for (let i = 0; i < breadenerLevels.length; i++) {
-    const breadLevel = breadenerLevels[i];
+    for (let i = 0; i < breadenerLevels.length; i++) {
+      const breadLevel = breadenerLevels[i];
 
-    if (breadLevel.threshold) {
-      message += `${breadLevel.emoji} ${breadLevel.level}: ${breadLevel.threshold - 12} - ${breadLevel.threshold} people Breadened!\n`;
-      continue;
+      if (breadLevel.threshold) {
+        message += `${breadLevel.emoji} ${breadLevel.level}: ${breadLevel.threshold - 12} - ${breadLevel.threshold} people Breadened!\n`;
+        continue;
+      }
+      message += `${breadLevel.emoji} ${breadLevel.level}: 48+ people Breadened!\n`;
     }
-    message += `${breadLevel.emoji} ${breadLevel.level}: 48+ people Breadened!\n`;
-  }
 
-  message +=
-    "\n🎯 Use `/get-breadener-level <username>` to check someone's level!";
+    message +=
+      "\n🎯 Use `/get-breadener-level <username>` to check someone's level!";
 
-  const logMessage = `Breadener levels info requested by "${interaction.user.username}"`;
+    const logMessage = `Breadener levels info requested by "${interaction.user.username}"`;
 
-  await interaction
-    .reply({
-      content: message,
-      withResponse: true,
-    })
-    .then((_response) => console.log(logMessage))
-    .catch(console.error);
-}
+    await interaction
+      .reply({
+        content: message,
+        withResponse: true,
+      })
+      .then((_response) => console.log(logMessage))
+      .catch(console.error);
+  },
+};
+
+export default command;

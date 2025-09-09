@@ -10,10 +10,16 @@ import {
 } from "discord.js";
 import { secrets } from "./config.ts";
 import { coolBanner } from "./utils.ts";
+import {
+  BotEvent,
+  BotEventGuard,
+  SlashCommand,
+  SlashCommandGuard,
+} from "./customTypes.ts";
 
 const commands = [];
 // Grab all the command folders from the commands directory you created earlier
-const foldersPath = path.join(import.meta.dirname, "commands");
+const foldersPath = path.join(import.meta.dirname ?? "", "commands");
 const commandFolders = fs.readdirSync(foldersPath);
 
 const client = new Client({
@@ -25,7 +31,7 @@ const client = new Client({
   /* commands: [] */
 });
 
-client.commands = new Collection();
+client.commands = new Collection<string, SlashCommand>();
 
 // Grabs all files in commands/utility
 for (const folder of commandFolders) {
@@ -36,16 +42,20 @@ for (const folder of commandFolders) {
 
   for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
-    const command = await import(`file:///${filePath}`);
+    const module = await import(`file:///${filePath}`);
 
-    if ("data" in command && "execute" in command) {
-      commands.push(command.data.toJSON());
-      client.commands.set(command.data.name, command);
-    } else {
+    if (!SlashCommandGuard(module)) {
       console.log(
-        `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`,
+        `[WARNING] The module at ${filePath} is doesn't really look like a slashcommand..`,
       );
+
+      continue;
     }
+
+    const command: SlashCommand = module.default as SlashCommand;
+
+    commands.push(command.data.toJSON());
+    client.commands.set(command.data.name, command);
   }
 }
 
@@ -60,16 +70,11 @@ const rest = new REST().setToken(secrets.token);
     );
 
     // The put method is used to fully refresh all commands in the guild with the current set
-    const data: any = await rest.put(
-      Routes.applicationCommands(secrets.clientId),
-      {
-        body: commands,
-      },
-    );
+    await rest.put(Routes.applicationCommands(secrets.clientId), {
+      body: commands,
+    });
 
-    console.log(
-      `Successfully reloaded ${data.length} application (/) commands.`,
-    );
+    console.log(`Successfully reloaded application (/) commands.`);
   } catch (error) {
     console.error(error);
   }
@@ -77,36 +82,31 @@ const rest = new REST().setToken(secrets.token);
 
 coolBanner();
 
-const eventsPath = path.join(import.meta.dirname, "events");
+const eventsPath = path.join(import.meta.dirname ?? "", "events");
 const eventFiles = fs
   .readdirSync(eventsPath)
   .filter((file) => file.endsWith(".ts"));
 
 for (const file of eventFiles) {
   const filePath = path.join(eventsPath, file);
-  const event = await import(`file:///${filePath}`);
+  const module = await import(`file:///${filePath}`);
+
+  if (!BotEventGuard(module)) {
+    console.log(
+      `[WARNING] The module at ${filePath} is doesn't really look like an event..`,
+    );
+
+    continue;
+  }
+
+  const event: BotEvent = module.default as BotEvent;
 
   if (event.once) {
-    client.once(event.name, (...args) => event.execute(...args));
+    client.once(event.type as string, (...args) => event.execute(...args));
   } else {
-    client.on(event.name, (...args) => event.execute(...args));
+    client.on(event.type as string, (...args) => event.execute(...args));
   }
 }
-
-client.on(Events.MessageCreate, async (message) => {
-  // Parse stuff
-  if (message.content === ".ping") {
-    message.channel.send("Pong!");
-  }
-
-  if (message.content === "Is <@1383534555960442880> up?") {
-    message.channel.send("Yes sir!");
-  }
-
-  if (message.content.includes("🍞")) {
-    message.react("🍞");
-  }
-});
 
 // Dit runt
 client.login(secrets.token);

@@ -1,8 +1,5 @@
 import "jsr:@std/dotenv/load";
 
-const configKeys = ["DATABASE_PATH", "SECRETS_PATH"] as const;
-type ConfigRecord = Record<(typeof configKeys)[number], string>;
-
 const secretKeys = [
   "clientId",
   "guildId",
@@ -10,7 +7,10 @@ const secretKeys = [
   "token",
   "octokitToken",
 ] as const;
-type SecretRecord = Record<(typeof configKeys)[number], string>;
+type SecretRecord = Record<(typeof secretKeys)[number], string>;
+
+const configKeys = ["DATABASE_PATH", "SECRETS_PATH"] as const;
+type ConfigRecord = Record<(typeof configKeys)[number], string>;
 
 export const config = configKeys.reduce<ConfigRecord>((prev, current) => {
   const env = Deno.env.get(current);

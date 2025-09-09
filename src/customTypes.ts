@@ -1,3 +1,38 @@
+import { SlashCommandOptionsOnlyBuilder } from "discord.js";
+import { ChatInputCommandInteraction, Events } from "discord.js";
+import {
+  Collection,
+  CommandInteraction,
+  SlashCommandBuilder,
+} from "discord.js";
+
+declare module "discord.js" {
+  export interface Client {
+    commands: Collection<string, SlashCommand>;
+  }
+}
+
+export type SlashCommand = {
+  data: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder;
+  execute: (interaction: ChatInputCommandInteraction) => void;
+};
+export const SlashCommandGuard = (object: object) =>
+  "default" in object &&
+  "data" in (object.default as object) &&
+  "execute" in (object.default as object);
+
+export type BotEvent = {
+  type: Events;
+  once?: boolean;
+
+  // deno-lint-ignore no-explicit-any
+  execute: (...args: any[]) => void; // Man, not my fault discordjs uses any even in their god damn type.
+};
+export const BotEventGuard = (object: object) =>
+  "default" in object &&
+  "type" in (object.default as object) &&
+  "execute" in (object.default as object);
+
 export type breadRecipe = {
   breadName: string | undefined;
   ingredients: string[][];

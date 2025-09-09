@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
 import breadRecipies from "../../../static/breadRecipies.json" with { type: "json" };
 import { breadRecipe, SlashCommand } from "../../customTypes.ts";
-import { parseRecipe, getPrimaryContent } from "../../utils.ts";
+import { parseRecipe } from "../../utils.ts";
 
 // export async function autocomplete(interaction) {
 //   const focusedValue = interaction.options.getFocused();

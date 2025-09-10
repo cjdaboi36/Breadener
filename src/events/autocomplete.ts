@@ -1,12 +1,12 @@
-import { Events, MessageFlags } from "discord.js";
+import { Events } from "discord.js";
 import { BotEvent } from "../customTypes.ts";
 
 const event: BotEvent = {
   type: Events.InteractionCreate,
   execute: (interaction) => {
-    if (!interaction.isAutocomplete()) return; // check eff of het ook echt deze method is
+    if (!interaction.isAutocomplete()) return;
 
-    const command = interaction.client.commands.get(interaction.commandName); // seems fine
+    const command = interaction.client.commands.get(interaction.commandName);
 
     if (!command) {
       console.error(

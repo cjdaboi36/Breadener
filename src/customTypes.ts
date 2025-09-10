@@ -4,29 +4,36 @@ import { ChatInputCommandInteraction, Events } from "discord.js";
 import { Collection, SlashCommandBuilder } from "discord.js";
 
 declare module "discord.js" {
+  // Adds the type for the  client.command object
   export interface Client {
     commands: Collection<string, SlashCommand>;
   }
 }
 
 export type SlashCommand = {
-  data: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder;
-  execute: (interaction: ChatInputCommandInteraction) => void;
-  autocomplete?: (interaction: AutocompleteInteraction) => void;
+  // This is a slash command. every .ts file in src/commands should export default this
+  data: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder; // there are multiple kinds of slashcommand builders
+  execute: (interaction: ChatInputCommandInteraction) => void; // the function that runs when the slashcommand is being executed
+  autocomplete?: (interaction: AutocompleteInteraction) => void; // optional autocomplete function
 };
-export const SlashCommandGuard = (object: object) =>
+export const SlashCommandGuard = (
+  object: object, // this checks if an object is a slashcommand
+) =>
   "default" in object &&
   "data" in (object.default as object) &&
   "execute" in (object.default as object);
 
 export type BotEvent = {
+  // botevent, these reside in src/events/*.ts
   type: Events;
   once?: boolean;
 
   // deno-lint-ignore no-explicit-any
   execute: (...args: any[]) => void; // Man, not my fault discordjs uses any even in their god damn type.
 };
-export const BotEventGuard = (object: object) =>
+export const BotEventGuard = (
+  object: object, // again, checks if an object is a botevent
+) =>
   "default" in object &&
   "type" in (object.default as object) &&
   "execute" in (object.default as object);

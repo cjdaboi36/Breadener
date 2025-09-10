@@ -1,10 +1,7 @@
-import { SlashCommandOptionsOnlyBuilder } from "discord.js";
+import { Interaction, SlashCommandOptionsOnlyBuilder } from "discord.js";
+import { AutocompleteInteraction } from "discord.js";
 import { ChatInputCommandInteraction, Events } from "discord.js";
-import {
-  Collection,
-  CommandInteraction,
-  SlashCommandBuilder,
-} from "discord.js";
+import { Collection, SlashCommandBuilder } from "discord.js";
 
 declare module "discord.js" {
   export interface Client {
@@ -15,6 +12,7 @@ declare module "discord.js" {
 export type SlashCommand = {
   data: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder;
   execute: (interaction: ChatInputCommandInteraction) => void;
+  autocomplete?: (interaction: AutocompleteInteraction) => void;
 };
 export const SlashCommandGuard = (object: object) =>
   "default" in object &&

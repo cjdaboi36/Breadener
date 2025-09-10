@@ -104,7 +104,7 @@ export function parseRecipe(breadType: string): breadRecipe {
 }
 
 export function getPrimaryContent(data: object): string[] {
-  let array: string[] = [];
+  const array: string[] = [];
   for (const i of Object.entries(data)) {
     array.push(i[0]);
   }

@@ -1,7 +1,10 @@
 import { Interaction, SlashCommandOptionsOnlyBuilder } from "discord.js";
 import { AutocompleteInteraction } from "discord.js";
 import { ChatInputCommandInteraction, Events } from "discord.js";
-import { Collection, SlashCommandBuilder } from "discord.js";
+import {
+  Collection,
+  SlashCommandBuilder,
+} from "discord.js";
 
 declare module "discord.js" {
   // Adds the type for the  client.command object

@@ -3,7 +3,6 @@ import path from "node:path";
 import {
   Client,
   Collection,
-  Events,
   GatewayIntentBits,
   REST,
   Routes,

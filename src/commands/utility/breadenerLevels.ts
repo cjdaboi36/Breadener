@@ -4,7 +4,7 @@ import breadenerLevels from "../../../static/breadenerLevels.json" with {
 };
 import { SlashCommand } from "../../customTypes.ts";
 
-const command: SlashCommand = {
+const slashCommand: SlashCommand = {
   data: new SlashCommandBuilder()
     .setName("breadener-levels")
     .setDescription(
@@ -43,4 +43,4 @@ const command: SlashCommand = {
   },
 };
 
-export default command;
+export default slashCommand;

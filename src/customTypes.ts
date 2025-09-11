@@ -35,6 +35,7 @@ export type BotEvent = {
   // deno-lint-ignore no-explicit-any
   execute: (...args: any[]) => void; // Man, not my fault discordjs uses any even in their god damn type.
 };
+
 export const BotEventGuard = (
   object: object, // again, checks if an object is a botevent
 ) =>

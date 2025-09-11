@@ -8,7 +8,7 @@ import type {
 import { Octokit } from "octokit";
 import { secrets } from "../../config.ts";
 
-const command: SlashCommand = {
+const slashCommand: SlashCommand = {
   data: new SlashCommandBuilder()
     .setName("breadener")
     .setDescription("Get recipes for the most delicious pieces of bread!"),
@@ -94,4 +94,4 @@ const command: SlashCommand = {
   },
 };
 
-export default command;
+export default slashCommand;

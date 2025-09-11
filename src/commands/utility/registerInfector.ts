@@ -34,7 +34,7 @@ const slashCommand: SlashCommand = {
     let message = "You can't register an infector twice buddy!";
     let logMessage = `${interaction.user.username} tried to fool the system, but turned out to be one themself`;
 
-    if (thing["COUNT(*)"] > 1) {
+    if (thing["COUNT(*)"] === 0) {
       message = `Registered "${person.username}" as the infector of "${interaction.user.username}".`;
       logMessage = `Registered "${person.username}" as the infector of "${interaction.user.username}".`;
 

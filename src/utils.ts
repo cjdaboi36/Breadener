@@ -1,4 +1,3 @@
-import "../node_modules/dotenv/config.d.ts";
 import { breadRecipe } from "./customTypes.ts";
 import recipeData from "../static/breadRecipies.json" with { type: "json" };
 

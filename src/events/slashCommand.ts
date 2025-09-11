@@ -5,6 +5,8 @@ import { Interaction } from "discord.js";
 const event: BotEvent = {
   type: Events.InteractionCreate,
   execute: async (interaction: Interaction) => {
+    console.log(interaction);
+
     if (!interaction.isChatInputCommand()) {
       return;
     }

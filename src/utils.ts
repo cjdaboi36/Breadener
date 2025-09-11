@@ -64,12 +64,3 @@ export function parseRecipe(breadType: string): breadRecipe {
     recipeLink: "",
   };
 }
-
-export function getPrimaryContent(data: object): string[] {
-  const array: string[] = [];
-  for (const i of Object.entries(data)) {
-    array.push(i[0]);
-  }
-
-  return array;
-}

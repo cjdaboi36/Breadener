@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
 import type { OctokitData, SlashCommand } from "../../customTypes.ts";
-import secretData from "../../../../Breadener-token/prodBot.json" with { type: "json" };
 import { Octokit } from "octokit";
+import { secrets } from "../../config.ts";
 
 const command: SlashCommand = {
   data: new SlashCommandBuilder()
@@ -10,7 +10,7 @@ const command: SlashCommand = {
 
   execute: async (interaction) => {
     const octokit = new Octokit({
-      auth: secretData.octokitToken,
+      auth: secrets.octokitToken,
     });
 
     const repoData: OctokitData = await octokit.request(

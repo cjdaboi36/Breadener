@@ -10,7 +10,7 @@ const slashCommand: SlashCommand = {
       option
         .setName("username")
         .setDescription("give the preferred username")
-        .setRequired(true),
+        .setRequired(true)
     ),
 
   execute: async (interaction) => {
@@ -23,7 +23,7 @@ const slashCommand: SlashCommand = {
           flags: [4096],
           withResponse: true,
         })
-        .then((response) => console.log(logMessage))
+        .then((_response) => console.log(logMessage))
         .catch(console.error);
     }
 
@@ -32,11 +32,14 @@ const slashCommand: SlashCommand = {
       .get(interaction.user.id) ?? { "COUNT(*)": 0 };
 
     let message = "You can't register an infector twice buddy!";
-    let logMessage = `${interaction.user.username} tried to fool the system, but turned out to be one themself`;
+    let logMessage =
+      `${interaction.user.username} tried to fool the system, but turned out to be one themself`;
 
     if (thing["COUNT(*)"] === 0) {
-      message = `Registered "${person.username}" as the infector of "${interaction.user.username}".`;
-      logMessage = `Registered "${person.username}" as the infector of "${interaction.user.username}".`;
+      message =
+        `Registered "${person.username}" as the infector of "${interaction.user.username}".`;
+      logMessage =
+        `Registered "${person.username}" as the infector of "${interaction.user.username}".`;
 
       db.prepare(
         "INSERT INTO infections (infector_id, infected_id) VALUES (?, ?)",
@@ -49,7 +52,7 @@ const slashCommand: SlashCommand = {
         flags: [4096],
         withResponse: true,
       })
-      .then((response) => console.log(logMessage))
+      .then((_response) => console.log(logMessage))
       .catch(console.error);
   },
 };

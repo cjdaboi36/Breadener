@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "discord.js";
-import type { breadenerLevel, SlashCommand } from "../../customTypes.ts";
+import type { SlashCommand } from "../../customTypes.ts";
 import { db } from "../../db.ts";
 
 type LevelBase = {
@@ -9,13 +9,13 @@ type LevelBase = {
 
 type Level =
   | (LevelBase & {
-      threshold?: never;
-      nextLevel?: never;
-    })
+    threshold?: never;
+    nextLevel?: never;
+  })
   | (LevelBase & {
-      threshold: number;
-      nextLevel: string;
-    });
+    threshold: number;
+    nextLevel: string;
+  });
 
 const breadenerLevels: Level[] = [
   {
@@ -56,7 +56,7 @@ const slashCommand: SlashCommand = {
       option
         .setName("username")
         .setDescription("give the username of the infector")
-        .setRequired(true),
+        .setRequired(true)
     ),
   execute: async (interaction) => {
     const username = interaction.options.getUser("username", true);
@@ -74,33 +74,39 @@ const slashCommand: SlashCommand = {
     }
 
     const levelProgress: number = breadCount % 12;
-    const progressBar =
-      "█".repeat(levelProgress) + "░".repeat(12 - levelProgress);
+    const progressBar = "█".repeat(levelProgress) +
+      "░".repeat(12 - levelProgress);
 
     let progressText: string = "";
 
     if (!("nextLevel" in breadenerLevels[index])) {
-      progressText =
-        `📊 You are at the maximum level!\n` + `📈 ${"█".repeat(12)} 100%\n`;
+      progressText = `📊 You are at the maximum level!\n` +
+        `📈 ${"█".repeat(12)} 100%\n`;
     } else {
       progressText =
-        `📊 Progress: ${breadCount}/${breadenerLevels[index].threshold} until ${breadenerLevels[index].nextLevel}\n` +
+        `📊 Progress: ${breadCount}/${breadenerLevels[index].threshold} until ${
+          breadenerLevels[index].nextLevel
+        }\n` +
         `📈 ${progressBar} ${Math.floor((levelProgress / 12) * 100)}%\n`;
     }
 
     const message =
-      `**${username}** is a **${breadenerLevels[index].emoji} ${breadenerLevels[index].level}**!\n` +
+      `**${username}** is a **${breadenerLevels[index].emoji} ${
+        breadenerLevels[index].level
+      }**!\n` +
       `${progressText}` +
       `🍞 Total breaded: **${breadCount}** people`;
 
-    const logMessage = `"${username}" level checked - ${breadenerLevels[index].level} (${breadCount} breaded). Requested by "${interaction.user.username}"`;
+    const logMessage = `"${username}" level checked - ${
+      breadenerLevels[index].level
+    } (${breadCount} breaded). Requested by "${interaction.user.username}"`;
 
     await interaction
       .reply({
         content: message,
         withResponse: true,
       })
-      .then((response) => console.log(logMessage))
+      .then((_response) => console.log(logMessage))
       .catch(console.error);
   },
 };

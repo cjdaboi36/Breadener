@@ -52,7 +52,7 @@ const slashCommand: SlashCommand = {
         content: message,
         withResponse: true,
       })
-      .then((response) => console.log(logMessage))
+      .then((_response) => console.log(logMessage))
       .catch(console.error);
   },
 

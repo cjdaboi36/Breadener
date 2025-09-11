@@ -1,5 +1,10 @@
 import { SlashCommandBuilder } from "discord.js";
-import type { OctokitData, SlashCommand } from "../../customTypes.ts";
+import type {
+  GitHubRepository,
+  Language,
+  OctokitResponse,
+  SlashCommand,
+} from "../../customTypes.ts";
 import { Octokit } from "octokit";
 import { secrets } from "../../config.ts";
 
@@ -9,15 +14,15 @@ const command: SlashCommand = {
     .setDescription("Get recipes for the most delicious pieces of bread!"),
 
   execute: async (interaction) => {
-    const octokit = new Octokit({
+    const octokit: Octokit = new Octokit({
       auth: secrets.octokitToken,
     });
 
-    const repoData: OctokitData = await octokit.request(
+    const repoData: OctokitResponse<GitHubRepository> = await octokit.request(
       "GET https://api.github.com/repos/The-Breadening/Breadener",
     );
 
-    const rawLanguageData = await octokit.request(
+    const rawLanguageData: OctokitResponse<Language> = await octokit.request(
       "GET https://api.github.com/repos/The-Breadening/Breadener/languages",
     );
 
@@ -26,7 +31,7 @@ const command: SlashCommand = {
     console.log(`\x1b[43m > \x1b[0m Fetch Log Languages`);
     console.log(rawLanguageData.headers);
 
-    const languageData: { [language: string]: string } = {};
+    const languageData: Language = {};
     let langTotalChar: number = 0;
 
     for (const language of Object.entries(rawLanguageData.data)) {
@@ -45,8 +50,7 @@ const command: SlashCommand = {
       languagemessage += `\t\t${languageEntry[0]}: "${languageEntry[1]}"\n`;
     }
 
-    const message: string =
-      "# Breadener-bot!\n" +
+    const message: string = "# Breadener-bot!\n" +
       "\`\`\`json\n" +
       "{\n" +
       "\tid: " +
@@ -78,14 +82,14 @@ const command: SlashCommand = {
       "}\n" +
       "\`\`\`";
 
-    const logMessage: string = `Inquired ${interaction.user.username} about the bot`;
-
     await interaction
       .reply({
         content: message,
         withResponse: true,
       })
-      .then((response) => console.log(logMessage))
+      .then((_response) =>
+        console.log(`Inquired ${interaction.user.username} about the bot`)
+      )
       .catch(console.error);
   },
 };

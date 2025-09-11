@@ -10,7 +10,7 @@ const slashCommand: SlashCommand = {
       option
         .setName("username")
         .setDescription("give the username of the infector")
-        .setRequired(true),
+        .setRequired(true)
     ),
 
   execute: async (interaction) => {
@@ -24,7 +24,8 @@ const slashCommand: SlashCommand = {
     const broodTeller = thing["COUNT(*)"];
 
     const message: string = `<@${username.id}> infected ${broodTeller} people!`;
-    const logMessage: string = `"${username.username}" breaded ${broodTeller} people. Requested by "${interaction.user.username}"`;
+    const logMessage: string =
+      `"${username.username}" breaded ${broodTeller} people. Requested by "${interaction.user.username}"`;
 
     await interaction
       .reply({
@@ -32,7 +33,7 @@ const slashCommand: SlashCommand = {
         flags: [4096], // makes the message silent
         withResponse: true,
       })
-      .then((response) => console.log(logMessage))
+      .then((_response) => console.log(logMessage))
       .catch(console.error);
   },
 };

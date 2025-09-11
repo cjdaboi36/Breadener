@@ -15,7 +15,9 @@ const slashCommand: SlashCommand = {
         content: message,
         withResponse: true,
       })
-      .then((response) => console.log(`Helped "${interaction.user.username}".`))
+      .then((_response) =>
+        console.log(`Helped "${interaction.user.username}".`)
+      )
       .catch(console.error);
   },
 };

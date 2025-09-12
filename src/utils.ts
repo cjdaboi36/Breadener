@@ -1,4 +1,4 @@
-import { breadRecipe } from "./customTypes.ts";
+import type { breadRecipe } from "./customTypes.ts";
 import recipeData from "../static/breadRecipies.json" with { type: "json" };
 
 // For all your exportation and header functional purposes

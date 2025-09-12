@@ -24,8 +24,8 @@ export const config = configKeys.reduce<ConfigRecord>((prev, current) => {
   return prev;
 }, {} as ConfigRecord);
 
-const base_path = new URL("../", import.meta.url);
-const secrets_path = new URL(config.SECRETS_PATH, base_path);
+const base_path: URL = new URL("../", import.meta.url);
+const secrets_path: URL = new URL(config.SECRETS_PATH, base_path);
 
 let tSecrets: SecretRecord | undefined;
 try {

@@ -27,7 +27,6 @@ const client = new Client({
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
   ],
-  /* commands: [] */
 });
 
 client.commands = new Collection<string, SlashCommand>();
@@ -59,7 +58,7 @@ for (const folder of commandFolders) {
 }
 
 // Construct and prepare an instance of the REST module
-const rest = new REST().setToken(secrets.token);
+const rest: REST = new REST().setToken(secrets.token);
 
 // and deploy your commands!
 (async () => {
@@ -87,7 +86,7 @@ const eventFiles = fs
   .filter((file) => file.endsWith(".ts"));
 
 for (const file of eventFiles) {
-  const filePath = path.join(eventsPath, file);
+  const filePath: string = path.join(eventsPath, file);
   const module = await import(`file:///${filePath}`);
 
   if (!BotEventGuard(module)) {

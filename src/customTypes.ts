@@ -1,9 +1,10 @@
-import { Interaction, SlashCommandOptionsOnlyBuilder } from "discord.js";
-import { AutocompleteInteraction } from "discord.js";
-import { ChatInputCommandInteraction, Events } from "discord.js";
 import {
+  AutocompleteInteraction,
+  ChatInputCommandInteraction,
   Collection,
+  Events,
   SlashCommandBuilder,
+  SlashCommandOptionsOnlyBuilder,
 } from "discord.js";
 
 declare module "discord.js" {
@@ -34,6 +35,7 @@ export type BotEvent = {
   // deno-lint-ignore no-explicit-any
   execute: (...args: any[]) => void; // Man, not my fault discordjs uses any even in their god damn type.
 };
+
 export const BotEventGuard = (
   object: object, // again, checks if an object is a botevent
 ) =>
@@ -181,9 +183,36 @@ export type GitHubRepository = {
   default_branch: string;
 };
 
-export type OctokitData = {
-  url: string;
-  status: number;
-  headers: any;
-  data: GitHubRepository;
+export type ResponseHeaders = {
+  "cache-control"?: string;
+  "content-length"?: number;
+  "content-type"?: string;
+  date?: string;
+  etag?: string;
+  "last-modified"?: string;
+  link?: string;
+  location?: string;
+  server?: string;
+  status?: string;
+  vary?: string;
+  "x-accepted-github-permissions"?: string;
+  "x-github-mediatype"?: string;
+  "x-github-request-id"?: string;
+  "x-oauth-scopes"?: string;
+  "x-ratelimit-limit"?: string;
+  "x-ratelimit-remaining"?: string;
+  "x-ratelimit-reset"?: string;
+
+  [header: string]: string | number | undefined;
+};
+
+export type Language = { [language: string]: string };
+
+export type Url = string;
+
+export type OctokitResponse<T, S extends number = number> = {
+  headers: ResponseHeaders;
+  status: S; // http response code
+  url: Url; // URL of response after all redirects
+  data: T; // Response data as documented in the REST API reference documentation at https://docs.github.com/rest/reference
 };

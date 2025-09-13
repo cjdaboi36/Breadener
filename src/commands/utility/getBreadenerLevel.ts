@@ -59,11 +59,11 @@ const slashCommand: SlashCommand = {
         .setRequired(true)
     ),
   execute: async (interaction) => {
-    const username = interaction.options.getUser("username", true);
+    const person = interaction.options.getUser("username", true);
 
     let thing: { "COUNT(*)": number } | undefined = db
       .prepare("SELECT COUNT(*) FROM infections WHERE infector_id = ?")
-      .get(username.id);
+      .get(person.id);
     thing = thing ?? { "COUNT(*)": 0 }; // if it can't find anything, use 0
 
     const breadCount = thing["COUNT(*)"];
@@ -91,13 +91,13 @@ const slashCommand: SlashCommand = {
     }
 
     const message =
-      `**${username}** is a **${breadenerLevels[index].emoji} ${
+      `**${person}** is a **${breadenerLevels[index].emoji} ${
         breadenerLevels[index].level
       }**!\n` +
       `${progressText}` +
       `🍞 Total breaded: **${breadCount}** people`;
 
-    const logMessage = `"${username}" level checked - ${
+    const logMessage = `"${person.username}" level checked - ${
       breadenerLevels[index].level
     } (${breadCount} breaded). Requested by "${interaction.user.username}"`;
 

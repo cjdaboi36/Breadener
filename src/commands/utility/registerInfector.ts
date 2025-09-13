@@ -20,24 +20,24 @@ const slashCommand: SlashCommand = {
       await interaction
         .reply({
           content: "You can't register yourself as your own infector buddy!", // sounds like the other sentences so i'll go with it.
-          flags: [4096],
           withResponse: true,
         })
-        .then((_response) => console.log(logMessage))
+        .then((_response) => console.log(`${interaction.user.username} tried to fool the system, but turned out to be one themselves`))
         .catch(console.error);
+      return;
     }
-
-    const thing: { "COUNT(*)": number } = db
-      .prepare("SELECT COUNT(*) FROM infections WHERE infected_id = ?")
-      .get(interaction.user.id) ?? { "COUNT(*)": 0 };
 
     let message = "You can't register an infector twice buddy!";
     let logMessage =
-      `${interaction.user.username} tried to fool the system, but turned out to be one themself`;
+      `${interaction.user.username} tried to fool the system, but turned out to be one themselves`;
+
+    const thing: { "COUNT(*)": number } = db
+      .prepare("SELECT COUNT(*) FROM infections WHERE infected_id = ?")
+      .get(interaction.user.id) ?? { "COUNT(*)": 0 }; // Checks whether command runner already has an entry
 
     if (thing["COUNT(*)"] === 0) {
       message =
-        `Registered "${person.username}" as the infector of "${interaction.user.username}".`;
+        `Registered <@${person.id}> as the infector of <@${interaction.user.id}>.`;
       logMessage =
         `Registered "${person.username}" as the infector of "${interaction.user.username}".`;
 
@@ -49,7 +49,6 @@ const slashCommand: SlashCommand = {
     await interaction
       .reply({
         content: message,
-        flags: [4096],
         withResponse: true,
       })
       .then((_response) => console.log(logMessage))

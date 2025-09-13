@@ -15,7 +15,6 @@ const slashCommand: SlashCommand = {
 
   execute: async (interaction) => {
     const username = interaction.options.getUser("username", true);
-    // console.log(`id of person requested ${username.id} ${username.username}`);
 
     const thing: { "COUNT(*)": number } = db
       .prepare("SELECT COUNT(*) FROM infections WHERE infector_id = ?")
@@ -23,14 +22,18 @@ const slashCommand: SlashCommand = {
 
     const broodTeller = thing["COUNT(*)"];
 
-    const message: string = `<@${username.id}> infected ${broodTeller} people!`;
-    const logMessage: string =
+    let message: string = `<@${username.id}> infected ${broodTeller} people!`;
+    let logMessage: string =
       `"${username.username}" breaded ${broodTeller} people. Requested by "${interaction.user.username}"`;
+
+    if (broodTeller === 1) {
+      message = `<@${username.id}> infected 1 person!`;
+      logMessage = `"${username.username}" breaded 1 person. Requested by "${interaction.user.username}"`;
+    }
 
     await interaction
       .reply({
         content: message,
-        flags: [4096], // makes the message silent
         withResponse: true,
       })
       .then((_response) => console.log(logMessage))

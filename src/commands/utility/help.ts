@@ -6,9 +6,8 @@ const slashCommand: SlashCommand = {
     .setName("help")
     .setDescription("Gives a list of the non-slashcommands!"),
   execute: async (interaction) => {
-    const message = `
-    .ping | Replies with pong!
-    `;
+    const message = `\`.ping\` | Replies with pong!\n` +
+      `\`Is @Breadener up?\` | Replies with affermation!\n`;
 
     await interaction
       .reply({

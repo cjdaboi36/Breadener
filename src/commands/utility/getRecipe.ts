@@ -15,7 +15,7 @@ const slashCommand: SlashCommand = {
           .setName("bread-type")
           .setDescription("give a type of bread")
           .setRequired(true)
-          .setAutocomplete(true), // FIXME: add back once the autocomplete is uncommented.
+          .setAutocomplete(true),
     ),
   execute: async (interaction) => {
     const requestedBreadType: string = interaction.options.getString(
@@ -42,8 +42,7 @@ const slashCommand: SlashCommand = {
       message += `${i + 1}. ${breadType.instructions[i]}\n`;
     }
 
-    message += "## Recipe Link\n";
-    message += `${recipeLink}\n`;
+    message += `## Recipe Link\n${recipeLink}\n`;
 
     let logMessage: string =
       `${interaction.user.username} requested the ${requestedBreadType}-recipe.`;

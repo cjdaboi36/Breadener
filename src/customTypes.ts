@@ -8,7 +8,7 @@ import {
 } from "discord.js";
 
 declare module "discord.js" {
-  // Adds the type for the  client.command object
+  // Adds the type for the client.command object
   export interface Client {
     commands: Collection<string, SlashCommand>;
   }
@@ -20,6 +20,7 @@ export type SlashCommand = {
   execute: (interaction: ChatInputCommandInteraction) => void; // the function that runs when the slashcommand is being executed
   autocomplete?: (interaction: AutocompleteInteraction) => void; // optional autocomplete function
 };
+
 export const SlashCommandGuard = (
   object: object, // this checks if an object is a slashcommand
 ) =>
@@ -53,6 +54,7 @@ export type breadRecipe = {
 
 export type breadenerLevel = {
   level: string;
+  id?: string;
   nextLevel?: string;
   emoji: string;
   breadCount: number;

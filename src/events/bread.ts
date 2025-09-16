@@ -1,25 +1,24 @@
 import { Events, Message, TextChannel } from "discord.js";
 import { BotEvent } from "../customTypes.ts";
+import { hasBread, isBotUp, ping, runDBQuery } from "./nonSlashCommands.ts";
 
 const event: BotEvent = {
   type: Events.MessageCreate,
-  execute: (message: Message) => {
+  execute: async (message: Message) => {
     if (!(message.channel instanceof TextChannel)) return;
 
     // Parse stuff
-    if (message.content === ".ping") {
-      message.channel.send("Pong!");
-    }
+    if (ping(message)) return;
 
     // Is the bot up?
-    if (message.content === "Is <@1383534555960442880> up?") {
-      message.channel.send("Yes sir!");
-    }
+    if (isBotUp(message)) return;
 
     // React with bread
-    if (message.content.includes("🍞")) {
-      message.react("🍞");
-    }
+    if (hasBread(message)) return;
+
+    if (!message.member) return; // If message is not sent in a guild, return
+
+    if (await runDBQuery(message)) return;
   },
 };
 

@@ -1,5 +1,6 @@
 import type { breadRecipe } from "./customTypes.ts";
 import recipeData from "../static/breadRecipies.json" with { type: "json" };
+import type { Message } from "discord.js";
 
 // For all your exportation and header functional purposes
 
@@ -62,4 +63,45 @@ export function parseRecipe(breadType: string): breadRecipe {
     instructions: [""],
     recipeLink: "",
   };
+}
+
+export function parseDBQuery(message: string): false | string {
+  const start = message.slice(0, 5);
+  const end = message.slice(-2, message.length);
+  if (start !== ";db[\`") {
+    return false;
+  }
+
+  if (end !== "\`]") {
+    return false;
+  }
+
+  console.log(`${message} is a valid query`);
+  message = message.slice(5);
+  message = message.slice(0, -2);
+
+  return message;
+}
+
+export function isModerator(message: Message): boolean {
+  if (!message.member) return false;
+  let returnValue: boolean = false;
+  message.member.roles.cache.each(
+    (value) => {
+      if (
+        value.id === "1383472356319559731" || value.id === "1408239632822304900"
+      ) {
+        returnValue = true;
+        return;
+      }
+    },
+  );
+  return returnValue;
+}
+
+export function isInChannel(message: Message, channelId: string): boolean {
+  if (message.channelId === channelId) {
+    return true;
+  }
+  return false;
 }

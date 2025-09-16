@@ -45,9 +45,9 @@ const slashCommand: SlashCommand = {
 
     console.log(`\x1b[102m > \x1b[0m Returned Data`);
 
-    let languagemessage: string = "";
+    let languageMessage: string = "";
     for (const languageEntry of Object.entries(languageData)) {
-      languagemessage += `\t\t${languageEntry[0]}: "${languageEntry[1]}"\n`;
+      languageMessage += `\t\t${languageEntry[0]}: "${languageEntry[1]}"\n`;
     }
 
     const message: string = "# Breadener-bot!\n" +
@@ -69,7 +69,7 @@ const slashCommand: SlashCommand = {
       repoData.data.url +
       ",\n" +
       "\tlanguages: {\n" +
-      languagemessage +
+      languageMessage +
       "\t},\n" +
       "\tlicense: {\n" +
       "\t\tname: " +

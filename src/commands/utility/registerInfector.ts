@@ -8,21 +8,25 @@ const slashCommand: SlashCommand = {
     .setDescription("Register your infector!")
     .addUserOption((option) =>
       option
-        .setName("username")
+        .setName("infector")
         .setDescription("give the preferred username")
         .setRequired(true)
     ),
 
   execute: async (interaction) => {
-    const person = interaction.options.getUser("username", true);
+    const infector = interaction.options.getUser("infector", true);
 
-    if (person.id === interaction.user.id) {
+    if (infector.id === interaction.user.id) {
       await interaction
         .reply({
           content: "You can't register yourself as your own infector buddy!", // sounds like the other sentences so i'll go with it.
           withResponse: true,
         })
-        .then((_response) => console.log(`${interaction.user.username} tried to fool the system, but turned out to be one themselves`))
+        .then((_response) =>
+          console.log(
+            `${interaction.user.username} tried to fool the system, but turned out to be one themselves`,
+          )
+        )
         .catch(console.error);
       return;
     }
@@ -37,13 +41,13 @@ const slashCommand: SlashCommand = {
 
     if (thing["COUNT(*)"] === 0) {
       message =
-        `Registered <@${person.id}> as the infector of <@${interaction.user.id}>.`;
+        `Registered <@${infector.id}> as the infector of <@${interaction.user.id}>.`;
       logMessage =
-        `Registered "${person.username}" as the infector of "${interaction.user.username}".`;
+        `Registered "${infector.username}" as the infector of "${interaction.user.username}".`;
 
       db.prepare(
         "INSERT INTO infections (infector_id, infected_id) VALUES (?, ?)",
-      ).run(person.id, interaction.user.id);
+      ).run(infector.id, interaction.user.id);
     }
 
     await interaction

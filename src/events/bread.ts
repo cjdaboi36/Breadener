@@ -1,6 +1,12 @@
 import { Events, Message, TextChannel } from "discord.js";
 import { BotEvent } from "../customTypes.ts";
-import { hasBread, isBotUp, ping, runDBQuery } from "./nonSlashCommands.ts";
+import {
+  hasBread,
+  help,
+  isBotUp,
+  ping,
+  runDBQuery,
+} from "./nonSlashCommands.ts";
 
 const event: BotEvent = {
   type: Events.MessageCreate,
@@ -9,6 +15,8 @@ const event: BotEvent = {
 
     // Parse stuff
     if (ping(message)) return;
+
+    if (help(message)) return;
 
     // Is the bot up?
     if (isBotUp(message)) return;

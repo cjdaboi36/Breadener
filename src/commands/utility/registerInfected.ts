@@ -87,7 +87,8 @@ const slashCommand: SlashCommand = {
     await interaction
       .reply({
         content:
-          `Registered ${infector.username} as the infector of the user with user_id of "${infected_id}"`,
+          `Registered <@${infector.id}> as the infector of the user with user_id of "${infected_id}"`,
+        flags: [4096], // makes the message silent
         withResponse: true,
       })
       .then((_response) =>

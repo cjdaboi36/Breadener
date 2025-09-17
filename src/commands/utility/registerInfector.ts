@@ -53,6 +53,7 @@ const slashCommand: SlashCommand = {
     await interaction
       .reply({
         content: message,
+        flags: [4096], // makes the message silent
         withResponse: true,
       })
       .then((_response) => console.log(logMessage))

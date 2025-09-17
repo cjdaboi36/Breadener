@@ -28,12 +28,14 @@ const slashCommand: SlashCommand = {
 
     if (broodTeller === 1) {
       message = `<@${username.id}> infected 1 person!`;
-      logMessage = `"${username.username}" breaded 1 person. Requested by "${interaction.user.username}"`;
+      logMessage =
+        `"${username.username}" breaded 1 person. Requested by "${interaction.user.username}"`;
     }
 
     await interaction
       .reply({
         content: message,
+        flags: [4096], // makes the message silent
         withResponse: true,
       })
       .then((_response) => console.log(logMessage))

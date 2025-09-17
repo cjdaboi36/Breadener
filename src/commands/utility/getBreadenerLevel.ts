@@ -1,6 +1,7 @@
 import { GuildMemberRoleManager, SlashCommandBuilder } from "discord.js";
 import type { SlashCommand } from "../../customTypes.ts";
 import { db } from "../../db.ts";
+import { Guild } from "discord.js";
 
 type LevelBase = {
   level: string;
@@ -60,16 +61,17 @@ const slashCommand: SlashCommand = {
     .setDescription("See the breadener level of someone")
     .addUserOption((option) =>
       option
-        .setName("username")
+        .setName("user")
         .setDescription("give the username of the infector")
         .setRequired(true)
     ),
   execute: async (interaction) => {
-    const username = interaction.options.getUser("username", true);
+    const user = interaction.options.getUser("user", true);
 
-    // Get the roles of the person
-
-    if (!(interaction.member?.roles instanceof GuildMemberRoleManager)) {
+    if (
+      !(interaction.guild instanceof Guild &&
+        interaction.member?.roles instanceof GuildMemberRoleManager)
+    ) {
       await interaction
         .reply({
           content: "You cannot run this command here.",
@@ -80,8 +82,11 @@ const slashCommand: SlashCommand = {
       return;
     }
 
+    const userMember = await interaction.guild.members.fetch(user.id);
+
+    // Get the roles of the person
     const roleIDs: string[] = [];
-    interaction.member?.roles.cache.each(
+    userMember.roles.cache.each(
       (value) => {
         roleIDs.push(value.id);
       },
@@ -89,15 +94,13 @@ const slashCommand: SlashCommand = {
 
     let thing: { "COUNT(*)": number } | undefined = db
       .prepare("SELECT COUNT(*) FROM infections WHERE infector_id = ?")
-      .get(username.id);
+      .get(user.id);
     thing = thing ?? { "COUNT(*)": 0 }; // if it can't find anything, use 0
 
     const breadCount = thing["COUNT(*)"];
     let index: number = Math.floor(breadCount / 12);
 
-    if (49 <= breadCount) {
-      index = 4;
-    }
+    if (49 <= breadCount) index = 4;
 
     const levelProgress: number = breadCount % 12;
     const progressBar = "█".repeat(levelProgress) +
@@ -117,30 +120,34 @@ const slashCommand: SlashCommand = {
     }
 
     const message =
-      `**${username}** is a **${breadenerLevels[index].emoji} ${
+      `**${user}** is a **${breadenerLevels[index].emoji} ${
         breadenerLevels[index].level
       }**!\n` +
       `${progressText}` +
       `🍞 Total breaded: **${breadCount}** people`;
 
-    const logMessage = `"${username.username}" level checked - ${
+    const logMessage = `"${user.username}" level checked - ${
       breadenerLevels[index].level
     } (${breadCount} breaded). Requested by "${interaction.user.username}"`;
 
-    // Checks for Breadener Roles
-    for (let i = 0; i <= 4; i++) {
-      interaction.member?.roles.remove(breadenerLevels[i].id);
-    }
-
-    interaction.member?.roles.add(
-      breadenerLevels[index].id,
+    // Adds the correct role (back)
+    const newRoleId = breadenerLevels[index].id;
+    userMember.roles.add(
+      newRoleId,
       `New breadener level role: ${breadenerLevels[index].level}`,
     );
     console.log(`New breadener level role: ${breadenerLevels[index].level}`);
 
+    // Removes all Breadener Roles except the correct one
+    for (let i = 0; i <= 4; i++) {
+      if (breadenerLevels[i].id === newRoleId) continue;
+      userMember.roles.remove(breadenerLevels[i].id);
+    }
+
     await interaction
       .reply({
         content: message,
+        flags: [4096], // makes the message silent
         withResponse: true,
       })
       .then((_response) => console.log(logMessage))

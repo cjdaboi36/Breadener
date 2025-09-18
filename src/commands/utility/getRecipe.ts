@@ -2,8 +2,8 @@ import { SlashCommandBuilder } from "discord.js";
 import breadRecipies from "$static/breadRecipies.json" with {
   type: "json",
 };
-import { breadRecipe, SlashCommand } from "../../customTypes.ts";
-import { parseRecipe } from "../../utils.ts";
+import type { breadRecipe, SlashCommand } from "$src/customTypes.ts";
+import { parseRecipe } from "$src/utils.ts";
 
 const slashCommand: SlashCommand = {
   data: new SlashCommandBuilder()

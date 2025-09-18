@@ -19,5 +19,13 @@
     "discord-interactions": "npm:discord-interactions@^4.3.0",
     "express": "npm:express@^5.1.0",
     "octokit": "npm:octokit@^5.0.3"
+  },
+  "lint": {
+    "include": ["src/"],
+    "exclude": ["src/customTypes.ts"],
+    "rules": {
+      "tags": ["recommend", "jsr"],
+      "include": ["camelcase", "egegeg", "explicit-function-return-type"]
+    }
   }
 }

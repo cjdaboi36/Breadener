@@ -1,5 +1,5 @@
-import { Events, Message, TextChannel } from "discord.js";
-import { BotEvent } from "$src/customTypes.ts";
+import { Events, type Message, TextChannel } from "discord.js";
+import type { BotEvent } from "$src/customTypes.ts";
 import { db } from "$src/db.ts";
 import { isInChannel, isModerator, parseDBQuery } from "$src/utils.ts";
 

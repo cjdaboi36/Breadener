@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from "discord.js";
 import breadenerLevels from "$static/breadenerLevels.json" with {
   type: "json",
 };
-import { SlashCommand } from "$src/customTypes.ts";
+import type { SlashCommand } from "$src/customTypes.ts";
 
 const slashCommand: SlashCommand = {
   data: new SlashCommandBuilder()

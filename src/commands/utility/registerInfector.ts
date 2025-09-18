@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
 import { db } from "$src/db.ts";
-import { SlashCommand } from "$src/customTypes.ts";
+import type { SlashCommand } from "$src/customTypes.ts";
 
 const slashCommand: SlashCommand = {
   data: new SlashCommandBuilder()
@@ -36,7 +36,7 @@ const slashCommand: SlashCommand = {
       `${interaction.user.username} tried to fool the system, but turned out to be one themselves`;
 
     const thing: { "COUNT(*)": number } = db
-      .prepare("SELECT COUNT(*) FROM infections WHERE infected_id = ?")
+      .prepare("SELECT COUNT(*) FROM infections WHERE infectedId = ?")
       .get(interaction.user.id) ?? { "COUNT(*)": 0 }; // Checks whether command runner already has an entry
 
     if (thing["COUNT(*)"] === 0) {
@@ -46,7 +46,7 @@ const slashCommand: SlashCommand = {
         `Registered "${infector.username}" as the infector of "${interaction.user.username}".`;
 
       db.prepare(
-        "INSERT INTO infections (infector_id, infected_id) VALUES (?, ?)",
+        "INSERT INTO infections (infectorId, infectedId) VALUES (?, ?)",
       ).run(infector.id, interaction.user.id);
     }
 

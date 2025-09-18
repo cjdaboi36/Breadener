@@ -1,6 +1,6 @@
 import { GuildMemberRoleManager, SlashCommandBuilder } from "discord.js";
 import { db } from "$src/db.ts";
-import { SlashCommand } from "$src/customTypes.ts";
+import type { SlashCommand } from "$src/customTypes.ts";
 
 const slashCommand: SlashCommand = {
   data: new SlashCommandBuilder()
@@ -20,7 +20,7 @@ const slashCommand: SlashCommand = {
 
   execute: async (interaction) => {
     const infector = interaction.options.getUser("infector", true);
-    const infected_id = interaction.options.getString("infected_id", true);
+    const infectedId = interaction.options.getString("infected_id", true);
 
     const rawRoleData = interaction.member?.roles;
 
@@ -61,8 +61,8 @@ const slashCommand: SlashCommand = {
     }
 
     const _thing: { "COUNT(*)": number } = db
-      .prepare("SELECT COUNT(*) FROM infections WHERE infected_id = ?")
-      .get(infected_id) ?? { "COUNT(*)": 0 }; // Checks whether infected person already has an entry
+      .prepare("SELECT COUNT(*) FROM infections WHERE infectedId = ?")
+      .get(infectedId) ?? { "COUNT(*)": 0 }; // Checks whether infected person already has an entry
 
     if (_thing["COUNT(*)"] !== 0) {
       await interaction
@@ -72,7 +72,7 @@ const slashCommand: SlashCommand = {
         })
         .then((_response) =>
           console.log(
-            `${interaction.user.username} tried to register infected_id ${infected_id}, but was already infected!`,
+            `${interaction.user.username} tried to register infectedId ${infectedId}, but was already infected!`,
           )
         )
         .catch(console.error);
@@ -81,19 +81,19 @@ const slashCommand: SlashCommand = {
 
     // If the person is not yet in the db
     db.prepare(
-      "INSERT INTO infections (infector_id, infected_id) VALUES (?, ?)",
-    ).run(infector.id, infected_id);
+      "INSERT INTO infections (infectorId, infectedId) VALUES (?, ?)",
+    ).run(infector.id, infectedId);
 
     await interaction
       .reply({
         content:
-          `Registered <@${infector.id}> as the infector of the user with user_id of "${infected_id}"`,
+          `Registered <@${infector.id}> as the infector of the user with user_id of "${infectedId}"`,
         flags: [4096], // makes the message silent
         withResponse: true,
       })
       .then((_response) =>
         console.log(
-          `${interaction.user.username} approved the infection of user "${infected_id}" by ${infector.username}`,
+          `${interaction.user.username} approved the infection of user "${infectedId}" by ${infector.username}`,
         )
       )
       .catch(console.error);

@@ -28,11 +28,11 @@ export function removeWhiteSpace(str: string): string {
 }
 
 // Simple method that returns a random emoji from list
-export function randomNumber(min: number, max: number) {
+export function randomNumber(min: number, max: number): number {
   return Math.floor(Math.random() * max - min) + min;
 }
 
-export function capitalize(input: string) {
+export function capitalize(input: string): string {
   return input.charAt(0).toUpperCase() + input.slice(1);
 }
 

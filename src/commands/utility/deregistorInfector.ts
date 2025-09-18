@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
 import { db } from "$src/db.ts";
-import { SlashCommand } from "$src/customTypes.ts";
+import type { SlashCommand } from "$src/customTypes.ts";
 
 const slashCommand: SlashCommand = {
   data: new SlashCommandBuilder()
@@ -11,7 +11,7 @@ const slashCommand: SlashCommand = {
 
   execute: async (interaction) => {
     const thing: { "COUNT(*)": number } = db
-      .prepare("SELECT COUNT(*) FROM infections WHERE infected_id = ?")
+      .prepare("SELECT COUNT(*) FROM infections WHERE infectedId = ?")
       .get(interaction.user.id) ?? { "COUNT(*)": 0 };
 
     let message = "Your entry cannot be removed if it doesn't exist!";
@@ -23,7 +23,7 @@ const slashCommand: SlashCommand = {
         `Entry succesfully removed! You can now reassign your infector.`;
       logMessage = `${interaction.user.username}'s Entry succesfully removed.`;
       db.prepare(
-        "DELETE FROM infections WHERE infected_id = ?",
+        "DELETE FROM infections WHERE infectedId = ?",
       ).run(interaction.user.id);
     }
 

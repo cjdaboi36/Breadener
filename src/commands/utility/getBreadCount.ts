@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
 import { db } from "$src/db.ts";
-import { SlashCommand } from "$src/customTypes.ts";
+import type { SlashCommand } from "$src/customTypes.ts";
 
 const slashCommand: SlashCommand = {
   data: new SlashCommandBuilder()
@@ -17,7 +17,7 @@ const slashCommand: SlashCommand = {
     const username = interaction.options.getUser("username", true);
 
     const thing: { "COUNT(*)": number } = db
-      .prepare("SELECT COUNT(*) FROM infections WHERE infector_id = ?")
+      .prepare("SELECT COUNT(*) FROM infections WHERE infectorId = ?")
       .get(username.id) ?? { "COUNT(*)": 0 };
 
     const broodTeller = thing["COUNT(*)"];

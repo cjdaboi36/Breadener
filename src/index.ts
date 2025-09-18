@@ -10,11 +10,11 @@ import {
 import { secrets } from "$src/config.ts";
 import { coolBanner } from "$src/utils.ts";
 import {
-  BotEvent,
+  type BotEvent,
   BotEventGuard,
-  SlashCommand,
+  type SlashCommand,
   SlashCommandGuard,
-} from "./customTypes.ts";
+} from "$src/customTypes.ts";
 
 const commands = [];
 // Grab all the command folders from the commands directory you created earlier

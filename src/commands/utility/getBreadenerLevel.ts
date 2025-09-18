@@ -92,7 +92,7 @@ const slashCommand: SlashCommand = {
     );
 
     let thing: { "COUNT(*)": number } | undefined = db
-      .prepare("SELECT COUNT(*) FROM infections WHERE infector_id = ?")
+      .prepare("SELECT COUNT(*) FROM infections WHERE infectorId = ?")
       .get(user.id);
     thing = thing ?? { "COUNT(*)": 0 }; // if it can't find anything, use 0
 

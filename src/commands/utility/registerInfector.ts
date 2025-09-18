@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
-import { db } from "../../db.ts";
-import { SlashCommand } from "../../customTypes.ts";
+import { db } from "$src/db.ts";
+import { SlashCommand } from "$src/customTypes.ts";
 
 const slashCommand: SlashCommand = {
   data: new SlashCommandBuilder()
@@ -53,6 +53,7 @@ const slashCommand: SlashCommand = {
     await interaction
       .reply({
         content: message,
+        flags: [4096], // makes the message silent
         withResponse: true,
       })
       .then((_response) => console.log(logMessage))

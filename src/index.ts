@@ -7,8 +7,8 @@ import {
   REST,
   Routes,
 } from "discord.js";
-import { secrets } from "./config.ts";
-import { coolBanner } from "./utils.ts";
+import { secrets } from "$src/config.ts";
+import { coolBanner } from "$src/utils.ts";
 import {
   BotEvent,
   BotEventGuard,

@@ -1,6 +1,6 @@
 import { GuildMemberRoleManager, SlashCommandBuilder } from "discord.js";
-import { db } from "../../db.ts";
-import { SlashCommand } from "../../customTypes.ts";
+import { db } from "$src/db.ts";
+import { SlashCommand } from "$src/customTypes.ts";
 
 const slashCommand: SlashCommand = {
   data: new SlashCommandBuilder()

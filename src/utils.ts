@@ -1,5 +1,5 @@
-import type { breadRecipe } from "./customTypes.ts";
-import recipeData from "../static/breadRecipies.json" with { type: "json" };
+import type { breadRecipe } from "$src/customTypes.ts";
+import recipeData from "$static/breadRecipies.json" with { type: "json" };
 import type { Message } from "discord.js";
 
 // For all your exportation and header functional purposes

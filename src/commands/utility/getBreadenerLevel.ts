@@ -1,7 +1,6 @@
-import { GuildMemberRoleManager, SlashCommandBuilder } from "discord.js";
-import type { SlashCommand } from "../../customTypes.ts";
-import { db } from "../../db.ts";
-import { Guild } from "discord.js";
+import { Guild, GuildMemberRoleManager, SlashCommandBuilder } from "discord.js";
+import type { SlashCommand } from "$src/customTypes.ts";
+import { db } from "$src/db.ts";
 
 type LevelBase = {
   level: string;

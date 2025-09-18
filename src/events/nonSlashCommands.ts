@@ -1,15 +1,16 @@
-import { db } from "../db.ts";
-import { isInChannel, isModerator, parseDBQuery } from "../utils.ts";
-import { Message } from "discord.js";
+import { Events, Message, TextChannel } from "discord.js";
+import { BotEvent } from "$src/customTypes.ts";
+import { db } from "$src/db.ts";
+import { isInChannel, isModerator, parseDBQuery } from "$src/utils.ts";
 
-export function ping(message: Message): boolean {
+function ping(message: Message): boolean {
   if (message.content !== ".ping") return false;
   message.reply("Pong!");
   console.log(`Pinged ${message.author.username} via .-command`);
   return true;
 }
 
-export function help(message: Message): boolean {
+function help(message: Message): boolean {
   if (message.content !== ".help") return false;
   const returnMessage = `\`.help\` | Gives a list of all nonslashcommands!\n` +
     `\`.ping\` | Replies with pong!\n` +
@@ -19,21 +20,21 @@ export function help(message: Message): boolean {
   return true;
 }
 
-export function isBotUp(message: Message): boolean {
+function isBotUp(message: Message): boolean {
   if (message.content !== "Is <@1383534555960442880> up?") return false;
   message.reply("Yes sir!");
   console.log(`Reminded ${message.author.username} that the bot is up!`);
   return true;
 }
 
-export function hasBread(message: Message): boolean {
+function hasBread(message: Message): boolean {
   if (!message.content.includes("🍞")) return false;
   message.react("🍞");
   console.log("Reacted with 🍞.");
   return true;
 }
 
-export async function runDBQuery(message: Message): Promise<boolean> {
+async function runDBQuery(message: Message): Promise<boolean> {
   const isAuthorMod = isModerator(message);
   const isProperChannel: boolean =
     isInChannel(message, "1383807467875733704") ||
@@ -90,3 +91,27 @@ export async function runDBQuery(message: Message): Promise<boolean> {
 
   return false;
 }
+
+const event: BotEvent = {
+  type: Events.MessageCreate,
+  execute: async (message: Message) => {
+    if (!(message.channel instanceof TextChannel)) return;
+
+    // Parse stuff
+    if (ping(message)) return;
+
+    if (help(message)) return;
+
+    // Is the bot up?
+    if (isBotUp(message)) return;
+
+    // React with bread
+    if (hasBread(message)) return;
+
+    if (!message.member) return; // If message is not sent in a guild, return
+
+    if (await runDBQuery(message)) return;
+  },
+};
+
+export default event;

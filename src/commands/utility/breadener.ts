@@ -4,9 +4,9 @@ import type {
   Language,
   OctokitResponse,
   SlashCommand,
-} from "../../customTypes.ts";
+} from "$src/customTypes.ts";
 import { Octokit } from "octokit";
-import { secrets } from "../../config.ts";
+import { secrets } from "$src/config.ts";
 
 const slashCommand: SlashCommand = {
   data: new SlashCommandBuilder()

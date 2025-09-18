@@ -11,5 +11,5 @@ or a variation of that if necessary to install all the dependencies before codin
 
 To run the bot, run
 ```
-deno run devploy
+deno run dev-db
 ```

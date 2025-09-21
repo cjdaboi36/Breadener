@@ -1,7 +1,7 @@
 import { Events, type Message, TextChannel } from "discord.js";
 import type { BotEvent } from "$src/customTypes.ts";
 import { db } from "$src/db.ts";
-import { isInChannel, isModerator, parseDBQuery } from "$src/utils.ts";
+import { isInChannel, isModerator, parseDBQuery, helpText } from "$src/utils.ts";
 
 function ping(message: Message): boolean {
   if (message.content !== ".ping") return false;
@@ -12,10 +12,7 @@ function ping(message: Message): boolean {
 
 function help(message: Message): boolean {
   if (message.content !== ".help") return false;
-  const returnMessage = `\`.help\` | Gives a list of all nonslashcommands!\n` +
-    `\`.ping\` | Replies with pong!\n` +
-    `\`Is @Breadener up?\` | Replies with affermation!\n`;
-  message.reply(returnMessage);
+  message.reply(helpText);
   console.log(`Helped ${message.author.username} via .-command`);
   return true;
 }

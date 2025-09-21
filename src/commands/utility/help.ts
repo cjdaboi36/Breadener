@@ -1,17 +1,15 @@
 import { SlashCommandBuilder } from "discord.js";
 import type { SlashCommand } from "$src/customTypes.ts";
+import { helpText } from "$src/utils.ts";
 
 const slashCommand: SlashCommand = {
   data: new SlashCommandBuilder()
     .setName("help")
     .setDescription("Gives a list of the non-slashcommands!"),
   execute: async (interaction) => {
-    const message = `\`.ping\` | Replies with pong!\n` +
-      `\`Is @Breadener up?\` | Replies with affermation!\n`;
-
     await interaction
       .reply({
-        content: message,
+        content: helpText,
         withResponse: true,
       })
       .then((_response) =>

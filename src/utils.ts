@@ -4,6 +4,10 @@ import type { Message } from "discord.js";
 
 // For all your exportation and header functional purposes
 
+export const helpText: string = `\`.help\` | Gives a list of all non-slash commands!\n` +
+  `\`.ping\` | Replies with pong!\n` +
+  `\`Is @Breadener up?\` | Replies with affermation!\n`;
+
 export function coolBanner(): void {
   console.log(
     "  ____                     _                      \n" +

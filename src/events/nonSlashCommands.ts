@@ -1,11 +1,18 @@
 import { Events, type Message, TextChannel } from "discord.js";
 import type { BotEvent } from "$src/customTypes.ts";
 import { db } from "$src/db.ts";
-import { isInChannel, isModerator, parseDBQuery, helpText } from "$src/utils.ts";
+import {
+  helpText,
+  isInChannel,
+  isModerator,
+  parseDBQuery,
+} from "$src/utils.ts";
 
 function ping(message: Message): boolean {
   if (message.content !== ".ping") return false;
-  message.reply("Pong!");
+  const now = Date.now();
+  const diff = now - message.createdTimestamp;
+  message.reply(`Pong! Ping: ${diff}ms`);
   console.log(`Pinged ${message.author.username} via .-command`);
   return true;
 }

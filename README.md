@@ -62,4 +62,6 @@ Replies with `Yes sir!`. It is supposed to be a fun little way of checking wheth
 
 ## Okay very cool and all but how can I try it myself?
 
-Firstly, join the server with [this link](https://discord.gg/rNAatmFGwh). Then, go to `#bot-commands` to try the commands out! Make sure to register the bot itself as an infector to not mess with the infection counts of actual users :).
+Firstly, join the server with [this link](https://discord.gg/rNAatmFGwh). Then, go to `#bot-commands` to try the commands out! Make sure to register the bot itself as an infector to not mess with the infection counts of actual users :). 
+
+Bread is very cool.

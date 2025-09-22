@@ -67,12 +67,14 @@ const rest: REST = new REST().setToken(secrets.token);
       `Started refreshing ${commands.length} application (/) commands.`,
     );
 
+    /*
     rest.put(
       Routes.applicationGuildCommands(secrets.clientId, secrets.guildId),
       { body: [] },
     )
       .then(() => console.log("Successfully deleted all guild commands."))
       .catch(console.error);
+    */
 
     // for global commands
     rest.put(Routes.applicationCommands(secrets.clientId), { body: [] })

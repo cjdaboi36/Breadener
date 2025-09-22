@@ -62,6 +62,8 @@ Replies with `Yes sir!`. It is supposed to be a fun little way of checking wheth
 
 ## Okay very cool and all but how can I try it myself?
 
-Firstly, join the server with [this link](https://discord.gg/rNAatmFGwh). Then, go to `#bot-commands` to try the commands out! Make sure to register the bot itself as an infector to not mess with the infection counts of actual users :). 
+Firstly, join the server with [this link](https://discord.gg/rNAatmFGwh). Then, go to `#bot-commands` to try the commands out! Make sure to register the bot itself as an infector to not mess with the infection counts of actual users :).
+
+If the bot is not responding, it may be because it is restarting, that happens every hour at roughly xx:40. It will be down for a few minutes, but it will be back up in no time!
 
 Bread is very cool.

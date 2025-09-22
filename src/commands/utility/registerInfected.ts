@@ -4,8 +4,8 @@ import type { SlashCommand } from "$src/customTypes.ts";
 
 const slashCommand: SlashCommand = {
   data: new SlashCommandBuilder()
-    .setName("register-infected")
-    .setDescription("Register your infector!")
+    .setName("register-non-joiner")
+    .setDescription("Register someone you infected but didn't join!")
     .addUserOption((option) =>
       option
         .setName("infector")
@@ -48,7 +48,7 @@ const slashCommand: SlashCommand = {
     ) {
       await interaction
         .reply({
-          content: "You are not permitted to use this command!",
+          content: "You are not permitted to use this command! Perhaps you meant to run `/register` instead?",
           withResponse: true,
         })
         .then((_response) =>

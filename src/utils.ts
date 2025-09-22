@@ -1,6 +1,6 @@
 import type { breadRecipe } from "$src/customTypes.ts";
 import recipeData from "$static/breadRecipies.json" with { type: "json" };
-import type { Message } from "discord.js";
+import type { ChatInputCommandInteraction, Message } from "discord.js";
 
 // For all your exportation and header functional purposes
 
@@ -30,6 +30,24 @@ export function removeWhiteSpace(str: string): string {
   }
 
   return str;
+}
+
+export async function guildChecker(
+  interaction: ChatInputCommandInteraction,
+): Promise<boolean> {
+  if (interaction.guildId === "1383472184416272507") return false;
+  await interaction
+    .reply({
+      content: "You cannot run this command here!",
+      withResponse: true,
+    })
+    .then((_response) =>
+      console.log(
+        `${interaction.user.username} tried to fool the system, but turned out to be one themselves`,
+      )
+    )
+    .catch(console.error);
+  return true;
 }
 
 // Simple method that returns a random emoji from list

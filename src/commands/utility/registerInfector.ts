@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
 import { db } from "$src/db.ts";
 import type { SlashCommand } from "$src/customTypes.ts";
+import { guildChecker } from "../../utils.ts";
 
 const slashCommand: SlashCommand = {
   data: new SlashCommandBuilder()
@@ -14,6 +15,8 @@ const slashCommand: SlashCommand = {
     ),
 
   execute: async (interaction) => {
+    if (await guildChecker(interaction)) return;
+
     const infector = interaction.options.getUser("infector", true);
 
     if (infector.id === interaction.user.id) {

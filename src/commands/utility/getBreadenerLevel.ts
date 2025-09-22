@@ -1,5 +1,6 @@
 import { Guild, GuildMemberRoleManager, SlashCommandBuilder } from "discord.js";
 import type { SlashCommand } from "$src/customTypes.ts";
+import { guildChecker } from "$src/utils.ts";
 import { db } from "$src/db.ts";
 
 type LevelBase = {
@@ -65,6 +66,8 @@ const slashCommand: SlashCommand = {
         .setRequired(true)
     ),
   execute: async (interaction) => {
+    if (await guildChecker(interaction)) return;
+
     const user = interaction.options.getUser("user", true);
 
     if (

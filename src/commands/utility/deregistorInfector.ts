@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
 import { db } from "$src/db.ts";
 import type { SlashCommand } from "$src/customTypes.ts";
+import { guildChecker } from "$src/utils.ts";
 
 const slashCommand: SlashCommand = {
   data: new SlashCommandBuilder()
@@ -10,6 +11,8 @@ const slashCommand: SlashCommand = {
     ),
 
   execute: async (interaction) => {
+    if (await guildChecker(interaction)) return;
+
     const thing: { "COUNT(*)": number } = db
       .prepare("SELECT COUNT(*) FROM infections WHERE infectedId = ?")
       .get(interaction.user.id) ?? { "COUNT(*)": 0 };

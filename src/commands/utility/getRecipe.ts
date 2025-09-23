@@ -1,7 +1,9 @@
 import { SlashCommandBuilder } from "discord.js";
-import breadRecipies from "../../../static/breadRecipies.json" with { type: "json" };
-import { breadRecipe, SlashCommand } from "../../customTypes.ts";
-import { parseRecipe } from "../../utils.ts";
+import breadRecipies from "$static/breadRecipies.json" with {
+  type: "json",
+};
+import type { breadRecipe, SlashCommand } from "$src/customTypes.ts";
+import { parseRecipe } from "$src/utils.ts";
 
 const slashCommand: SlashCommand = {
   data: new SlashCommandBuilder()
@@ -13,7 +15,7 @@ const slashCommand: SlashCommand = {
           .setName("bread-type")
           .setDescription("give a type of bread")
           .setRequired(true)
-          .setAutocomplete(true), // FIXME: add back once the autocomplete is uncommented.
+          .setAutocomplete(true),
     ),
   execute: async (interaction) => {
     const requestedBreadType: string = interaction.options.getString(
@@ -25,10 +27,13 @@ const slashCommand: SlashCommand = {
     const instructionsLength: number = breadType.instructions.length;
     const recipeLink: string = breadType.recipeLink;
 
-    let message: string = `# Recipe for ${breadType.breadName}! \nIngredients:\n`;
+    let message: string =
+      `# Recipe for ${breadType.breadName}! \nIngredients:\n`;
 
     for (let i: number = 0; i <= ingredientsLength - 1; i++) {
-      message += `${i + 1}. ${breadType.ingredients[i][1]} of ${breadType.ingredients[i][0]}\n`;
+      message += `${i + 1}. ${breadType.ingredients[i][1]} of ${
+        breadType.ingredients[i][0]
+      }\n`;
     }
 
     message += "## Instructions\n";
@@ -37,14 +42,16 @@ const slashCommand: SlashCommand = {
       message += `${i + 1}. ${breadType.instructions[i]}\n`;
     }
 
-    message += "## Recipe Link\n";
-    message += `${recipeLink}\n`;
+    message += `## Recipe Link\n${recipeLink}\n`;
 
-    let logMessage: string = `${interaction.user.username} requested the ${requestedBreadType}-recipe.`;
+    let logMessage: string =
+      `${interaction.user.username} requested the ${requestedBreadType}-recipe.`;
 
     if (!breadType.breadName) {
-      message = `It doesn't seem like we have a recipe for ${requestedBreadType}. Maybe you misspelled it, or we just dont have it yet!\nDon't feel bad, if you can think of a recipe, make a pull request on my repository!`;
-      logMessage = `${interaction.user.username} requested a ${requestedBreadType}-recipe, but none were found.`;
+      message =
+        `It doesn't seem like we have a recipe for ${requestedBreadType}. Maybe you misspelled it, or we just dont have it yet!\nDon't feel bad, if you can think of a recipe, make a pull request on my repository!`;
+      logMessage =
+        `${interaction.user.username} requested a ${requestedBreadType}-recipe, but none were found.`;
     }
 
     await interaction
@@ -52,7 +59,7 @@ const slashCommand: SlashCommand = {
         content: message,
         withResponse: true,
       })
-      .then((response) => console.log(logMessage))
+      .then((_response) => console.log(logMessage))
       .catch(console.error);
   },
 
@@ -60,7 +67,7 @@ const slashCommand: SlashCommand = {
     const focusedValue = interaction.options.getFocused();
     // Object.keys gets the keys of the jśon. added tolowercase to remove case sensitivity
     const filtered = Object.keys(breadRecipies).filter((choice) =>
-      choice.toLowerCase().startsWith(focusedValue.toLowerCase()),
+      choice.toLowerCase().startsWith(focusedValue.toLowerCase())
     );
     await interaction.respond(
       filtered.map((choice) => ({ name: choice, value: choice })).slice(0, 24), // maximum of 24 items for autocomplete or smt

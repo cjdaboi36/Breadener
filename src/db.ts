@@ -12,9 +12,10 @@ const closeListener = () => {
 };
 addSigListener(closeListener);
 
+
 db.exec(`
         CREATE TABLE IF NOT EXISTS infections (
-        infector_id TEXT PRIMARY KEY,
-        infected_id TEXT KEY
+        infectedId TEXT PRIMARY KEY,
+        infectorId TEXT KEY
         )
     `);

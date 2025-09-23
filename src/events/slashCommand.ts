@@ -1,12 +1,9 @@
-import { Events, MessageFlags } from "discord.js";
-import { BotEvent } from "../customTypes.ts";
-import { Interaction } from "discord.js";
+import { Events, type Interaction, MessageFlags } from "discord.js";
+import type { BotEvent } from "$src/customTypes.ts";
 
 const event: BotEvent = {
   type: Events.InteractionCreate,
   execute: async (interaction: Interaction) => {
-    console.log(interaction);
-
     if (!interaction.isChatInputCommand()) {
       return;
     }

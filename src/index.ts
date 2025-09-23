@@ -7,14 +7,14 @@ import {
   REST,
   Routes,
 } from "discord.js";
-import { secrets } from "./config.ts";
-import { coolBanner } from "./utils.ts";
+import { secrets } from "$src/config.ts";
+import { coolBanner } from "$src/utils.ts";
 import {
-  BotEvent,
+  type BotEvent,
   BotEventGuard,
-  SlashCommand,
+  type SlashCommand,
   SlashCommandGuard,
-} from "./customTypes.ts";
+} from "$src/customTypes.ts";
 
 const commands = [];
 // Grab all the command folders from the commands directory you created earlier
@@ -27,7 +27,6 @@ const client = new Client({
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
   ],
-  /* commands: [] */
 });
 
 client.commands = new Collection<string, SlashCommand>();
@@ -59,7 +58,7 @@ for (const folder of commandFolders) {
 }
 
 // Construct and prepare an instance of the REST module
-const rest = new REST().setToken(secrets.token);
+const rest: REST = new REST().setToken(secrets.token);
 
 // and deploy your commands!
 (async () => {
@@ -69,9 +68,10 @@ const rest = new REST().setToken(secrets.token);
     );
 
     // The put method is used to fully refresh all commands in the guild with the current set
-    await rest.put(Routes.applicationCommands(secrets.clientId), {
-      body: commands,
-    });
+    await rest.put(
+      Routes.applicationCommands(secrets.clientId),
+      { body: commands },
+    );
 
     console.log(`Successfully reloaded application (/) commands.`);
   } catch (error) {
@@ -87,7 +87,7 @@ const eventFiles = fs
   .filter((file) => file.endsWith(".ts"));
 
 for (const file of eventFiles) {
-  const filePath = path.join(eventsPath, file);
+  const filePath: string = path.join(eventsPath, file);
   const module = await import(`file:///${filePath}`);
 
   if (!BotEventGuard(module)) {

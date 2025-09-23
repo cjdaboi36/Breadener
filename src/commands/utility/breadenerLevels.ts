@@ -1,8 +1,10 @@
 import { SlashCommandBuilder } from "discord.js";
-import breadenerLevels from "../../../static/breadenerLevels.json" with { type: "json" };
-import { SlashCommand } from "../../customTypes.ts";
+import breadenerLevels from "$static/breadenerLevels.json" with {
+  type: "json",
+};
+import type { SlashCommand } from "$src/customTypes.ts";
 
-const command: SlashCommand = {
+const slashCommand: SlashCommand = {
   data: new SlashCommandBuilder()
     .setName("breadener-levels")
     .setDescription(
@@ -16,16 +18,20 @@ const command: SlashCommand = {
       const breadLevel = breadenerLevels[i];
 
       if (breadLevel.threshold) {
-        message += `${breadLevel.emoji} ${breadLevel.level}: ${breadLevel.threshold - 12} - ${breadLevel.threshold} people Breadened!\n`;
+        message += `${breadLevel.emoji} ${breadLevel.level}: ${
+          breadLevel.threshold - 12
+        } - ${breadLevel.threshold} people Breadened!\n`;
         continue;
       }
-      message += `${breadLevel.emoji} ${breadLevel.level}: 48+ people Breadened!\n`;
+      message +=
+        `${breadLevel.emoji} ${breadLevel.level}: 48+ people Breadened!\n`;
     }
 
     message +=
       "\n🎯 Use `/get-breadener-level <username>` to check someone's level!";
 
-    const logMessage = `Breadener levels info requested by "${interaction.user.username}"`;
+    const logMessage =
+      `Breadener levels info requested by "${interaction.user.username}"`;
 
     await interaction
       .reply({
@@ -37,4 +43,4 @@ const command: SlashCommand = {
   },
 };
 
-export default command;
+export default slashCommand;

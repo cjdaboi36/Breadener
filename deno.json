@@ -1,20 +1,31 @@
 {
-  "nodeModulesDir": "auto",
   "tasks": {
-    "dev": "deno run --watch -A src/index.ts",
-    "prod": "deno run -A src/index.ts",
-    "deploy": "deno run -A src/deploy-commands.ts",
-    "devploy": "deno run deploy; deno run dev"
+    "dev": "deno run -A --watch src/index.ts",
+    "dev-db": "rm daataabaasaa.db; deno run -A src/db.ts; deno run dev",
+    "prod": "deno run -A src/index.ts"
   },
   "imports": {
+    "$src/": "./src/",
+    "$utils/": "./src/utils/",
+    "$static/": "./static/",
+    "$events/": "./src/events/",
+
     "@db/sqlite": "jsr:@db/sqlite@^0.12.0",
+    "@eslint/js": "npm:@eslint/js@^9.35.0",
     "@std/assert": "jsr:@std/assert@1",
     "@std/dotenv": "jsr:@std/dotenv@^0.225.5",
-    "@types/node": "npm:@types/node@^24.3.1",
-    "discord.js": "npm:discord.js@^14.20.0",
+    "@types/node": "npm:@types/node@^24.5.2",
+    "discord.js": "npm:discord.js@^14.22.1",
     "discord-interactions": "npm:discord-interactions@^4.3.0",
-    "discord.js": "npm:discord.js@^14.21.0",
     "express": "npm:express@^5.1.0",
     "octokit": "npm:octokit@^5.0.3"
+  },
+  "lint": {
+    "include": ["src/"],
+    "exclude": ["src/customTypes.ts"],
+    "rules": {
+      "tags": ["recommend", "jsr"],
+      "include": ["camelcase", "egegeg", "explicit-function-return-type"]
+    }
   }
 }

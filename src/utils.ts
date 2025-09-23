@@ -1,8 +1,13 @@
-import "../node_modules/dotenv/config.d.ts";
-import { breadRecipe } from "./customTypes.ts";
-import recipeData from "../static/breadRecipies.json" with { type: "json" };
+import type { breadRecipe } from "$src/customTypes.ts";
+import recipeData from "$static/breadRecipies.json" with { type: "json" };
+import type { ChatInputCommandInteraction, Message } from "discord.js";
 
 // For all your exportation and header functional purposes
+
+export const helpText: string =
+  `\`.help\` | Gives a list of all non-slash commands!\n` +
+  `\`.ping\` | Replies with pong and your ping!\n` +
+  `\`Is @Breadener up?\` | Replies with affermation!\n`;
 
 export function coolBanner(): void {
   console.log(
@@ -27,12 +32,30 @@ export function removeWhiteSpace(str: string): string {
   return str;
 }
 
+export async function guildChecker(
+  interaction: ChatInputCommandInteraction,
+): Promise<boolean> {
+  if (interaction.guildId === "1383472184416272507") return false;
+  await interaction
+    .reply({
+      content: "You cannot run this command here!",
+      withResponse: true,
+    })
+    .then((_response) =>
+      console.log(
+        `${interaction.user.username} tried to fool the system, but turned out to be one themselves`,
+      )
+    )
+    .catch(console.error);
+  return true;
+}
+
 // Simple method that returns a random emoji from list
-export function randomNumber(min: number, max: number) {
+export function randomNumber(min: number, max: number): number {
   return Math.floor(Math.random() * max - min) + min;
 }
 
-export function capitalize(input: string) {
+export function capitalize(input: string): string {
   return input.charAt(0).toUpperCase() + input.slice(1);
 }
 
@@ -63,4 +86,45 @@ export function parseRecipe(breadType: string): breadRecipe {
     instructions: [""],
     recipeLink: "",
   };
+}
+
+export function parseDBQuery(message: string): false | string {
+  const start = message.slice(0, 5);
+  const end = message.slice(-2, message.length);
+  if (start !== ";db[\`") {
+    return false;
+  }
+
+  if (end !== "\`]") {
+    return false;
+  }
+
+  console.log(`${message} is a valid query`);
+  message = message.slice(5);
+  message = message.slice(0, -2);
+
+  return message;
+}
+
+export function isModerator(message: Message): boolean {
+  if (!message.member) return false;
+  let returnValue: boolean = false;
+  message.member.roles.cache.each(
+    (value) => {
+      if (
+        value.id === "1383472356319559731" || value.id === "1408239632822304900"
+      ) {
+        returnValue = true;
+        return;
+      }
+    },
+  );
+  return returnValue;
+}
+
+export function isInChannel(message: Message, channelId: string): boolean {
+  if (message.channelId === channelId) {
+    return true;
+  }
+  return false;
 }

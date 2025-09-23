@@ -1,10 +1,17 @@
 import { Database } from "@db/sqlite";
-import { config } from "$src/config.ts";
+import { config } from "./config.ts";
+import { addSigListener } from "./sighandler.ts";
 
-const basePath: URL = new URL("../", import.meta.url);
-export const db: Database = new Database(
-  new URL(config.DATABASE_PATH, basePath),
-);
+const base_path = new URL("../", import.meta.url);
+const path = new URL(config.DATABASE_PATH, base_path);
+export const db = new Database(path);
+
+const closeListener = () => {
+  console.log("Closing DB");
+  db.close();
+};
+addSigListener(closeListener);
+
 
 db.exec(`
         CREATE TABLE IF NOT EXISTS infections (

@@ -13,7 +13,7 @@ const slashCommand: SlashCommand = {
   execute: async (interaction) => {
     if (await guildChecker(interaction)) return;
 
-    const thing: { "COUNT(*)": number } = db
+    const breadCount: { "COUNT(*)": number } = db
       .prepare("SELECT COUNT(*) FROM infections WHERE infectedId = ?")
       .get(interaction.user.id) ?? { "COUNT(*)": 0 };
 
@@ -21,7 +21,7 @@ const slashCommand: SlashCommand = {
     let logMessage =
       `${interaction.user.username} tried to remove their infection entry that did not even exist!`;
 
-    if (thing["COUNT(*)"] !== 0) {
+    if (breadCount["COUNT(*)"] !== 0) {
       message =
         `Entry succesfully removed! You can now reassign your infector.`;
       logMessage = `${interaction.user.username}'s Entry succesfully removed.`;

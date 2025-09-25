@@ -12,17 +12,20 @@ type SecretRecord = Record<(typeof secretKeys)[number], string>;
 const configKeys = ["DATABASE_PATH", "SECRETS_PATH"] as const;
 type ConfigRecord = Record<(typeof configKeys)[number], string>;
 
-export const config = configKeys.reduce<ConfigRecord>((prev, current) => {
-  const env = Deno.env.get(current);
-  if (!env) {
-    throw new Error(
-      `Please configure your dotenv correctly. Missing: ${current}`,
-    );
-  }
+export const config: ConfigRecord = configKeys.reduce<ConfigRecord>(
+  (prev, current) => {
+    const env: string | undefined = Deno.env.get(current);
+    if (!env) {
+      throw new Error(
+        `Please configure your dotenv correctly. Missing: ${current}`,
+      );
+    }
 
-  prev[current] = env;
-  return prev;
-}, {} as ConfigRecord);
+    prev[current] = env;
+    return prev;
+  },
+  {} as ConfigRecord,
+);
 
 const basePath: URL = new URL("../", import.meta.url);
 const secretsPath: URL = new URL(config.SECRETS_PATH, basePath);
@@ -38,9 +41,9 @@ try {
   throw Error(`Failed to read secrets: '${e}'`);
 }
 
-const tSecretsKeys = Object.keys(tSecrets);
+const tSecretsKeys: string[] = Object.keys(tSecrets);
 for (const key of secretKeys) {
   if (!tSecretsKeys.includes(key)) throw Error(`Missing secret: '${key}'`);
 }
 
-export const secrets = tSecrets;
+export const secrets: SecretRecord = tSecrets;

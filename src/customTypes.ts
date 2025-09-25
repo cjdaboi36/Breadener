@@ -67,9 +67,7 @@ export type Repository = {
   ownerLogin: string;
   description: string;
   url: string;
-  languages: {
-    [language: string]: string;
-  };
+  languages: Language;
   license?: {
     name: string;
   };
@@ -208,7 +206,7 @@ export type ResponseHeaders = {
   [header: string]: string | number | undefined;
 };
 
-export type Language = { [language: string]: string };
+export type Language = { [language: string]: number };
 
 export type Url = string;
 

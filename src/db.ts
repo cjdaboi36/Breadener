@@ -2,8 +2,8 @@ import { Database } from "@db/sqlite";
 import { config } from "./config.ts";
 import { addSigListener } from "./sighandler.ts";
 
-const base_path = new URL("../", import.meta.url);
-const path = new URL(config.DATABASE_PATH, base_path);
+const basePath = new URL("../", import.meta.url);
+const path = new URL(config.DATABASE_PATH, basePath);
 export const db = new Database(path);
 
 const closeListener = () => {

@@ -13,7 +13,7 @@ const slashCommand: SlashCommand = {
         content: helpText,
         withResponse: true,
       })
-      .then((response) => {
+      .then((_response) => {
         console.log(`Helped "${interaction.user.username}".`);
       })
       .catch(console.error);

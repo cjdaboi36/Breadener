@@ -18,10 +18,10 @@ import {
 
 const commands = [];
 // Grab all the command folders from the commands directory you created earlier
-const foldersPath = path.join(import.meta.dirname ?? "", "commands");
-const commandFolders = fs.readdirSync(foldersPath);
+const foldersPath: string = path.join(import.meta.dirname ?? "", "commands");
+const commandFolders: string[] = fs.readdirSync(foldersPath);
 
-const client = new Client({
+const client: Client<boolean> = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
@@ -33,13 +33,13 @@ client.commands = new Collection<string, SlashCommand>();
 
 // Grabs all files in commands/utility
 for (const folder of commandFolders) {
-  const commandsPath = path.join(foldersPath, folder);
-  const commandFiles = fs
+  const commandsPath: string = path.join(foldersPath, folder);
+  const commandFiles: string[] = fs
     .readdirSync(commandsPath)
     .filter((file) => file.endsWith(".ts"));
 
   for (const file of commandFiles) {
-    const filePath = path.join(commandsPath, file);
+    const filePath: string = path.join(commandsPath, file);
     const module = await import(`file:///${filePath}`);
 
     if (!SlashCommandGuard(module)) {
@@ -81,8 +81,8 @@ const rest: REST = new REST().setToken(secrets.token);
 
 coolBanner();
 
-const eventsPath = path.join(import.meta.dirname ?? "", "events");
-const eventFiles = fs
+const eventsPath: string = path.join(import.meta.dirname ?? "", "events");
+const eventFiles: string[] = fs
   .readdirSync(eventsPath)
   .filter((file) => file.endsWith(".ts"));
 

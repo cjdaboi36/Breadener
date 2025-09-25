@@ -12,9 +12,9 @@ const slashCommand: SlashCommand = {
     ),
 
   execute: async (interaction) => {
-    let message = "🍞 **Breadener Levels** 🍞\n\n";
+    let message: string = "🍞 **Breadener Levels** 🍞\n\n";
 
-    for (let i = 0; i < breadenerLevels.length; i++) {
+    for (let i: number = 0; i < breadenerLevels.length; i++) {
       const breadLevel = breadenerLevels[i];
 
       if (breadLevel.threshold) {
@@ -30,7 +30,7 @@ const slashCommand: SlashCommand = {
     message +=
       "\n🎯 Use `/get-breadener-level <username>` to check someone's level!";
 
-    const logMessage =
+    const logMessage: string =
       `Breadener levels info requested by "${interaction.user.username}"`;
 
     await interaction

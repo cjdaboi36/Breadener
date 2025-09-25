@@ -32,16 +32,19 @@ const slashCommand: SlashCommand = {
     console.log(rawLanguageData.headers);
 
     const languageData: Language = {};
-    let langTotalChar: number = 0;
+    let totalChar: number = 0;
 
     for (const language of Object.entries(rawLanguageData.data)) {
-      langTotalChar += Number(language[1]);
+      totalChar += Number(language[1]);
     }
     for (const language of Object.entries(rawLanguageData.data)) {
-      languageData[language[0]] = ((Number(language[1]) / langTotalChar) * 100)
-        .toFixed(1)
-        .toString();
-    }
+        const thing: number = Math.floor(Number(language[1]) / totalChar * 1000) /
+          10;
+        if (thing === 0) {
+          continue; // Equivalent of break as long as github doesn't switch the descending order of languages
+        }
+        languageData[language[0]] = thing;
+      }
 
     console.log(`\x1b[102m > \x1b[0m Returned Data`);
 

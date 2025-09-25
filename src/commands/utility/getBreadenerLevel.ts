@@ -1,4 +1,9 @@
-import { Guild, GuildMemberRoleManager, SlashCommandBuilder } from "discord.js";
+import {
+  Guild,
+  type GuildMemberRoleManager,
+  SlashCommandBuilder,
+  type User,
+} from "discord.js";
 import type { SlashCommand } from "$src/customTypes.ts";
 import { guildChecker } from "$src/utils.ts";
 import { db } from "$src/db.ts";
@@ -19,7 +24,7 @@ type Level =
     nextLevel: string;
   });
 
-const breadenerLevels: Level[] = [
+export const breadenerLevels: Level[] = [
   {
     level: "Breadener I",
     id: "1383476387742224414",
@@ -68,11 +73,11 @@ const slashCommand: SlashCommand = {
   execute: async (interaction) => {
     if (await guildChecker(interaction)) return;
 
-    const user = interaction.options.getUser("user", true);
+    const user: User = interaction.options.getUser("user", true);
 
     if (
       !(interaction.guild instanceof Guild &&
-        interaction.member?.roles instanceof GuildMemberRoleManager)
+        interaction.guild.id === "1383472184416272507")
     ) {
       await interaction
         .reply({
@@ -84,75 +89,45 @@ const slashCommand: SlashCommand = {
       return;
     }
 
-    const userMember = await interaction.guild.members.fetch(user.id);
+    const breadCount: { "COUNT(*)": number } = db
+      .prepare("SELECT COUNT(*) FROM infections WHERE infectedId = ?")
+      .get(interaction.user.id) ?? { "COUNT(*)": 0 };
 
-    // Get the roles of the person
-    const roleIDs: string[] = [];
-    userMember.roles.cache.each(
-      (value) => {
-        roleIDs.push(value.id);
-      },
-    );
+    const index: number = Math.floor(Math.min(breadCount["COUNT(*)"], 48) / 12);
 
-    let thing: { "COUNT(*)": number } | undefined = db
-      .prepare("SELECT COUNT(*) FROM infections WHERE infectorId = ?")
-      .get(user.id);
-    thing = thing ?? { "COUNT(*)": 0 }; // if it can't find anything, use 0
-
-    const breadCount = thing["COUNT(*)"];
-    let index: number = Math.floor(breadCount / 12);
-
-    if (49 <= breadCount) index = 4;
-
-    const levelProgress: number = breadCount % 12;
+    const levelProgress: number = breadCount["COUNT(*)"] % 12;
     const progressBar = "█".repeat(levelProgress) +
       "░".repeat(12 - levelProgress);
 
-    let progressText: string;
+    let progressText: string =
+      `📊 Progress: ${breadCount}/${breadenerLevels[index].threshold} until ${
+        breadenerLevels[index].nextLevel
+      }\n` +
+      `📈 ${progressBar} ${Math.floor((levelProgress / 12) * 100)}%\n`;
 
     if (!("nextLevel" in breadenerLevels[index])) {
       progressText = `📊 You are at the maximum level!\n` +
         `📈 ${"█".repeat(12)} 100%\n`;
-    } else {
-      progressText =
-        `📊 Progress: ${breadCount}/${breadenerLevels[index].threshold} until ${
-          breadenerLevels[index].nextLevel
-        }\n` +
-        `📈 ${progressBar} ${Math.floor((levelProgress / 12) * 100)}%\n`;
-    }
-
-    const message =
-      `**${user}** is a **${breadenerLevels[index].emoji} ${
-        breadenerLevels[index].level
-      }**!\n` +
-      `${progressText}` +
-      `🍞 Total breaded: **${breadCount}** people`;
-
-    const logMessage = `"${user.username}" level checked - ${
-      breadenerLevels[index].level
-    } (${breadCount} breaded). Requested by "${interaction.user.username}"`;
-
-    // Adds the correct role (back)
-    const newRoleId = breadenerLevels[index].id;
-    userMember.roles.add(
-      newRoleId,
-      `New breadener level role: ${breadenerLevels[index].level}`,
-    );
-    console.log(`New breadener level role: ${breadenerLevels[index].level}`);
-
-    // Removes all Breadener Roles except the correct one
-    for (let i = 0; i <= 4; i++) {
-      if (breadenerLevels[i].id === newRoleId) continue;
-      userMember.roles.remove(breadenerLevels[i].id);
     }
 
     await interaction
       .reply({
-        content: message,
+        content:
+          `**${user}** is a **${breadenerLevels[index].emoji} ${
+            breadenerLevels[index].level
+          }**!\n` +
+          `${progressText}` +
+          `🍞 Total breaded: **${breadCount}** people`,
         flags: [4096], // makes the message silent
         withResponse: true,
       })
-      .then((_response) => console.log(logMessage))
+      .then((_response) =>
+        console.log(
+          `"${user.username}" level checked - ${
+            breadenerLevels[index].level
+          } (${breadCount} breaded). Requested by "${interaction.user.username}"`,
+        )
+      )
       .catch(console.error);
   },
 };

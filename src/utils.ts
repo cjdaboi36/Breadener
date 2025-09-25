@@ -35,7 +35,7 @@ export function removeWhiteSpace(str: string): string {
 export async function guildChecker(
   interaction: ChatInputCommandInteraction,
 ): Promise<boolean> {
-  if (interaction.guildId === "1383472184416272507") return false;
+  if (interaction.guild && interaction.guild.id === "1383472184416272507") return false;
   await interaction
     .reply({
       content: "You cannot run this command here!",

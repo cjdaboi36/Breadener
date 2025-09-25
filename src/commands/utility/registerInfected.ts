@@ -1,6 +1,12 @@
-import { GuildMemberRoleManager, SlashCommandBuilder } from "discord.js";
+import {
+  GuildMember,
+  type GuildMemberRoleManager,
+  SlashCommandBuilder,
+  type User,
+} from "discord.js";
 import { db } from "$src/db.ts";
 import type { SlashCommand } from "$src/customTypes.ts";
+import { breadenerLevels } from "./getBreadenerLevel.ts";
 
 const slashCommand: SlashCommand = {
   data: new SlashCommandBuilder()
@@ -19,22 +25,26 @@ const slashCommand: SlashCommand = {
     ),
 
   execute: async (interaction) => {
-    const infector = interaction.options.getUser("infector", true);
-    const infectedId = interaction.options.getString("infected_id", true);
-
-    const rawRoleData = interaction.member?.roles;
-
-    if (!(rawRoleData instanceof GuildMemberRoleManager)) {
+    if (
+      !(interaction.guild && interaction.guild.id === "1383472184416272507" &&
+        interaction.member instanceof GuildMember)
+    ) {
       await interaction
         .reply({
-          content: "You cannot run this command here.",
+          content: "You cannot run this command here!",
           withResponse: true,
         })
-        .then((_response) => console.log("Nuh uh uh"))
+        .then((_response) =>
+          console.log(
+            `${interaction.user.username} tried to fool the system, but turned out to be one themselves`,
+          )
+        )
         .catch(console.error);
       return;
     }
 
+    // Collects all role IDs
+    const rawRoleData: GuildMemberRoleManager = interaction.member.roles;
     const roleIDs: string[] = [];
     rawRoleData.cache.each(
       (value) => {
@@ -42,29 +52,59 @@ const slashCommand: SlashCommand = {
       },
     );
 
+    // Checks whether command is being ran by a mod
     if (
       !(roleIDs.includes("1383472356319559731") ||
         roleIDs.includes("1408239632822304900"))
     ) {
       await interaction
         .reply({
-          content: "You are not permitted to use this command! Perhaps you meant to run `/register` instead?",
+          content:
+            "You are not permitted to use this command! Perhaps you meant to run `/register` instead?",
           withResponse: true,
         })
         .then((_response) =>
           console.log(
-            `${interaction.user.username} was not permitted to use /register-infector`,
+            `${interaction.user.username} was not permitted to use /register-non-joiner`,
           )
         )
         .catch(console.error);
       return;
     }
 
-    const _thing: { "COUNT(*)": number } = db
-      .prepare("SELECT COUNT(*) FROM infections WHERE infectedId = ?")
-      .get(infectedId) ?? { "COUNT(*)": 0 }; // Checks whether infected person already has an entry
+    const infector_: User = interaction.options.getUser("infector", true);
+    const infectedId: string = interaction.options.getString(
+      "infected_id",
+      true,
+    );
+    const infector: GuildMember = await interaction.guild?.members.fetch(
+      infector_.id,
+    );
 
-    if (_thing["COUNT(*)"] !== 0) {
+    if (
+      infectedId === infector.id
+    ) {
+      await interaction
+        .reply({
+          content:
+            "You cannot infect yourself!",
+          withResponse: true,
+        })
+        .then((_response) =>
+          console.log(
+            `${interaction.user.username} tried to infect themselves with /register-non-joiner`,
+          )
+        )
+        .catch(console.error);
+      return;
+    }
+
+    // Checks whether infected person already has an entry
+    const infectedEntry: { "COUNT(*)": number } = db
+      .prepare("SELECT COUNT(*) FROM infections WHERE infectedId = ?")
+      .get(infectedId) ?? { "COUNT(*)": 0 };
+
+    if (infectedEntry["COUNT(*)"] !== 0) {
       await interaction
         .reply({
           content: "This person already has an entry!",
@@ -82,7 +122,28 @@ const slashCommand: SlashCommand = {
     // If the person is not yet in the db
     db.prepare(
       "INSERT INTO infections (infectorId, infectedId) VALUES (?, ?)",
-    ).run(infector.id, infectedId);
+    ).run(infector.user.id, infectedId);
+
+    // Assign roles n stuff
+    const breadCount: { "COUNT(*)": number } = db
+      .prepare("SELECT COUNT(*) FROM infections WHERE infectorId = ?")
+      .get(infector.user.id) ?? { "COUNT(*)": 0 }; // if it can't find anything, use 0
+
+    const index: number = Math.floor(Math.min(breadCount["COUNT(*)"], 48) / 12);
+
+    // Adds the correct role (back)
+    const newRoleId: string = breadenerLevels[index].id;
+    infector.roles.add(
+      newRoleId,
+      `New breadener level role: ${breadenerLevels[index].level}`,
+    );
+    console.log(`New breadener level role: ${breadenerLevels[index].level}`);
+
+    // Removes all Breadener Roles except the correct one
+    for (let i: number = 0; i <= 4; i++) {
+      if (breadenerLevels[i].id === newRoleId) continue;
+      infector.roles.remove(breadenerLevels[i].id);
+    }
 
     await interaction
       .reply({
@@ -93,7 +154,7 @@ const slashCommand: SlashCommand = {
       })
       .then((_response) =>
         console.log(
-          `${interaction.user.username} approved the infection of user "${infectedId}" by ${infector.username}`,
+          `${interaction.user.username} approved the infection of user "${infectedId}" by ${infector.user.username}`,
         )
       )
       .catch(console.error);

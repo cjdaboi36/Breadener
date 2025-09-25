@@ -4,6 +4,14 @@ For all your Breadening purposes! The official discord bot of _The Breadening_ s
 
 This bot is made with TypeScript, it uses the _GitHub API_, _SQLite3_, and ofcourse _discord.js_. I made this bot originally to keep track of infections, but can also do some other cool stuff.
 
+## Okay very cool and all but how can I try it myself?
+
+Firstly, join the server with [this link](https://discord.gg/rNAatmFGwh). Then, go to `#bot-commands` to try the commands out! Make sure to register the bot itself as an infector to not mess with the infection counts of actual users :).
+
+If the bot is not responding, it may be because it is restarting, that happens every hour at roughly xx:40. It will be down for a few minutes, but it will be back up in no time!
+
+Bread is very cool.
+
 ## Okay cool but what is an infection?
 
 The server where the bot lives is the hub for the breadening _infection_. It works like this: Someone has their status as "DM me the word bread". When another someone is foolish enough to DM them the word bread, they are "infected" and required to also change their status to "DM me the word bread". We decided to make a discord server for that, so everyone in it can chat with each other, hang out and also see who infected the most people!
@@ -59,11 +67,3 @@ Replies with `Pong!`, as well as the actual ping of the user.
 ### `Is @Breadener up?`
 
 Replies with `Yes sir!`. It is supposed to be a fun little way of checking whether the bot is up.
-
-## Okay very cool and all but how can I try it myself?
-
-Firstly, join the server with [this link](https://discord.gg/rNAatmFGwh). Then, go to `#bot-commands` to try the commands out! Make sure to register the bot itself as an infector to not mess with the infection counts of actual users :).
-
-If the bot is not responding, it may be because it is restarting, that happens every hour at roughly xx:40. It will be down for a few minutes, but it will be back up in no time!
-
-Bread is very cool.

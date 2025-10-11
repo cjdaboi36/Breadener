@@ -1,9 +1,4 @@
-import {
-  Guild,
-  type GuildMemberRoleManager,
-  SlashCommandBuilder,
-  type User,
-} from "discord.js";
+import { Guild, SlashCommandBuilder, type User } from "discord.js";
 import type { SlashCommand } from "$src/customTypes.ts";
 import { guildChecker } from "$src/utils.ts";
 import { db } from "$src/db.ts";
@@ -89,13 +84,14 @@ const slashCommand: SlashCommand = {
       return;
     }
 
-    const breadCount: { "COUNT(*)": number } = db
+    const thing: { "COUNT(*)": number } = db
       .prepare("SELECT COUNT(*) FROM infections WHERE infectedId = ?")
       .get(interaction.user.id) ?? { "COUNT(*)": 0 };
+    const breadCount = thing["COUNT(*)"];
 
-    const index: number = Math.floor(Math.min(breadCount["COUNT(*)"], 48) / 12);
+    const index: number = Math.floor(Math.min(breadCount, 48) / 12);
 
-    const levelProgress: number = breadCount["COUNT(*)"] % 12;
+    const levelProgress: number = breadCount % 12;
     const progressBar = "█".repeat(levelProgress) +
       "░".repeat(12 - levelProgress);
 

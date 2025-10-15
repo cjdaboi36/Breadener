@@ -85,8 +85,8 @@ const slashCommand: SlashCommand = {
     }
 
     const thing: { "COUNT(*)": number } = db
-      .prepare("SELECT COUNT(*) FROM infections WHERE infectedId = ?")
-      .get(interaction.user.id) ?? { "COUNT(*)": 0 };
+      .prepare("SELECT COUNT(*) FROM infections WHERE infectorId = ?")
+      .get(user.id) ?? { "COUNT(*)": 0 };
     const breadCount = thing["COUNT(*)"];
 
     const index: number = Math.floor(Math.min(breadCount, 48) / 12);

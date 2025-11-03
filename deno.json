@@ -21,11 +21,15 @@
     "octokit": "npm:octokit@^5.0.3"
   },
   "lint": {
-    "include": ["src/"],
-    "exclude": ["src/customTypes.ts"],
     "rules": {
-      "tags": ["recommend", "jsr"],
-      "include": ["camelcase", "egegeg", "explicit-function-return-type"]
+      "tags": ["recommended", "jsr"],
+      "include": [
+        "camelCase",
+        "eqeqeq",
+        "explicit-function-return-type",
+        "no-const-reassign",
+        "no-eval"
+      ]
     }
   }
 }

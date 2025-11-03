@@ -21,6 +21,7 @@
     "octokit": "npm:octokit@^5.0.3"
   },
   "lint": {
+    "include": ["src/"],
     "rules": {
       "tags": ["recommended", "jsr"],
       "include": [

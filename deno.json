@@ -1,8 +1,9 @@
 {
   "tasks": {
-    "dev": "deno run -A --watch src/index.ts",
+    "dev": "deno run -A src/index.ts",
     "dev-db": "rm daataabaasaa.db; deno run -A src/db.ts; deno run dev",
-    "prod": "deno run -A src/index.ts"
+    "dev-watch": "deno run -A --watch src/index.ts",
+    "dev-db-watch": "rm daataabaasaa.db; deno run -A src/db.ts; deno run dev-watch"
   },
   "imports": {
     "$src/": "./src/",
@@ -21,7 +22,6 @@
     "octokit": "npm:octokit@^5.0.3"
   },
   "lint": {
-    "include": ["src/"],
     "rules": {
       "tags": ["recommended", "jsr"],
       "include": [
@@ -32,5 +32,12 @@
         "no-eval"
       ]
     }
+  },
+  "fmt": {
+    "bracePosition": "sameLine",
+    "singleQuote": false,
+    "semiColons": true,
+    "operatorPosition": "nextLine",
+    "useBraces": "whenNotSingleLine"
   }
 }

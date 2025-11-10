@@ -1,7 +1,8 @@
+import type { maybePromiseVoid } from "./customTypes.ts";
+
 // jsw: code snippet from my own bot that allows you to register handlers that will be ran when the program is stopped.
 
 let handlers: (() => maybePromiseVoid)[] = [];
-type maybePromiseVoid = void | Promise<void>;
 
 export const addSigListener = (fun: () => maybePromiseVoid) => {
   handlers.push(fun);

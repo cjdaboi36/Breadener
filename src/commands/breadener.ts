@@ -1,21 +1,21 @@
-import { SlashCommandBuilder } from "discord.js";
+import { env } from "../config.ts";
 import type {
   GitHubRepository,
   Language,
   OctokitResponse,
   SlashCommand,
-} from "$src/customTypes.ts";
+} from "../customTypes.ts";
+import { SlashCommandBuilder } from "discord.js";
 import { Octokit } from "octokit";
-import { secrets } from "$src/config.ts";
 
-const slashCommand: SlashCommand = {
+export const slashBreadener: SlashCommand = {
   data: new SlashCommandBuilder()
     .setName("breadener")
     .setDescription("Get recipes for the most delicious pieces of bread!"),
 
   execute: async (interaction) => {
     const octokit: Octokit = new Octokit({
-      auth: secrets.octokitToken,
+      auth: env.GITHUB_TOKEN,
     });
 
     const repoData: OctokitResponse<GitHubRepository> = await octokit.request(
@@ -38,13 +38,13 @@ const slashCommand: SlashCommand = {
       totalChar += Number(language[1]);
     }
     for (const language of Object.entries(rawLanguageData.data)) {
-        const thing: number = Math.floor(Number(language[1]) / totalChar * 1000) /
-          10;
-        if (thing === 0) {
-          continue; // Equivalent of break as long as github doesn't switch the descending order of languages
-        }
-        languageData[language[0]] = thing;
+      const thing: number = Math.floor(Number(language[1]) / totalChar * 1000)
+        / 10;
+      if (thing === 0) {
+        continue; // Equivalent of break as long as github doesn't switch the descending order of languages
       }
+      languageData[language[0]] = thing;
+    }
 
     console.log(`\x1b[102m > \x1b[0m Returned Data`);
 
@@ -53,48 +53,48 @@ const slashCommand: SlashCommand = {
       languageMessage += `\t\t${languageEntry[0]}: "${languageEntry[1]}"\n`;
     }
 
-    const message: string = "# Breadener-bot!\n" +
-      "\`\`\`json\n" +
-      "{\n" +
-      "\tid: " +
-      repoData.data.id +
-      ",\n" +
-      "\tname: " +
-      repoData.data.name +
-      ",\n" +
-      "\townerLogin: " +
-      repoData.data.owner.login +
-      ",\n" +
-      "\tdescription: " +
-      repoData.data.description! +
-      ",\n" +
-      "\turl: " +
-      repoData.data.url +
-      ",\n" +
-      "\tlanguages: {\n" +
-      languageMessage +
-      "\t},\n" +
-      "\tlicense: {\n" +
-      "\t\tname: " +
-      repoData.data.license?.name +
-      "\n" +
-      "\t},\n" +
-      "\tstargazers_count: " +
-      repoData.data.stargazers_count +
-      "\n" +
-      "}\n" +
-      "\`\`\`";
+    const message: string = "# Breadener-bot!\n"
+      + "\`\`\`json\n"
+      + "{\n"
+      + "\tid: "
+      + repoData.data.id
+      + ",\n"
+      + "\tname: "
+      + repoData.data.name
+      + ",\n"
+      + "\townerLogin: "
+      + repoData.data.owner.login
+      + ",\n"
+      + "\tdescription: "
+      + repoData.data.description!
+      + ",\n"
+      + "\turl: "
+      + repoData.data.url
+      + ",\n"
+      + "\tlanguages: {\n"
+      + languageMessage
+      + "\t},\n"
+      + "\tlicense: {\n"
+      + "\t\tname: "
+      + repoData.data.license?.name
+      + "\n"
+      + "\t},\n"
+      + "\tstargazers_count: "
+      + repoData.data.stargazers_count
+      + "\n"
+      + "}\n"
+      + "\`\`\`";
 
     await interaction
       .reply({
         content: message,
         withResponse: true,
       })
-      .then((_response) =>
-        console.log(`Inquired ${interaction.user.username} about the bot`)
+      .then(() =>
+        console.log(
+          `\x1b[47m > \x1b[0m Inquired ${interaction.user.username} about the bot`,
+        )
       )
       .catch(console.error);
   },
 };
-
-export default slashCommand;

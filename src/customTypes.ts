@@ -3,6 +3,7 @@ import type {
   ChatInputCommandInteraction,
   Collection,
   Events,
+  Message,
   SlashCommandBuilder,
   SlashCommandOptionsOnlyBuilder,
 } from "discord.js";
@@ -21,31 +22,33 @@ export type SlashCommand = {
   autocomplete?: (interaction: AutocompleteInteraction) => void; // optional autocomplete function
 };
 
-export const SlashCommandGuard = (
-  object: object, // this checks if an object is a slashcommand
-) =>
-  "default" in object &&
-  "data" in (object.default as object) &&
-  "execute" in (object.default as object);
+export const SlashCommandGuard = (object: object) =>
+  "data" in object && "execute" in object;
 
-export type BotEvent = {
-  // botevent, these reside in src/events/*.ts
-  type: Events;
-  once?: boolean;
-
-  // deno-lint-ignore no-explicit-any
-  execute: (...args: any[]) => void; // Man, not my fault discordjs uses any even in their god damn type.
+export type NonSlashCommand = {
+  name: string;
+  match: (message: Message) => boolean;
+  execute: (message: Message) => maybePromiseVoid;
 };
 
-export const BotEventGuard = (
-  object: object, // again, checks if an object is a botevent
-) =>
-  "default" in object &&
-  "type" in (object.default as object) &&
-  "execute" in (object.default as object);
+export const NonSlashCommandGuard = (object: object) =>
+  "name" in object && "match" in object && "execute" in object;
+
+export type BotEvent = {
+  type: Events;
+  once?: boolean;
+  // deno-lint-ignore no-explicit-any
+  execute: (...args: any[]) => void;
+  // These types and parameters differ wildly, I also don't want to use any but I have no choice
+};
+
+export const BotEventGuard = (object: object) =>
+  "type" in object && "execute" in object;
+
+export type maybePromiseVoid = void | Promise<void>;
 
 export type breadRecipe = {
-  breadName: string | undefined;
+  breadName: string;
   ingredients: string[][];
   expectedTime: number;
   instructions: string[];

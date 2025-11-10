@@ -5,18 +5,18 @@ import type { ChatInputCommandInteraction, Message } from "discord.js";
 // For all your exportation and header functional purposes
 
 export const helpText: string =
-  `\`.help\` | Gives a list of all non-slash commands!\n` +
-  `\`.ping\` | Replies with pong and your ping!\n` +
-  `\`Is @Breadener up?\` | Replies with affermation!\n`;
+  `\`.help\` | Gives a list of all non-slash commands!\n`
+  + `\`.ping\` | Replies with pong and your ping!\n`
+  + `\`Is @Breadener up?\` | Replies with affermation!\n`;
 
 export function coolBanner(): void {
   console.log(
-    "  ____                     _                      \n" +
-      " |  _ \\                   | |                     \n" +
-      " | |_) |_ __ ___  __ _  __| | ___ _ __   ___ _ __\n" +
-      " |  _ <| '__/ _ \\\/ _` |/ _` |/ _ \ '_ \\ / _ \\ '__|\n" +
-      " | |_) | | |  __/ (_| | (_| |  __/ | | |  __/ |   \n" +
-      " |____/|_|  \\\___|\\\__,_|\\\__,_|\\\___|_| |_|\\\___|_|🍞",
+    "  ____                     _                      \n"
+      + " |  _ \\                   | |                     \n"
+      + " | |_) |_ __ ___  __ _  __| | ___ _ __   ___ _ __\n"
+      + " |  _ <| '__/ _ \\\/ _` |/ _` |/ _ \ '_ \\ / _ \\ '__|\n"
+      + " | |_) | | |  __/ (_| | (_| |  __/ | | |  __/ |   \n"
+      + " |____/|_|  \\\___|\\\__,_|\\\__,_|\\\___|_| |_|\\\___|_|🍞",
   );
 }
 
@@ -35,7 +35,9 @@ export function removeWhiteSpace(str: string): string {
 export async function guildChecker(
   interaction: ChatInputCommandInteraction,
 ): Promise<boolean> {
-  if (interaction.guild && interaction.guild.id === "1383472184416272507") return false;
+  if (interaction.guild && interaction.guild.id === "1383472184416272507") {
+    return false;
+  }
   await interaction
     .reply({
       content: "You cannot run this command here!",

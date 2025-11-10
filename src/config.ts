@@ -1,49 +1,42 @@
-import "@std/dotenv/load";
+import { load } from "@std/dotenv";
 
-const secretKeys = [
-  "clientId",
-  "guildId",
-  "public_key",
-  "token",
-  "octokitToken",
+type Thing =
+  | "DATABASE_PATH"
+  | "CLIENTID"
+  | "GUILDID"
+  | "PUBLIC_KEY"
+  | "TOKEN"
+  | "GITHUB_TOKEN";
+
+const secretKeys: Thing[] = [
+  "DATABASE_PATH",
+  "CLIENTID",
+  "GUILDID",
+  "PUBLIC_KEY",
+  "TOKEN",
+  "GITHUB_TOKEN",
 ] as const;
-type SecretRecord = Record<(typeof secretKeys)[number], string>;
 
-const configKeys = ["DATABASE_PATH", "SECRETS_PATH"] as const;
-type ConfigRecord = Record<(typeof configKeys)[number], string>;
+const env: Record<Thing, string> = await load({
+  export: true,
+});
 
-export const config: ConfigRecord = configKeys.reduce<ConfigRecord>(
-  (prev, current) => {
-    const env: string | undefined = Deno.env.get(current);
-    if (!env) {
-      throw new Error(
-        `Please configure your dotenv correctly. Missing: ${current}`,
-      );
-    }
-
-    prev[current] = env;
-    return prev;
-  },
-  {} as ConfigRecord,
-);
-
-const basePath: URL = new URL("../", import.meta.url);
-const secretsPath: URL = new URL(config.SECRETS_PATH, basePath);
-
-let tSecrets: SecretRecord | undefined;
-try {
-  tSecrets = (
-    await import(secretsPath.href, {
-      with: { type: "json" },
-    })
-  ).default as SecretRecord;
-} catch (e) {
-  throw Error(`Failed to read secrets: '${e}'`);
-}
-
-const tSecretsKeys: string[] = Object.keys(tSecrets);
 for (const key of secretKeys) {
-  if (!tSecretsKeys.includes(key)) throw Error(`Missing secret: '${key}'`);
+  if (!env[key]) {
+    throw new Error(`\x1b[34mMissing .env variable ${key}\x1b[0m`);
+  }
 }
 
-export const secrets: SecretRecord = tSecrets;
+console.log("\x1b[34m.env values:\x1b[0m");
+for (const entry of Object.entries(env)) {
+  console.log(
+    `\t${entry[0]}: \x1b[32m"${
+      ".".repeat(entry[1].length).replace(
+        /^.{5}/g,
+        entry[1].substring(0, 5),
+      )
+    }"\x1b[0m`,
+  );
+}
+
+export { env };

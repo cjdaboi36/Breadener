@@ -1,11 +1,11 @@
-import { SlashCommandBuilder } from "discord.js";
+import type { breadRecipe, SlashCommand } from "../customTypes.ts";
+import { parseRecipe } from "../utils.ts";
 import breadRecipies from "$static/breadRecipies.json" with {
   type: "json",
 };
-import type { breadRecipe, SlashCommand } from "$src/customTypes.ts";
-import { parseRecipe } from "$src/utils.ts";
+import { SlashCommandBuilder } from "discord.js";
 
-const slashCommand: SlashCommand = {
+export const slashGetRecipe: SlashCommand = {
   data: new SlashCommandBuilder()
     .setName("get-recipes")
     .setDescription("Get recipes for the most delicious pieces of bread!")
@@ -45,13 +45,13 @@ const slashCommand: SlashCommand = {
     message += `## Recipe Link\n${recipeLink}\n`;
 
     let logMessage: string =
-      `${interaction.user.username} requested the ${requestedBreadType}-recipe.`;
+      `\x1b[47m > \x1b[0m ${interaction.user.username} requested the ${requestedBreadType}-recipe.`;
 
     if (!breadType.breadName) {
       message =
         `It doesn't seem like we have a recipe for ${requestedBreadType}. Maybe you misspelled it, or we just dont have it yet!\nDon't feel bad, if you can think of a recipe, make a pull request on my repository!`;
       logMessage =
-        `${interaction.user.username} requested a ${requestedBreadType}-recipe, but none were found.`;
+        `\x1b[47m > \x1b[0m ${interaction.user.username} requested a ${requestedBreadType}-recipe, but none were found.`;
     }
 
     await interaction
@@ -59,7 +59,7 @@ const slashCommand: SlashCommand = {
         content: message,
         withResponse: true,
       })
-      .then((_response) => console.log(logMessage))
+      .then(() => console.log(logMessage))
       .catch(console.error);
   },
 
@@ -74,5 +74,3 @@ const slashCommand: SlashCommand = {
     );
   },
 };
-
-export default slashCommand;

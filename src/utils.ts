@@ -93,19 +93,10 @@ export function parseRecipe(breadType: string): breadRecipe {
 export function parseDBQuery(message: string): false | string {
   const start = message.slice(0, 5);
   const end = message.slice(-2, message.length);
-  if (start !== ";db[\`") {
-    return false;
-  }
-
-  if (end !== "\`]") {
-    return false;
-  }
+  if (!(start === ";db[\`" || end === "\`]")) return false;
 
   console.log(`${message} is a valid query`);
-  message = message.slice(5);
-  message = message.slice(0, -2);
-
-  return message;
+  return message.slice(5).slice(0, -2);
 }
 
 export function isModerator(message: Message): boolean {

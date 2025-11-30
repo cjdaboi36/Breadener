@@ -1,7 +1,7 @@
 import breadenerLevels from "$static/breadenerLevels.json" with {
   type: "json",
 };
-import { MessageFlags, SlashCommandBuilder, type User } from "discord.js";
+import { MessageFlags, SlashCommandBuilder } from "discord.js";
 import type { SlashCommand } from "../customTypes.ts";
 import { db } from "../db.ts";
 import { validGuildGuard } from "../utils.ts";
@@ -17,9 +17,7 @@ export const slashGetBreadenerLevel: SlashCommand = {
         .setRequired(true)
     ),
   execute: async (interaction) => {
-    const user: User = interaction.options.getUser("user", true);
-
-    if (validGuildGuard(interaction)) {
+    if (!validGuildGuard(interaction)) {
       await interaction
         .reply({
           content: "You cannot run this command here.",
@@ -28,6 +26,8 @@ export const slashGetBreadenerLevel: SlashCommand = {
         .catch((err) => console.error(err));
       return `${interaction.user.username} used /get-breadener-level, but ran it somewhere invalid`;
     }
+
+    const user = interaction.options.getUser("user", true);
 
     const breadCount = db
       .sql`SELECT COUNT(*) FROM infections WHERE infectorId = ${user.id}`[0][

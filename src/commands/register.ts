@@ -21,7 +21,7 @@ export const slashRegisterInfector: SlashCommand = {
         .setRequired(true)
     ),
   execute: async (interaction) => {
-    if (validGuildGuard(interaction)) {
+    if (!validGuildGuard(interaction)) {
       await interaction
         .reply({
           content: "You cannot run this command here!",

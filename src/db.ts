@@ -2,19 +2,21 @@ import { Database } from "@db/sqlite";
 import { env } from "./env.ts";
 import { addSigListener } from "./sighandler.ts";
 
-const basePath: URL = new URL("../", import.meta.url);
-const path: URL = new URL(env.DATABASE_PATH, basePath);
-export const db: Database = new Database(path);
+const basePath = new URL("../", import.meta.url);
+export const db = new Database(
+  new URL(basePath + env.DATABASE_PATH),
+);
 
 const closeListener = (): void => {
   console.log("Closing DB");
   db.close();
 };
+
 addSigListener(closeListener);
 
-db.exec(`
-        CREATE TABLE IF NOT EXISTS infections (
-        infectedId TEXT PRIMARY KEY,
-        infectorId TEXT KEY
-        )
-    `);
+db.sql`
+  CREATE TABLE IF NOT EXISTS infections (
+  infectedId TEXT PRIMARY KEY,
+  infectorId TEXT KEY
+  )
+`;

@@ -22,7 +22,7 @@ export type NonSlashCommand = {
   description: string;
   showInHelp: boolean;
   match: (message: Message) => boolean;
-  execute: (message: Message) => Promise<string | void>;
+  execute: (message: Message) => Promise<string>;
 };
 
 export const nonSlashCommandGuard = (object: object) =>

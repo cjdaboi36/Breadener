@@ -4,12 +4,13 @@ import type { BotEvent } from "../customTypes.ts";
 
 export const nonSlashCommandEvent: BotEvent = {
   type: Events.MessageCreate,
-  execute: (message: Message): void => {
+  execute: async (message: Message) => {
     if (!(message.channel instanceof TextChannel)) return;
 
     for (const nonSlashCommand of nonSlashCommands) {
       if (nonSlashCommand.match(message)) {
-        nonSlashCommand.execute(message);
+        const logMessage = await nonSlashCommand.execute(message);
+        console.log(`\x1b[36m > \x1b[0m ${logMessage}`);
       }
     }
   },

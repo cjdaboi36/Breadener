@@ -77,22 +77,19 @@ export const slashGetBreadenerLevels: SlashCommand = {
     for (let i = 0; i < breadenerLevels.length; i++) {
       const breadLevel = breadenerLevels[i];
 
-      if (breadLevel.threshold) {
-        message += `${breadLevel.emoji} ${breadLevel.level}: ${
-          breadLevel.threshold - 12
-        } - ${breadLevel.threshold} people Breadened!\n`;
+      if (!breadLevel.threshold) {
+        message +=
+          `${breadLevel.emoji} ${breadLevel.level}: 48+ people Breadened!\n`;
         continue;
       }
-      message +=
-        `${breadLevel.emoji} ${breadLevel.level}: 48+ people Breadened!\n`;
+      message += `${breadLevel.emoji} ${breadLevel.level}: ${
+        breadLevel.threshold - 12
+      } - ${breadLevel.threshold} people Breadened!\n`;
     }
 
     message +=
       "\n🎯 Use `/get-breadener-level <username>` to check someone's level!";
 
-    console.log(
-      `Breadener levels info requested by "${interaction.user.username}"`,
-    );
     await interaction
       .reply({
         content: message,

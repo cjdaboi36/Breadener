@@ -17,8 +17,7 @@ const sigHandler = async () => {
   Deno.exit();
 };
 
-if (Deno.build.os !== "windows") {
-  Deno.addSignalListener("SIGTERM", sigHandler);
-}
+if (Deno.build.os !== "windows") Deno.addSignalListener("SIGTERM", sigHandler);
+
 // Windows momentje
 Deno.addSignalListener("SIGINT", sigHandler);

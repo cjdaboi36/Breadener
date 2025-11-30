@@ -22,12 +22,10 @@ export const slashGetRecipe: SlashCommand = {
       "bread-type",
       true,
     );
-    const breadType: BreadRecipe = parseRecipe(requestedBreadType);
-    const ingredientsLength = breadType.ingredients.length;
-    const instructionsLength = breadType.instructions.length;
-    const recipeLink = breadType.recipeLink;
+    const { breadName, ingredients, expectedTime, instructions, recipeLink }:
+      BreadRecipe = parseRecipe(requestedBreadType);
 
-    if (!breadType.breadName) {
+    if (!breadName) {
       await interaction
         .reply({
           content:
@@ -38,18 +36,16 @@ export const slashGetRecipe: SlashCommand = {
       return `${interaction.user.username} used /get-recipe [${requestedBreadType}], but no recipe was found`;
     }
 
-    let message = `# Recipe for ${breadType.breadName}! \nIngredients:\n`;
+    let message = `# Recipe for ${breadName}! \nIngredients:\n`;
 
-    for (let i = 0; i < ingredientsLength; i++) {
-      message += `${i + 1}. ${breadType.ingredients[i][1]} of ${
-        breadType.ingredients[i][0]
-      }\n`;
+    for (let i = 0; i < ingredients.length; i++) {
+      message += `${i + 1}. ${ingredients[i][1]} of ${ingredients[i][0]}\n`;
     }
 
-    message += "## Instructions\n";
+    message += `Expected time spent: ${expectedTime}\n## Instructions\n`;
 
-    for (let i = 0; i <= instructionsLength - 1; i++) {
-      message += `${i + 1}. ${breadType.instructions[i]}\n`;
+    for (let i = 0; i <= instructions.length - 1; i++) {
+      message += `${i + 1}. ${instructions[i]}\n`;
     }
 
     message += `## Recipe Link\n${recipeLink}\n`;
@@ -60,7 +56,7 @@ export const slashGetRecipe: SlashCommand = {
         withResponse: true,
       })
       .catch((err) => console.error(err));
-    return `${interaction.user.username} used /get-recipe [${requestedBreadType}]`;
+    return `${interaction.user.username} used /get-recipe [${breadName}]`;
   },
 
   autocomplete: async (interaction) => {

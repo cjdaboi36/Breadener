@@ -27,8 +27,8 @@ export const slashRegisterInfector: SlashCommand = {
           content: "You cannot run this command here!",
           withResponse: true,
         })
-        .catch(console.error);
-      return `${interaction.user.username} tried to fool the system, but turned out to be one themselves`;
+        .catch((err) => console.error(err));
+      return `${interaction.user.username} used /register, but wasn't in the server`;
     }
 
     // Get infector as GuildMember
@@ -40,11 +40,11 @@ export const slashRegisterInfector: SlashCommand = {
     if (!infector) {
       await interaction
         .reply({
-          content: "Your infector is not in this server!", // sounds like the other sentences so i'll go with it.
+          content: "Your infector is not in this server!",
           withResponse: true,
         })
-        .catch(console.error);
-      return `${interaction.user.username}'s isn't in the server`;
+        .catch((err) => console.error(err));
+      return `${interaction.user.username} used /register, but the infector wasn't in the server`;
     }
 
     // Checks whether infector is the same is infected
@@ -54,15 +54,16 @@ export const slashRegisterInfector: SlashCommand = {
           content: "You can't register yourself as your own infector buddy!", // sounds like the other sentences so i'll go with it.
           withResponse: true,
         })
-        .catch(console.error);
-      return `${interaction.user.username} tried to fool the system, but turned out to be one themselves`;
+        .catch((err) => console.error(err));
+      return `${interaction.user.username} used /register, but tried to register themselves`;
     }
 
-    const registerCount = db
+    const registerCount: number = db
       .sql`SELECT COUNT(*) FROM infections WHERE infectedId = ${interaction.user.id}`[
         0
-      ]["COUNT(*)"] as number; // Checks whether command runner already has an entry
+      ]["COUNT(*)"] ?? 0;
 
+    // Check whether infected already has an entry
     if (registerCount !== 0) {
       await interaction
         .reply({
@@ -71,7 +72,7 @@ export const slashRegisterInfector: SlashCommand = {
           withResponse: true,
         })
         .catch(console.error);
-      return `${interaction.user.username} tried to fool the system, but turned out to be one themselves`;
+      return `${interaction.user.username} user /register [${infector.user.username}], but already has an entry`;
     }
 
     db.sql`INSERT INTO infections (infectorId, infectedId) VALUES (${infector.id}, ${interaction.user.id})`;
@@ -80,33 +81,46 @@ export const slashRegisterInfector: SlashCommand = {
     const breadCount = db
       .sql`SELECT COUNT(*) FROM infections WHERE infectorId = ${infector.id}`[
         0
-      ]["COUNT(*)"] as number;
+      ]["COUNT(*)"] as number ?? 0;
 
     const index = Math.floor(Math.min(breadCount, 48) / 12);
 
-    // Adds the correct role (back)
-    const newRoleId = breadenerLevels[index].id;
-    infector.roles.add(
-      newRoleId,
-      `New breadener level role: ${breadenerLevels[index].level}`,
-    );
+    try {
+      // Adds the correct role (back)
+      const newRoleId = breadenerLevels[index].id;
+      infector.roles.add(
+        newRoleId,
+        `New breadener level role: ${breadenerLevels[index].level}`,
+      );
 
-    // Removes all Breadener Roles except the correct one
-    for (let i = 0; i <= 4; i++) {
-      if (breadenerLevels[i].id !== newRoleId) {
-        infector.roles.remove(breadenerLevels[i].id);
+      // Removes all Breadener Roles except the correct one
+      for (let i = 0; i <= 4; i++) {
+        if (breadenerLevels[i].id !== newRoleId) {
+          infector.roles.remove(breadenerLevels[i].id);
+        }
       }
+    } catch (err) {
+      console.error(err);
+      await interaction
+        .reply({
+          content:
+            `Something went wrong while giving you your new roles! The infector count however, has been updated.`,
+          flags: MessageFlags.SuppressNotifications,
+          withResponse: true,
+        })
+        .catch((err) => console.error(err));
+      return `${interaction.user.username} used /register [${infector.user.username}], but something went wrong while updating roles`;
     }
 
     await interaction
       .reply({
         content:
           `Registered <@${infector.id}> as the infector of <@${interaction.user.id}>.`,
-        flags: MessageFlags.SuppressNotifications, // makes the message silent
+        flags: MessageFlags.SuppressNotifications,
         withResponse: true,
       })
-      .catch(console.error);
-    return `Registered "${infector.user.username}" as the infector of "${interaction.user.username}".`;
+      .catch((err) => console.error(err));
+    return `${interaction.user.username} used /register [${infector.user.username}]`;
   },
 };
 
@@ -133,14 +147,19 @@ export const slashRegisterInfected: SlashCommand = {
           withResponse: true,
         })
         .catch((err) => console.error(err));
-      return `${interaction.user.username} tried to fool the system, but turned out to be one themselves`;
+      return `${interaction.user.username} used /register-non-joiner, but in somewhere invalid`;
     }
 
     // Collects all role IDs
     const rawRoleData = interaction.member?.roles;
     if (!(rawRoleData instanceof GuildMemberRoleManager)) {
-      // This will never happen
-      return `How did this run this should never run?!`;
+      await interaction
+        .reply({
+          content: "Something went wrong!",
+          withResponse: true,
+        })
+        .catch((err) => console.error(err));
+      return `${interaction.user.username} used /register-non-joiner, but something went wrong while checking their perms`;
     }
 
     const roleIDs: string[] = [];
@@ -160,20 +179,21 @@ export const slashRegisterInfected: SlashCommand = {
           withResponse: true,
         })
         .catch((err) => console.error(err));
-      return `${interaction.user.username} was not permitted to use /register-non-joiner`;
+      return `${interaction.user.username} used /register-non-joiner, but was not permitted to`;
     }
 
-    const infectedId = interaction.options.getString(
-      "infected_id",
-      true,
-    );
+    const infectedId = interaction.options.getString("infected_id", true);
     const infector = await interaction.guild?.members.fetch(
       interaction.options.getUser("infector", true).id,
     );
 
     if (!infector) {
-      // This will never happen
-      return `How did this run this should never run?!`;
+      await interaction
+        .reply({
+          content: "Your infector isn't in the server!",
+        })
+        .catch((err) => console.error(err));
+      return `${interaction.user.username} used /register-non-joiner, but the infector wasn't in the server`;
     }
 
     if (infectedId === infector.id) {
@@ -183,7 +203,7 @@ export const slashRegisterInfected: SlashCommand = {
           withResponse: true,
         })
         .catch((err) => console.error(err));
-      return `${interaction.user.username} tried to infect themselves with /register-non-joiner`;
+      return `${interaction.user.username} used /register-non-joiner, but tried to infect themselves`;
     }
 
     // Checks whether infected person already has an entry
@@ -199,7 +219,7 @@ export const slashRegisterInfected: SlashCommand = {
           withResponse: true,
         })
         .catch((err) => console.error(err));
-      return `${interaction.user.username} tried to register infectedId ${infectedId}, but was already infected!`;
+      return `${interaction.user.username} used /register-non-joiner, but the infected already had an entry`;
     }
 
     // If the person is not yet in the db
@@ -235,11 +255,11 @@ export const slashRegisterInfected: SlashCommand = {
         withResponse: true,
       })
       .catch((err) => console.error(err));
-    return `${interaction.user.username} approved the infection of user "${infectedId}" by ${infector.user.username}`;
+    return `${interaction.user.username} used /register-non-joiner [${infector.user.username}] [${infectedId}]`;
   },
 };
 
-export const slashDeregisterInfector: SlashCommand = {
+export const slashDeregister: SlashCommand = {
   data: new SlashCommandBuilder()
     .setName("deregister")
     .setDescription(
@@ -253,7 +273,7 @@ export const slashDeregisterInfector: SlashCommand = {
           withResponse: true,
         })
         .catch((err) => console.error(err));
-      return `${interaction.user.username} tried to fool the system, but turned out to be one themselves`;
+      return `${interaction.user.username} used /register-non-joiner, but in somewhere invalid`;
     }
 
     const breadCount: number = db
@@ -269,7 +289,7 @@ export const slashDeregisterInfector: SlashCommand = {
           withResponse: true,
         })
         .catch((err) => console.error(err));
-      return `${interaction.user.username} tried to remove their infection entry that did not even exist`;
+      return `${interaction.user.username} used /deregister, but doesn't have an infection entry`;
     }
 
     db.sql`DELETE FROM infections WHERE infectedId = ${interaction.user.id}`;
@@ -281,7 +301,7 @@ export const slashDeregisterInfector: SlashCommand = {
         flags: MessageFlags.SuppressNotifications,
         withResponse: true,
       })
-      .catch(console.error);
-    return `${interaction.user.username}'s Entry succesfully removed.`;
+      .catch((err) => console.error(err));
+    return `${interaction.user.username} used /register-non-joiner`;
   },
 };

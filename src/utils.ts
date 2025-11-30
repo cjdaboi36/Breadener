@@ -8,12 +8,7 @@ import {
 
 // For all your exportation and header functional purposes
 
-export const helpText: string =
-  `\`.help\` | Gives a list of all non-slash commands!\n`
-  + `\`.ping\` | Replies with pong and your ping!\n`
-  + `\`Is @Breadener up?\` | Replies with affermation!\n`;
-
-export function coolBanner(): void {
+export const coolBanner = () => {
   console.log(
     "  ____                     _                      \n"
       + " |  _ \\                   | |                     \n"
@@ -22,19 +17,7 @@ export function coolBanner(): void {
       + " | |_) | | |  __/ (_| | (_| |  __/ | | |  __/ |   \n"
       + " |____/|_|  \\\___|\\\__,_|\\\__,_|\\\___|_| |_|\\\___|_|🍞",
   );
-}
-
-export function removeWhiteSpace(str: string): string {
-  while (str[0] === " " || str[0] === "\n") {
-    str = str.slice();
-  }
-
-  while (str[str.length - 1] === " " || str[str.length - 1] === "\n") {
-    str = str.substring(0, str.length - 1);
-  }
-
-  return str;
-}
+};
 
 export const validGuildGuard = (
   interaction: ChatInputCommandInteraction,
@@ -43,17 +26,15 @@ export const validGuildGuard = (
   && interaction.guild.id === "1383472184416272507";
 
 // Simple method that returns a random emoji from list
-export function randomNumber(min: number, max: number): number {
-  return Math.floor(Math.random() * max - min) + min;
-}
+export const randomNumber = (min: number, max: number) =>
+  Math.floor(Math.random() * max - min + 1) + min;
 
-export function capitalize(input: string): string {
-  return input.charAt(0).toUpperCase() + input.slice(1);
-}
+export const capitalize = (input: string) =>
+  input.charAt(0).toUpperCase() + input.slice(1);
 
 export function getRandomEmoji(): string {
   const smileys: string[] = [":)", ":D", ":3", ":P"];
-  return smileys[randomNumber(0, smileys.length)];
+  return smileys[randomNumber(0, smileys.length - 1)];
 }
 
 export function parseRecipe(breadType: string): BreadRecipe {

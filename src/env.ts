@@ -9,7 +9,7 @@ const requiredKeys = [
   "GITHUB_TOKEN",
 ] as const;
 
-const env: Record<string, string> = await load({
+const env = await load({
   export: true,
 });
 

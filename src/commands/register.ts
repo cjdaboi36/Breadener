@@ -74,16 +74,14 @@ export const slashRegisterInfector: SlashCommand = {
 
     db.sql`INSERT INTO infections (infectorId, infectedId) VALUES (${infector.id}, ${interaction.user.id})`;
 
-    // Assign roles to infector
-    const breadCount = db
+    const breadCount: number = db
       .sql`SELECT COUNT(*) FROM infections WHERE infectorId = ${infector.id}`[
         0
-      ]["COUNT(*)"] as number ?? 0;
+      ]["COUNT(*)"] ?? 0;
 
     const index = Math.floor(Math.min(breadCount, 48) / 12);
 
     try {
-      // Adds the correct role (back)
       const newRoleId = breadenerLevels[index].id;
       infector.roles.add(
         newRoleId,
@@ -219,17 +217,14 @@ export const slashRegisterInfected: SlashCommand = {
       return `${interaction.user.username} used /register-non-joiner, but the infected already had an entry`;
     }
 
-    // If the person is not yet in the db
     db.sql`INSERT INTO infections (infectorId, infectedId) VALUES (${infector.user.id}, ${infectedId})`;
 
-    // Assign roles n stuff
     const breadCount: number = db
       .sql`SELECT COUNT(*) FROM infections WHERE infectorId = ${infector.user.id}`[
         0
-      ]["COUNT(*)"] ?? 0; // if it can't find anything, use 0
+      ]["COUNT(*)"] ?? 0;
     const index = Math.floor(Math.min(breadCount, 48) / 12);
 
-    // Adds the correct role (back)
     const newRoleId = breadenerLevels[index].id;
     infector.roles.add(
       newRoleId,
@@ -237,7 +232,6 @@ export const slashRegisterInfected: SlashCommand = {
     );
     console.log(`New breadener level role: ${breadenerLevels[index].level}`);
 
-    // Removes all Breadener Roles except the correct one
     for (let i = 0; i <= 4; i++) {
       if (breadenerLevels[i].id !== newRoleId) {
         infector.roles.remove(breadenerLevels[i].id);

@@ -50,7 +50,7 @@ export type BreadRecipe = {
 
 export type BreadenerLevel = {
   level: string;
-  id?: string;
+  id: string;
   nextLevel?: string;
   emoji: string;
   breadCount: number;

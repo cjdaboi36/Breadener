@@ -20,7 +20,6 @@ export const slashPing: SlashCommand = {
     .setDescription("Replies with pong!"),
   execute: async (interaction) => {
     const diff = Date.now() - interaction.createdTimestamp;
-
     await interaction
       .reply({
         content: `Pong! Latency: ${diff}ms`,

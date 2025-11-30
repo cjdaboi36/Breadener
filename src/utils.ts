@@ -63,18 +63,11 @@ export function parseRecipe(breadType: string): BreadRecipe {
 
 export function isModerator(message: Message): boolean {
   if (!message.member) return false;
-  let returnValue = false;
-  message.member.roles.cache.each(
-    (value) => {
-      if (
-        value.id === "1383472356319559731" || value.id === "1408239632822304900"
-      ) {
-        returnValue = true;
-        return;
-      }
-    },
+  return Boolean(
+    message.member.roles.cache.find((value) =>
+      value.id === "1383472356319559731" || value.id === "1408239632822304900"
+    ),
   );
-  return returnValue;
 }
 
 export const isInChannel = (message: Message, channelId: string) =>

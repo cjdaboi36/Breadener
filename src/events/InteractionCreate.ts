@@ -10,42 +10,10 @@ for (const slashCommand of slashCommands) {
 export const slashCommandEvent: BotEvent = {
   type: Events.InteractionCreate,
   execute: async (interaction: Interaction) => {
-    if (!interaction.isChatInputCommand()) return;
-
-    const command: SlashCommand | undefined =
-      slashCommandsRecord[interaction.commandName];
-
-    if (!command) {
-      console.error(
-        `No command matching ${interaction.commandName} was found.`,
-      );
-      return;
-    }
-
-    try {
-      const returnMessage = await command.execute(interaction);
-      console.log(`\x1b[36m > \x1b[0m ${returnMessage}`);
-    } catch (error) {
-      console.error(error);
-      if (interaction.replied || interaction.deferred) {
-        await interaction.followUp({
-          content: "There was an error while executing this command!",
-          flags: MessageFlags.Ephemeral,
-        });
-        return;
-      }
-      await interaction.reply({
-        content: "There was an error while executing this command!",
-        flags: MessageFlags.Ephemeral,
-      });
-    }
-  },
-};
-
-export const autoCompleteEvent: BotEvent = {
-  type: Events.InteractionCreate,
-  execute: (interaction: Interaction) => {
-    if (!interaction.isAutocomplete()) return;
+    if (
+      !interaction.isChatInputCommand()
+      && !interaction.isAutocomplete()
+    ) return;
 
     const slashCommand: SlashCommand | undefined =
       slashCommandsRecord[interaction.commandName];
@@ -57,17 +25,33 @@ export const autoCompleteEvent: BotEvent = {
       return;
     }
 
-    if (!slashCommand.autocomplete) {
-      console.error(
-        `This command ('${slashCommand.data.name}) hasn't implemented autocomplete!`,
-      );
+    if (interaction.isChatInputCommand()) {
+      try {
+        const returnMessage = await slashCommand.execute(interaction);
+        console.log(`\x1b[36m > \x1b[0m ${returnMessage}`);
+      } catch (error) {
+        console.error(error);
+        await interaction.reply({
+          content: "There was an error while executing this command!",
+          flags: MessageFlags.Ephemeral,
+        });
+      }
       return;
     }
 
-    try {
-      slashCommand.autocomplete(interaction);
-    } catch (error) {
-      console.error(error);
+    if (interaction.isAutocomplete()) {
+      if (!slashCommand.autocomplete) {
+        console.error(
+          `This command ('${slashCommand.data.name}) hasn't implemented autocomplete!`,
+        );
+        return;
+      }
+
+      try {
+        slashCommand.autocomplete(interaction);
+      } catch (error) {
+        console.error(error);
+      }
     }
   },
 };

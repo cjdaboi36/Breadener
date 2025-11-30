@@ -10,7 +10,6 @@ import { env } from "./env.ts";
 import { type BotEvent, botEventGuard } from "./customTypes.ts";
 import { coolBanner } from "./utils.ts";
 
-// Grab all the command folders from the commands directory you created earlier
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -28,9 +27,7 @@ for (const slashCommand of slashCommands) {
 // Construct and prepare an instance of the REST module
 const rest = new REST().setToken(env.TOKEN);
 
-console.log(
-  `Started refreshing ${commands.length} application (/) commands.`,
-);
+console.log(`Started refreshing ${commands.length} application (/) commands`);
 
 await rest
   .put(Routes.applicationCommands(env.CLIENTID), { body: commands })
@@ -65,6 +62,5 @@ for (const eventFile of eventFiles) {
   }
 }
 
-// Dit runt
 client.login(env.TOKEN);
 coolBanner();

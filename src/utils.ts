@@ -1,6 +1,10 @@
-import type { breadRecipe } from "$src/customTypes.ts";
+import type { BreadRecipe } from "$src/customTypes.ts";
 import recipeData from "$static/breadRecipies.json" with { type: "json" };
-import type { ChatInputCommandInteraction, Message } from "discord.js";
+import {
+  type ChatInputCommandInteraction,
+  Guild,
+  type Message,
+} from "discord.js";
 
 // For all your exportation and header functional purposes
 
@@ -32,25 +36,11 @@ export function removeWhiteSpace(str: string): string {
   return str;
 }
 
-export async function guildChecker(
+export const validGuildGuard = (
   interaction: ChatInputCommandInteraction,
-): Promise<boolean> {
-  if (interaction.guild && interaction.guild.id === "1383472184416272507") {
-    return false;
-  }
-  await interaction
-    .reply({
-      content: "You cannot run this command here!",
-      withResponse: true,
-    })
-    .then((_response) =>
-      console.log(
-        `${interaction.user.username} tried to fool the system, but turned out to be one themselves`,
-      )
-    )
-    .catch(console.error);
-  return true;
-}
+) =>
+  interaction.guild instanceof Guild
+  && interaction.guild.id === "1383472184416272507";
 
 // Simple method that returns a random emoji from list
 export function randomNumber(min: number, max: number): number {
@@ -66,7 +56,7 @@ export function getRandomEmoji(): string {
   return smileys[randomNumber(0, smileys.length)];
 }
 
-export function parseRecipe(breadType: string): breadRecipe {
+export function parseRecipe(breadType: string): BreadRecipe {
   for (const focusedData of Object.entries(recipeData)) {
     if (focusedData[0] === breadType) {
       return {
@@ -90,15 +80,6 @@ export function parseRecipe(breadType: string): breadRecipe {
   };
 }
 
-export function parseDBQuery(message: string): false | string {
-  const start = message.slice(0, 5);
-  const end = message.slice(-2, message.length);
-  if (!(start === ";db[\`" || end === "\`]")) return false;
-
-  console.log(`${message} is a valid query`);
-  return message.slice(5).slice(0, -2);
-}
-
 export function isModerator(message: Message): boolean {
   if (!message.member) return false;
   let returnValue = false;
@@ -115,7 +96,5 @@ export function isModerator(message: Message): boolean {
   return returnValue;
 }
 
-export function isInChannel(message: Message, channelId: string): boolean {
-  if (message.channelId === channelId) return true;
-  return false;
-}
+export const isInChannel = (message: Message, channelId: string) =>
+  message.channelId === channelId;

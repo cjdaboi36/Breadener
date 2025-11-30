@@ -9,7 +9,6 @@ export const ping: NonSlashCommand = {
   match: (message: Message) => message.content === (ping.command as string),
   execute: async (message: Message) => {
     const diff = Date.now() - message.createdTimestamp;
-
     await message.reply(`Pong! Latency: ${diff}ms`);
     return `${message.author.username} used .ping, ping was ${diff}`;
   },

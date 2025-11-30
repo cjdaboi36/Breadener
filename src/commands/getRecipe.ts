@@ -1,8 +1,8 @@
 import breadRecipies from "$static/breadRecipies.json" with {
-  type: "json"
+  type: "json",
 };
 import { SlashCommandBuilder } from "discord.js";
-import type { breadRecipe, SlashCommand } from "../customTypes.ts";
+import type { BreadRecipe, SlashCommand } from "../customTypes.ts";
 import { parseRecipe } from "../utils.ts";
 
 export const slashGetRecipe: SlashCommand = {
@@ -18,19 +18,29 @@ export const slashGetRecipe: SlashCommand = {
           .setAutocomplete(true),
     ),
   execute: async (interaction) => {
-    const requestedBreadType: string = interaction.options.getString(
+    const requestedBreadType = interaction.options.getString(
       "bread-type",
       true,
     );
-    const breadType: breadRecipe = parseRecipe(requestedBreadType);
-    const ingredientsLength: number = breadType.ingredients.length;
-    const instructionsLength: number = breadType.instructions.length;
-    const recipeLink: string = breadType.recipeLink;
+    const breadType: BreadRecipe = parseRecipe(requestedBreadType);
+    const ingredientsLength = breadType.ingredients.length;
+    const instructionsLength = breadType.instructions.length;
+    const recipeLink = breadType.recipeLink;
 
-    let message: string =
-      `# Recipe for ${breadType.breadName}! \nIngredients:\n`;
+    if (!breadType.breadName) {
+      await interaction
+        .reply({
+          content:
+            `It doesn't seem like we have a recipe for ${requestedBreadType}. Maybe you misspelled it, or we just dont have it yet!\nDon't feel bad, if you can think of a recipe, make a pull request on my repository!`,
+          withResponse: true,
+        })
+        .catch((err) => console.error(err));
+      return `${interaction.user.username} used /get-recipe [${requestedBreadType}], but no recipe was found`;
+    }
 
-    for (let i: number = 0; i <= ingredientsLength - 1; i++) {
+    let message = `# Recipe for ${breadType.breadName}! \nIngredients:\n`;
+
+    for (let i = 0; i < ingredientsLength; i++) {
       message += `${i + 1}. ${breadType.ingredients[i][1]} of ${
         breadType.ingredients[i][0]
       }\n`;
@@ -38,29 +48,19 @@ export const slashGetRecipe: SlashCommand = {
 
     message += "## Instructions\n";
 
-    for (let i: number = 0; i <= instructionsLength - 1; i++) {
+    for (let i = 0; i <= instructionsLength - 1; i++) {
       message += `${i + 1}. ${breadType.instructions[i]}\n`;
     }
 
     message += `## Recipe Link\n${recipeLink}\n`;
-
-    let logMessage: string =
-      `\x1b[47m > \x1b[0m ${interaction.user.username} requested the ${requestedBreadType}-recipe.`;
-
-    if (!breadType.breadName) {
-      message =
-        `It doesn't seem like we have a recipe for ${requestedBreadType}. Maybe you misspelled it, or we just dont have it yet!\nDon't feel bad, if you can think of a recipe, make a pull request on my repository!`;
-      logMessage =
-        `\x1b[47m > \x1b[0m ${interaction.user.username} requested a ${requestedBreadType}-recipe, but none were found.`;
-    }
 
     await interaction
       .reply({
         content: message,
         withResponse: true,
       })
-      .then(() => console.log(logMessage))
-      .catch(console.error);
+      .catch((err) => console.error(err));
+    return `${interaction.user.username} used /get-recipe [${requestedBreadType}]`;
   },
 
   autocomplete: async (interaction) => {

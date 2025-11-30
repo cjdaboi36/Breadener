@@ -8,8 +8,6 @@ export const hasBread: NonSlashCommand = {
   match: (message) => message.content.includes("🍞"),
   execute: async (message) => {
     await message.react("🍞");
-    console.log(
-      `\x1b[46m > \x1b[0m Reacted with bread ${message.author.username}.`,
-    );
+    return `Reacted with bread ${message.author.username}.`;
   },
 };

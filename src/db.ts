@@ -1,5 +1,5 @@
 import { Database } from "@db/sqlite";
-import { env } from "./config.ts";
+import { env } from "./env.ts";
 import { addSigListener } from "./sighandler.ts";
 
 const basePath: URL = new URL("../", import.meta.url);

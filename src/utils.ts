@@ -101,7 +101,7 @@ export function parseDBQuery(message: string): false | string {
 
 export function isModerator(message: Message): boolean {
   if (!message.member) return false;
-  let returnValue: boolean = false;
+  let returnValue = false;
   message.member.roles.cache.each(
     (value) => {
       if (
@@ -116,8 +116,6 @@ export function isModerator(message: Message): boolean {
 }
 
 export function isInChannel(message: Message, channelId: string): boolean {
-  if (message.channelId === channelId) {
-    return true;
-  }
+  if (message.channelId === channelId) return true;
   return false;
 }

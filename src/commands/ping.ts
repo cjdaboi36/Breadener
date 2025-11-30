@@ -1,14 +1,33 @@
-import type { Message } from "discord.js";
-import type { NonSlashCommand } from "../customTypes.ts";
+import { type Message, SlashCommandBuilder } from "discord.js";
+import type { NonSlashCommand, SlashCommand } from "../customTypes.ts";
 
 export const ping: NonSlashCommand = {
-  name: ".ping",
-  match: (message: Message) => message.content === ".ping",
-  execute: (message: Message): void => {
-    const diff: number = Date.now() - message.createdTimestamp;
-    console.log(
-      `\x1b[46m > \x1b[0m Pinged ${message.author.username}.`,
-    );
-    message.reply(`Pong! Latency: ${diff}ms`);
+  name: "ping",
+  command: ".ping",
+  description: "ping pong",
+  showInHelp: true,
+  match: (message: Message) => message.content === (ping.command as string),
+  execute: async (message: Message) => {
+    const diff = Date.now() - message.createdTimestamp;
+
+    await message.reply(`Pong! Latency: ${diff}ms`);
+    return `${message.author.username} used .ping, ping was ${diff}`;
+  },
+};
+
+export const slashPing: SlashCommand = {
+  data: new SlashCommandBuilder()
+    .setName("ping")
+    .setDescription("Replies with pong!"),
+  execute: async (interaction) => {
+    const diff = Date.now() - interaction.createdTimestamp;
+
+    await interaction
+      .reply({
+        content: `Pong! Latency: ${diff}ms`,
+        withResponse: true,
+      })
+      .catch((err) => console.error(err));
+    return `${interaction.user.username} used .ping, ping was ${diff}`;
   },
 };

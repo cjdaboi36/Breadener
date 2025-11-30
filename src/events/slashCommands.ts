@@ -1,14 +1,19 @@
 import { Events, type Interaction, MessageFlags } from "discord.js";
-import type { BotEvent, SlashCommand } from "$src/customTypes.ts";
+import { slashCommands } from "../collectCommands.ts";
+import type { BotEvent, SlashCommand } from "../customTypes.ts";
+
+const slashCommandsRecord: Record<string, SlashCommand> = {};
+for (const slashCommand of slashCommands) {
+  slashCommandsRecord[slashCommand.data.name] = slashCommand;
+}
 
 export const slashCommandEvent: BotEvent = {
   type: Events.InteractionCreate,
   execute: async (interaction: Interaction) => {
     if (!interaction.isChatInputCommand()) return;
 
-    const command: SlashCommand | undefined = interaction.client.commands.get(
-      interaction.commandName,
-    );
+    const command: SlashCommand | undefined =
+      slashCommandsRecord[interaction.commandName];
 
     if (!command) {
       console.error(
@@ -18,7 +23,8 @@ export const slashCommandEvent: BotEvent = {
     }
 
     try {
-      command.execute(interaction);
+      const returnMessage = await command.execute(interaction);
+      console.log(`\x1b[36m > \x1b[0m ${returnMessage}`);
     } catch (error) {
       console.error(error);
       if (interaction.replied || interaction.deferred) {

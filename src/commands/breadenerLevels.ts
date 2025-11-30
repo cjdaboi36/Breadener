@@ -1,5 +1,5 @@
 import breadenerLevels from "$static/breadenerLevels.json" with {
-  type: "json",
+  type: "json"
 };
 import {
   type CacheType,
@@ -13,9 +13,9 @@ import type { SlashCommand } from "../customTypes.ts";
 import { db } from "../db.ts";
 import { guildChecker } from "../utils.ts";
 
-export const slashGetBreadenerLevelSelf: SlashCommand = {
+export const slashGetBreadenerLevel: SlashCommand = {
   data: new SlashCommandBuilder()
-    .setName("get-breadener-level-self")
+    .setName("get-breadener-level")
     .setDescription("See the breadener level of someone")
     .addUserOption((option) =>
       option
@@ -42,16 +42,16 @@ export const slashGetBreadenerLevelSelf: SlashCommand = {
       return;
     }
 
-    const thing: { "COUNT(*)": number } = db
-      .prepare("SELECT COUNT(*) FROM infections WHERE infectorId = ?")
-      .get(user.id) ?? { "COUNT(*)": 0 };
-    const breadCount = thing["COUNT(*)"];
-    const index: number = Math.floor(Math.min(breadCount, 48) / 12);
-    const levelProgress: number = breadCount % 12;
-    const progressBar: string = "█".repeat(levelProgress)
+    const breadCount = db
+      .sql`SELECT COUNT(*) FROM infections WHERE infectorId = ${user.id}`[0][
+        "COUNT(*)"
+      ] as number ?? 0;
+    const index = Math.floor(Math.min(breadCount, 48) / 12);
+    const levelProgress = breadCount % 12;
+    const progressBar = "█".repeat(levelProgress)
       + "░".repeat(12 - levelProgress);
 
-    let progressText: string =
+    let progressText =
       `📊 Progress: ${breadCount}/${breadenerLevels[index].threshold} until ${
         breadenerLevels[index].nextLevel
       }\n`
@@ -62,6 +62,11 @@ export const slashGetBreadenerLevelSelf: SlashCommand = {
         + `📈 ${"█".repeat(12)} 100%\n`;
     }
 
+    console.log(
+      `"${user.username}" level checked - ${
+        breadenerLevels[index].level
+      } (${breadCount} breaded). Requested by "${interaction.user.username}"`,
+    );
     await interaction
       .reply({
         content:
@@ -73,14 +78,7 @@ export const slashGetBreadenerLevelSelf: SlashCommand = {
         flags: [MessageFlags.SuppressNotifications], // makes the message silent
         withResponse: true,
       })
-      .then((_response) =>
-        console.log(
-          `"${user.username}" level checked - ${
-            breadenerLevels[index].level
-          } (${breadCount} breaded). Requested by "${interaction.user.username}"`,
-        )
-      )
-      .catch(console.error);
+      .catch((err) => console.error(err));
   },
 };
 
@@ -91,9 +89,9 @@ export const slashGetBreadenerLevels: SlashCommand = {
       "Show all available breadener levels and their requirements",
     ),
   execute: async (interaction: ChatInputCommandInteraction<CacheType>) => {
-    let message: string = "🍞 **Breadener Levels** 🍞\n\n";
+    let message = "🍞 **Breadener Levels** 🍞\n\n";
 
-    for (let i: number = 0; i < breadenerLevels.length; i++) {
+    for (let i = 0; i < breadenerLevels.length; i++) {
       const breadLevel = breadenerLevels[i];
 
       if (breadLevel.threshold) {
@@ -109,15 +107,14 @@ export const slashGetBreadenerLevels: SlashCommand = {
     message +=
       "\n🎯 Use `/get-breadener-level <username>` to check someone's level!";
 
-    const logMessage: string =
-      `Breadener levels info requested by "${interaction.user.username}"`;
-
+    console.log(
+      `Breadener levels info requested by "${interaction.user.username}"`,
+    );
     await interaction
       .reply({
         content: message,
         withResponse: true,
       })
-      .then((_response) => console.log(logMessage))
-      .catch(console.error);
+      .catch((err) => console.error(err));
   },
 };

@@ -1,54 +1,47 @@
 import type {
   AutocompleteInteraction,
   ChatInputCommandInteraction,
-  Collection,
   Events,
   Message,
   SlashCommandBuilder,
   SlashCommandOptionsOnlyBuilder,
 } from "discord.js";
 
-declare module "discord.js" {
-  // Adds the type for the client.command object
-  export interface Client {
-    commands: Collection<string, SlashCommand>;
-  }
-}
-
 export type SlashCommand = {
-  // This is a slash command. every .ts file in src/commands should export default this
-  data: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder; // there are multiple kinds of slashcommand builders
-  execute: (interaction: ChatInputCommandInteraction) => void; // the function that runs when the slashcommand is being executed
-  autocomplete?: (interaction: AutocompleteInteraction) => void; // optional autocomplete function
+  data: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder;
+  execute: (interaction: ChatInputCommandInteraction) => Promise<string>;
+  autocomplete?: (interaction: AutocompleteInteraction) => void;
 };
 
-export const SlashCommandGuard = (object: object) =>
+export const slashCommandGuard = (object: object) =>
   "data" in object && "execute" in object;
 
 export type NonSlashCommand = {
   name: string;
+  command: string | RegExp;
+  description: string;
+  showInHelp: boolean;
   match: (message: Message) => boolean;
-  execute: (message: Message) => maybePromiseVoid;
+  execute: (message: Message) => Promise<string | void>;
 };
 
-export const NonSlashCommandGuard = (object: object) =>
-  "name" in object && "match" in object && "execute" in object;
+export const nonSlashCommandGuard = (object: object) =>
+  "match" in object && "execute" in object;
 
 export type BotEvent = {
   type: Events;
   once?: boolean;
   // deno-lint-ignore no-explicit-any
   execute: (...args: any[]) => void;
-  // These types and parameters differ wildly, I also don't want to use any but I have no choice
 };
 
-export const BotEventGuard = (object: object) =>
+export const botEventGuard = (object: object) =>
   "type" in object && "execute" in object;
 
-export type maybePromiseVoid = void | Promise<void>;
+export type MaybePromiseVoid = void | Promise<void>;
 
 export type breadRecipe = {
-  breadName: string;
+  breadName?: string;
   ingredients: string[][];
   expectedTime: number;
   instructions: string[];

@@ -1,9 +1,8 @@
-import type { BotEvent } from "../customTypes.ts";
-import { db } from "../db.ts";
-import { isInChannel, isModerator, parseDBQuery } from "../utils.ts";
 import { Events, type Message, TextChannel } from "discord.js";
 import { nonSlashCommands } from "../collectCommands.ts";
+import type { BotEvent } from "../customTypes.ts";
 
+/*
 async function _runDBQuery(message: Message): Promise<boolean> {
   const isAuthorMod = isModerator(message);
   const isProperChannel: boolean = isInChannel(message, "1383807467875733704")
@@ -60,6 +59,7 @@ async function _runDBQuery(message: Message): Promise<boolean> {
 
   return false;
 }
+*/
 
 export const nonSlashCommandEvent: BotEvent = {
   type: Events.MessageCreate,

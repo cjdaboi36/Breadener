@@ -1,5 +1,5 @@
 import breadenerLevels from "$static/breadenerLevels.json" with {
-  type: "json",
+  type: "json"
 };
 import {
   type CacheType,

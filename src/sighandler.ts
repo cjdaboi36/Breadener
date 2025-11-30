@@ -1,24 +1,24 @@
-import type { maybePromiseVoid } from "./customTypes.ts";
+import type { MaybePromiseVoid } from "./customTypes.ts";
 
-// jsw: code snippet from my own bot that allows you to register handlers that will be ran when the program is stopped.
+let handlers: (() => MaybePromiseVoid)[] = [];
 
-let handlers: (() => maybePromiseVoid)[] = [];
-
-export const addSigListener = (fun: () => maybePromiseVoid) => {
+export const addSigListener = (fun: () => MaybePromiseVoid): void => {
   handlers.push(fun);
 };
-export const removeSigListener = (fun: () => maybePromiseVoid) => {
+
+export const removeSigListener = (fun: () => MaybePromiseVoid): void => {
   handlers = handlers.filter((v) => v === fun);
 };
 
 const sigHandler = async () => {
   console.log("Shutting down...");
-  for (const i of handlers) {
-    await i();
-  }
+  for (const handler of handlers) await handler();
+
   Deno.exit();
 };
+
 if (Deno.build.os !== "windows") {
   Deno.addSignalListener("SIGTERM", sigHandler);
 }
+// Windows momentje
 Deno.addSignalListener("SIGINT", sigHandler);

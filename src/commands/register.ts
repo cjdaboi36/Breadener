@@ -31,12 +31,10 @@ export const slashRegisterInfector: SlashCommand = {
       return `${interaction.user.username} used /register, but wasn't in the server`;
     }
 
-    // Get infector as GuildMember
     const infector = await interaction.guild?.members.fetch(
       interaction.options.getUser("infector", true).id,
     );
 
-    // check whether infector is in the server:
     if (!infector) {
       await interaction
         .reply({
@@ -47,11 +45,10 @@ export const slashRegisterInfector: SlashCommand = {
       return `${interaction.user.username} used /register, but the infector wasn't in the server`;
     }
 
-    // Checks whether infector is the same is infected
     if (infector.id === interaction.user.id) {
       await interaction
         .reply({
-          content: "You can't register yourself as your own infector buddy!", // sounds like the other sentences so i'll go with it.
+          content: "You can't register yourself as your own infector buddy!",
           withResponse: true,
         })
         .catch((err) => console.error(err));
@@ -68,7 +65,7 @@ export const slashRegisterInfector: SlashCommand = {
       await interaction
         .reply({
           content: "You can't register an infector twice buddy!",
-          flags: MessageFlags.SuppressNotifications, // makes the message silent
+          flags: MessageFlags.SuppressNotifications,
           withResponse: true,
         })
         .catch(console.error);

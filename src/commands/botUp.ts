@@ -3,7 +3,7 @@ import type { NonSlashCommand } from "../customTypes.ts";
 export const botUp: NonSlashCommand = {
   name: "Is the bot up?",
   description: "check whether the bot is up",
-  command: /is (the bot|<@1383534555960442880>) up\??/i,
+  command: /^is (the bot|<@1383534555960442880>) up\??$/i,
   showInHelp: true,
   match: (message) => message.content.match(botUp.command) !== null,
   execute: async (message) => {

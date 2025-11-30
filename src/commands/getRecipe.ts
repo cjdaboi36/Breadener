@@ -58,15 +58,13 @@ export const slashGetRecipe: SlashCommand = {
       .catch((err) => console.error(err));
     return `${interaction.user.username} used /get-recipe [${breadName}]`;
   },
-
   autocomplete: async (interaction) => {
     const focusedValue = interaction.options.getFocused();
-    // Object.keys gets the keys of the jśon. added tolowercase to remove case sensitivity
     const filtered = Object.keys(breadRecipies).filter((choice) =>
       choice.toLowerCase().startsWith(focusedValue.toLowerCase())
     );
     await interaction.respond(
-      filtered.map((choice) => ({ name: choice, value: choice })).slice(0, 24), // maximum of 24 items for autocomplete or smt
+      filtered.map((choice) => ({ name: choice, value: choice })).slice(0, 24),
     );
   },
 };

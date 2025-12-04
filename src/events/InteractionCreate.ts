@@ -10,10 +10,9 @@ for (const slashCommand of slashCommands) {
 export const slashCommandEvent: BotEvent<Events.InteractionCreate> = {
   type: Events.InteractionCreate,
   execute: async (interaction: Interaction) => {
-    if (
-      !(interaction.isChatInputCommand()
-        || interaction.isAutocomplete())
-    ) return;
+    if (!(interaction.isChatInputCommand() || interaction.isAutocomplete())) {
+      return;
+    }
 
     const slashCommand: SlashCommand | undefined =
       slashCommandsRecord[interaction.commandName];
@@ -39,19 +38,19 @@ export const slashCommandEvent: BotEvent<Events.InteractionCreate> = {
       return;
     }
 
-    if (interaction.isAutocomplete()) {
-      if (!slashCommand.autocomplete) {
-        console.error(
-          `This command ('${slashCommand.data.name}) hasn't implemented autocomplete!`,
-        );
-        return;
-      }
+    if (!interaction.isAutocomplete()) return;
 
-      try {
-        slashCommand.autocomplete(interaction);
-      } catch (error) {
-        console.error(error);
-      }
+    if (!slashCommand.autocomplete) {
+      console.error(
+        `This command ('${slashCommand.data.name}) hasn't implemented autocomplete!`,
+      );
+      return;
+    }
+
+    try {
+      slashCommand.autocomplete(interaction);
+    } catch (error) {
+      console.error(error);
     }
   },
 };

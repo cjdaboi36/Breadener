@@ -34,13 +34,16 @@ for (const commandFile of commandFiles) {
   }
 }
 
-let helpMessage = "";
-for (const nonSlashCommand of nonSlashCommands) {
-  if (nonSlashCommand.showInHelp) {
-    helpMessage +=
-      `**${nonSlashCommand.name}** (\`\`${nonSlashCommand.command.toString()}\`\`): ${nonSlashCommand.description}\n`;
+const helpMessage = () => {
+  let returnMessage = "";
+  for (const nonSlashCommand of nonSlashCommands) {
+    if (nonSlashCommand.showInHelp) {
+      returnMessage +=
+        `**${nonSlashCommand.name}** (\`\`${nonSlashCommand.command.toString()}\`\`): ${nonSlashCommand.description}\n`;
+    }
   }
-}
+  return returnMessage;
+};
 
 nonSlashCommands.push({
   name: "help",
@@ -49,7 +52,7 @@ nonSlashCommands.push({
   showInHelp: true,
   match: (message: Message) => message.content === ".help",
   execute: async (message: Message) => {
-    await message.reply(helpMessage);
+    await message.reply(helpMessage());
     return `${message.author.username} used .help`;
   },
 });
@@ -59,8 +62,8 @@ slashCommands.push({
     .setName("help")
     .setDescription("helps!"),
   execute: async (interaction) => {
-    await interaction.reply({ content: helpMessage, withResponse: true });
-    return `${interaction.user.username} used .help`;
+    await interaction.reply({ content: helpMessage(), withResponse: true });
+    return `${interaction.user.username} used /help`;
   },
 });
 

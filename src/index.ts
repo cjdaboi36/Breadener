@@ -62,4 +62,4 @@ for (const eventFile of eventFiles) {
 }
 
 client.login(env.TOKEN);
-coolBanner();
+console.log(coolBanner);

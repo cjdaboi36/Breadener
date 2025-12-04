@@ -45,8 +45,9 @@ export const slashGetBreadenerLevel: SlashCommand = {
       + `📈 ${progressBar} ${Math.floor((levelProgress / 12) * 100)}%\n`;
 
     if (!("nextLevel" in breadenerLevels[index])) {
-      progressText = `📊 You are at the maximum level!\n`
-        + `📈 ${"█".repeat(12)} 100%\n`;
+      progressText = `📊 You are at the maximum level!\n📈 ${
+        "█".repeat(12)
+      } 100%\n`;
     }
 
     await interaction

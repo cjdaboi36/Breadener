@@ -51,14 +51,13 @@ for (const eventFile of eventFiles) {
       continue;
     }
 
-    const event = entry as BotEvent;
+    const event = entry as BotEvent<typeof entry.type>;
 
     if (event.once) {
       client.once(event.type as string, (...args) => event.execute(...args));
-      continue;
+    } else {
+      client.on(event.type as string, (...args) => event.execute(...args));
     }
-
-    client.on(event.type as string, (...args) => event.execute(...args));
   }
 }
 

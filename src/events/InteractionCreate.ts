@@ -7,12 +7,12 @@ for (const slashCommand of slashCommands) {
   slashCommandsRecord[slashCommand.data.name] = slashCommand;
 }
 
-export const slashCommandEvent: BotEvent = {
+export const slashCommandEvent: BotEvent<Events.InteractionCreate> = {
   type: Events.InteractionCreate,
   execute: async (interaction: Interaction) => {
     if (
-      !interaction.isChatInputCommand()
-      && !interaction.isAutocomplete()
+      !(interaction.isChatInputCommand()
+        || interaction.isAutocomplete())
     ) return;
 
     const slashCommand: SlashCommand | undefined =

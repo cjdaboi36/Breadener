@@ -22,10 +22,9 @@ export const slashGetRecipe: SlashCommand = {
       "bread-type",
       true,
     );
-    const { breadName, ingredients, expectedTime, instructions, recipeLink }:
-      BreadRecipe = parseRecipe(requestedBreadType);
+    const recipe = parseRecipe(requestedBreadType);
 
-    if (!breadName) {
+    if (!recipe) {
       await interaction
         .reply({
           content:
@@ -35,6 +34,9 @@ export const slashGetRecipe: SlashCommand = {
         .catch((err) => console.error(err));
       return `${interaction.user.username} used /get-recipe [${requestedBreadType}], but no recipe was found`;
     }
+
+    const { breadName, ingredients, expectedTime, instructions, recipeLink }:
+      BreadRecipe = recipe;
 
     let message = `# Recipe for ${breadName}! \nIngredients:\n`;
 

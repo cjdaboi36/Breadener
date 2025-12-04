@@ -1,4 +1,4 @@
-import type { BreadRecipe } from "$src/customTypes.ts";
+import type { BreadRecipe } from "./customTypes.ts";
 import recipeData from "$static/breadRecipies.json" with { type: "json" };
 import {
   type ChatInputCommandInteraction,
@@ -29,36 +29,25 @@ export const validGuildGuard = (
 export const randomNumber = (min: number, max: number) =>
   Math.floor(Math.random() * max - min + 1) + min;
 
-export const capitalize = (input: string) =>
-  input.charAt(0).toUpperCase() + input.slice(1);
-
 export function getRandomEmoji(): string {
-  const smileys: string[] = [":)", ":D", ":3", ":P"];
+  const smileys = [":)", ":D", ":3", ":P"] as const;
   return smileys[randomNumber(0, smileys.length - 1)];
 }
 
-export function parseRecipe(breadType: string): BreadRecipe {
-  for (const focusedData of Object.entries(recipeData)) {
-    if (focusedData[0] === breadType) {
-      return {
-        breadName: breadType,
-        ingredients: focusedData[1].ingredients,
-        expectedTime: focusedData[1].expectedTime,
-        instructions: focusedData[1].instructions,
-        recipeLink: focusedData[1].recipeLink,
-      };
+export function parseRecipe(breadType: string): BreadRecipe | undefined {
+  const recipe = Object.entries(recipeData).find(([name, _]) =>
+    name === breadType
+  ) as [string, BreadRecipe] | undefined;
+
+  return recipe
+    ? {
+      breadName: breadType,
+      ingredients: recipe[1].ingredients,
+      expectedTime: recipe[1].expectedTime,
+      instructions: recipe[1].instructions,
+      recipeLink: recipe[1].recipeLink,
     }
-  }
-
-  // Bitch im 21 but still walk around with fake id
-
-  return {
-    breadName: undefined,
-    ingredients: [["", ""]],
-    expectedTime: 0,
-    instructions: [""],
-    recipeLink: "",
-  };
+    : undefined;
 }
 
 export function isModerator(message: Message): boolean {

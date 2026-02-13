@@ -1,5 +1,5 @@
 import breadenerLevels from "$static/breadenerLevels.json" with {
-  type: "json",
+  type: "json"
 };
 import { MessageFlags, SlashCommandBuilder } from "discord.js";
 import type { SlashCommand } from "../customTypes.ts";

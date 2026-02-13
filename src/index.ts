@@ -6,8 +6,8 @@ import {
   Routes,
 } from "discord.js";
 import { slashCommands } from "./collectCommands.ts";
-import { env } from "./env.ts";
 import { type BotEvent, botEventGuard } from "./customTypes.ts";
+import { env } from "./env.ts";
 import { coolBanner } from "./utils.ts";
 
 const client = new Client({

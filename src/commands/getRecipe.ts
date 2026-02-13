@@ -1,5 +1,5 @@
 import breadRecipies from "$static/breadRecipies.json" with {
-  type: "json",
+  type: "json"
 };
 import { SlashCommandBuilder } from "discord.js";
 import type { BreadRecipe, SlashCommand } from "../customTypes.ts";
@@ -46,7 +46,7 @@ export const slashGetRecipe: SlashCommand = {
 
     message += `Expected time spent: ${expectedTime}\n## Instructions\n`;
 
-    for (let i = 0; i <= instructions.length - 1; i++) {
+    for (let i = 0; i < instructions.length; i++) {
       message += `${i + 1}. ${instructions[i]}\n`;
     }
 

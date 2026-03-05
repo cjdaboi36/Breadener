@@ -1,11 +1,11 @@
 import breadRecipies from "$static/breadRecipies.json" with {
-  type: "json"
+  type: "json",
 };
 import { SlashCommandBuilder } from "discord.js";
-import type { BreadRecipe, SlashCommand } from "../customTypes.ts";
+import { type BreadRecipe, SlashCommand } from "../types.ts";
 import { parseRecipe } from "../utils.ts";
 
-export const slashGetRecipe: SlashCommand = {
+export const slashGetRecipe = new SlashCommand({
   data: new SlashCommandBuilder()
     .setName("get-recipes")
     .setDescription("Get recipes for the most delicious pieces of bread!")
@@ -69,4 +69,4 @@ export const slashGetRecipe: SlashCommand = {
       filtered.map((choice) => ({ name: choice, value: choice })).slice(0, 24),
     );
   },
-};
+});

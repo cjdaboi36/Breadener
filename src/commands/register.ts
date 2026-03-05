@@ -6,11 +6,11 @@ import {
   MessageFlags,
   SlashCommandBuilder,
 } from "discord.js";
-import type { SlashCommand } from "../customTypes.ts";
 import { db } from "../db.ts";
+import { SlashCommand } from "../types.ts";
 import { validGuildGuard } from "../utils.ts";
 
-export const slashRegisterInfector: SlashCommand = {
+export const slashRegisterInfector = new SlashCommand({
   data: new SlashCommandBuilder()
     .setName("register")
     .setDescription("Register your infector!")
@@ -48,17 +48,18 @@ export const slashRegisterInfector: SlashCommand = {
     if (infector.id === interaction.user.id) {
       await interaction
         .reply({
-          content: "You can't register yourself as your own infector buddy!",
+          content: "You can't register yourself as yours infector buddy!",
           withResponse: true,
         })
         .catch((err) => console.error(err));
       return `${interaction.user.username} used /register, but tried to register themselves`;
     }
 
-    const registerCount: number = db
-      .sql`SELECT COUNT(*) FROM infections WHERE infectedId = ${interaction.user.id}`[
+    const registerCount = (
+      db.sql`SELECT COUNT(*) FROM infections WHERE infectedId = ${interaction.user.id}`[
         0
-      ]["COUNT(*)"] ?? 0;
+      ]["COUNT(*)"] ?? 0
+    ) as number;
 
     // Check whether infected already has an entry
     if (registerCount !== 0) {
@@ -68,16 +69,17 @@ export const slashRegisterInfector: SlashCommand = {
           flags: MessageFlags.SuppressNotifications,
           withResponse: true,
         })
-        .catch(console.error);
-      return `${interaction.user.username} user /register [${infector.user.username}], but already has an entry`;
+        .catch((err) => console.error(err));
+      return `${interaction.user.username} used /register [${infector.user.username}], but already has an entry`;
     }
 
     db.sql`INSERT INTO infections (infectorId, infectedId) VALUES (${infector.id}, ${interaction.user.id})`;
 
-    const breadCount: number = db
-      .sql`SELECT COUNT(*) FROM infections WHERE infectorId = ${infector.id}`[
+    const breadCount = (
+      db.sql`SELECT COUNT(*) FROM infections WHERE infectorId = ${infector.id}`[
         0
-      ]["COUNT(*)"] ?? 0;
+      ]["COUNT(*)"] ?? 0
+    ) as number;
 
     const index = Math.floor(Math.min(breadCount, 48) / 12);
 
@@ -117,9 +119,9 @@ export const slashRegisterInfector: SlashCommand = {
       .catch((err) => console.error(err));
     return `${interaction.user.username} used /register [${infector.user.username}]`;
   },
-};
+});
 
-export const slashRegisterInfected: SlashCommand = {
+export const slashRegisterInfected = new SlashCommand({
   data: new SlashCommandBuilder()
     .setName("register-non-joiner")
     .setDescription("Register someone you infected but didn't join!")
@@ -157,10 +159,7 @@ export const slashRegisterInfected: SlashCommand = {
       return `${interaction.user.username} used /register-non-joiner, but something went wrong while checking their perms`;
     }
 
-    const roleIDs: string[] = [];
-    rawRoleData.cache.each(
-      (role) => roleIDs.push(role.id),
-    );
+    const roleIDs = rawRoleData.cache.map((role) => role.id);
 
     // Checks whether command is being ran by a mod
     if (
@@ -202,10 +201,11 @@ export const slashRegisterInfected: SlashCommand = {
     }
 
     // Checks whether infected person already has an entry
-    const infectedEntry: number = db
-      .sql`SELECT COUNT(*) FROM infections WHERE infectedId = ${infectedId}`[0][
-        "COUNT(*)"
-      ] ?? 0;
+    const infectedEntry = (
+      db.sql`SELECT COUNT(*) FROM infections WHERE infectedId = ${infectedId}`[
+        0
+      ]["COUNT(*)"] ?? 0
+    ) as number;
 
     if (infectedEntry !== 0) {
       await interaction
@@ -219,10 +219,11 @@ export const slashRegisterInfected: SlashCommand = {
 
     db.sql`INSERT INTO infections (infectorId, infectedId) VALUES (${infector.user.id}, ${infectedId})`;
 
-    const breadCount: number = db
-      .sql`SELECT COUNT(*) FROM infections WHERE infectorId = ${infector.user.id}`[
+    const breadCount = (
+      db.sql`SELECT COUNT(*) FROM infections WHERE infectorId = ${infector.user.id}`[
         0
-      ]["COUNT(*)"] ?? 0;
+      ]["COUNT(*)"] ?? 0
+    ) as number;
     const index = Math.floor(Math.min(breadCount, 48) / 12);
 
     const newRoleId = breadenerLevels[index].id;
@@ -230,6 +231,7 @@ export const slashRegisterInfected: SlashCommand = {
       newRoleId,
       `New breadener level role: ${breadenerLevels[index].level}`,
     );
+
     console.log(`New breadener level role: ${breadenerLevels[index].level}`);
 
     for (let i = 0; i <= 4; i++) {
@@ -248,9 +250,9 @@ export const slashRegisterInfected: SlashCommand = {
       .catch((err) => console.error(err));
     return `${interaction.user.username} used /register-non-joiner [${infector.user.username}] [${infectedId}]`;
   },
-};
+});
 
-export const slashDeregister: SlashCommand = {
+export const slashDeregister = new SlashCommand({
   data: new SlashCommandBuilder()
     .setName("deregister")
     .setDescription(
@@ -267,10 +269,11 @@ export const slashDeregister: SlashCommand = {
       return `${interaction.user.username} used /register-non-joiner, but in somewhere invalid`;
     }
 
-    const breadCount: number = db
-      .sql`SELECT COUNT(*) FROM infections WHERE infectedId = ${interaction.user.id}`[
+    const breadCount = (
+      db.sql`SELECT COUNT(*) FROM infections WHERE infectedId = ${interaction.user.id}`[
         0
-      ]["COUNT(*)"] ?? 0;
+      ]["COUNT(*)"] ?? 0
+    ) as number;
 
     if (breadCount === 0) {
       await interaction
@@ -295,4 +298,4 @@ export const slashDeregister: SlashCommand = {
       .catch((err) => console.error(err));
     return `${interaction.user.username} used /register-non-joiner`;
   },
-};
+});

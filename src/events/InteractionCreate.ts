@@ -1,21 +1,23 @@
 import { Events, type Interaction, MessageFlags } from "discord.js";
 import { slashCommands } from "../collectCommands.ts";
-import type { BotEvent, SlashCommand } from "../customTypes.ts";
+import { BotEvent, type SlashCommand } from "../types.ts";
 
 const slashCommandsRecord: Record<string, SlashCommand> = {};
 for (const slashCommand of slashCommands) {
   slashCommandsRecord[slashCommand.data.name] = slashCommand;
 }
 
-export const slashCommandEvent: BotEvent<Events.InteractionCreate> = {
+export const slashCommandEvent = new BotEvent<Events.InteractionCreate>({
   type: Events.InteractionCreate,
+  once: false,
   execute: async (interaction: Interaction) => {
     if (!(interaction.isChatInputCommand() || interaction.isAutocomplete())) {
       return;
     }
 
-    const slashCommand: SlashCommand | undefined =
-      slashCommandsRecord[interaction.commandName];
+    const slashCommand = slashCommandsRecord[interaction.commandName] as
+      | SlashCommand
+      | undefined;
 
     if (!slashCommand) {
       console.error(
@@ -53,4 +55,4 @@ export const slashCommandEvent: BotEvent<Events.InteractionCreate> = {
       console.error(error);
     }
   },
-};
+});

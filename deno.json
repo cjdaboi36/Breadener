@@ -1,10 +1,11 @@
 {
   "tasks": {
-    "dev": "deno run -A src/index.ts",
-    "dev-db": "rm daataabaasaa.db; deno run -A src/db.ts; deno run dev",
-    "dev-watch": "deno run -A --watch src/index.ts",
-    "dev-db-watch": "rm daataabaasaa.db; deno run -A src/db.ts; deno run dev-watch",
-    "prod": "deno run -A src/index.ts"
+    "copy-dev": "cp ../Breadener-token/dev.env .env",
+    "copy-prod": "cp ../Breadener-token/prod.env .env",
+    "prod": "deno run -A src/index.ts",
+    "prod-db": "rm daataabaasaa.db; deno run -A src/db.ts; deno run dev",
+    "dev": "deno run -A --watch src/index.ts",
+    "dev-db": "rm daataabaasaa.db; deno run -A src/db.ts; deno run dev-watch"
   },
   "imports": {
     "$src/": "./src/",

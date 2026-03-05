@@ -4,6 +4,7 @@ import { addSigListener } from "./sighandler.ts";
 
 const basePath = new URL("../", import.meta.url);
 export const db = new Database(
+  // To do: use join() from @std/fs
   new URL(basePath + env.DATABASE_PATH),
 );
 
@@ -16,7 +17,7 @@ addSigListener(closeListener);
 
 db.sql`
   CREATE TABLE IF NOT EXISTS infections (
-  infectedId TEXT PRIMARY KEY,
-  infectorId TEXT KEY
+    infectedId TEXT PRIMARY KEY,
+    infectorId TEXT KEY
   )
 `;

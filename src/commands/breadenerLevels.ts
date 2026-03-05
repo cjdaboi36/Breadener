@@ -1,12 +1,12 @@
 import breadenerLevels from "$static/breadenerLevels.json" with {
-  type: "json"
+  type: "json",
 };
 import { MessageFlags, SlashCommandBuilder } from "discord.js";
-import type { SlashCommand } from "../customTypes.ts";
+import { SlashCommand } from "../types.ts";
 import { db } from "../db.ts";
 import { validGuildGuard } from "../utils.ts";
 
-export const slashGetBreadenerLevel: SlashCommand = {
+export const slashGetBreadenerLevel = new SlashCommand({
   data: new SlashCommandBuilder()
     .setName("get-breadener-level")
     .setDescription("See the breadener level of someone")
@@ -64,9 +64,9 @@ export const slashGetBreadenerLevel: SlashCommand = {
       .catch((err) => console.error(err));
     return `${interaction.user.username} used /get-breadener-level`;
   },
-};
+});
 
-export const slashGetBreadenerLevels: SlashCommand = {
+export const slashGetBreadenerLevels = new SlashCommand({
   data: new SlashCommandBuilder()
     .setName("breadener-levels")
     .setDescription(
@@ -99,4 +99,4 @@ export const slashGetBreadenerLevels: SlashCommand = {
       .catch((err) => console.error(err));
     return `${interaction.user.username} used /breadener-levels`;
   },
-};
+});

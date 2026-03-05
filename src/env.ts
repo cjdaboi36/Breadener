@@ -8,9 +8,7 @@ const requiredKeys = [
   "GITHUB_TOKEN",
 ] as const;
 
-const env = await load({
-  export: true,
-});
+const env = await load();
 
 for (const key of requiredKeys) {
   if (!env[key]) throw new Error(`\x1b[34mMissing .env variable ${key}\x1b[0m`);

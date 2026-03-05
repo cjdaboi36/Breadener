@@ -1,10 +1,5 @@
 import { type Message, SlashCommandBuilder } from "discord.js";
-import {
-  type NonSlashCommand,
-  nonSlashCommandGuard,
-  type SlashCommand,
-  slashCommandGuard,
-} from "./customTypes.ts";
+import { NonSlashCommand, SlashCommand } from "./types.ts";
 
 const slashCommands: SlashCommand[] = [];
 const nonSlashCommands: NonSlashCommand[] = [];
@@ -18,12 +13,12 @@ for (const commandFile of commandFiles) {
   const module = await import(`./commands/${commandFile.name}`) as object;
 
   for (const [name, command] of Object.entries(module)) {
-    if (slashCommandGuard(command)) {
-      slashCommands.push(command as SlashCommand);
+    if (command instanceof SlashCommand) {
+      slashCommands.push(command);
       continue;
     }
 
-    if (nonSlashCommandGuard(command)) {
+    if (command instanceof NonSlashCommand) {
       nonSlashCommands.push(command as NonSlashCommand);
       continue;
     }

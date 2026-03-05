@@ -1,6 +1,6 @@
 import recipeData from "$static/breadRecipies.json" with { type: "json" };
-import { type ChatInputCommandInteraction, Guild } from "discord.js";
-import type { BreadRecipe } from "./customTypes.ts";
+import type { ChatInputCommandInteraction } from "discord.js";
+import type { BreadRecipe } from "./types.ts";
 
 export const coolBanner = "  ____                     _                      \n"
   + " |  _ \\                   | |                     \n"
@@ -12,7 +12,7 @@ export const coolBanner = "  ____                     _                      \n"
 export const validGuildGuard = (
   interaction: ChatInputCommandInteraction,
 ) =>
-  interaction.guild instanceof Guild
+  interaction.guild
   && interaction.guild.id === "1383472184416272507";
 
 export function parseRecipe(breadType: string): BreadRecipe | undefined {

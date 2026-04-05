@@ -8,14 +8,16 @@ const requiredKeys = [
   "GITHUB_TOKEN",
 ] as const;
 
-const env = await load();
+const env = new Map(Object.entries(await load()));
 
 for (const key of requiredKeys) {
-  if (!env[key]) throw new Error(`\x1b[34mMissing .env variable ${key}\x1b[0m`);
+  if (!env.get(key)) {
+    throw new Error(`\x1b[34mMissing .env variable ${key}\x1b[0m`);
+  }
 }
 
 console.log("\x1b[34m.env values:\x1b[0m");
-for (const [key, value] of Object.entries(env)) {
+for (const [key, value] of env.entries()) {
   console.log(
     `\t${key}:\x1b[32m "${
       value.substring(0, 5) + ".".repeat(value.length - 5)
@@ -23,4 +25,4 @@ for (const [key, value] of Object.entries(env)) {
   );
 }
 
-export { env };
+export default env;

@@ -2,7 +2,7 @@ import breadRecipies from "$static/breadRecipies.json" with {
   type: "json",
 };
 import { SlashCommandBuilder } from "discord.js";
-import { type BreadRecipe, SlashCommand } from "../types.ts";
+import { SlashCommand } from "../types.ts";
 import { parseRecipe } from "../utils.ts";
 
 export const slashGetRecipe = new SlashCommand({
@@ -35,8 +35,8 @@ export const slashGetRecipe = new SlashCommand({
       return `${interaction.user.username} used /get-recipe [${requestedBreadType}], but no recipe was found`;
     }
 
-    const { breadName, ingredients, expectedTime, instructions, recipeLink }:
-      BreadRecipe = recipe;
+    const { breadName, ingredients, expectedTime, instructions, recipeLink } =
+      recipe;
 
     let message = `# Recipe for ${breadName}! \nIngredients:\n`;
 

@@ -6,7 +6,7 @@ import {
   Routes,
 } from "discord.js";
 import { slashCommands } from "./collectCommands.ts";
-import { env } from "./env.ts";
+import env from "./env.ts";
 import { BotEvent } from "./types.ts";
 import { coolBanner } from "./utils.ts";
 
@@ -25,12 +25,12 @@ for (const slashCommand of slashCommands) {
 }
 
 // Construct and prepare an instance of the REST module
-const rest = new REST().setToken(env.TOKEN);
+const rest = new REST().setToken(env.get("TOKEN")!);
 
 console.log(`Started refreshing ${commands.length} application (/) commands`);
 
 await rest
-  .put(Routes.applicationCommands(env.CLIENTID), { body: commands })
+  .put(Routes.applicationCommands(env.get("CLIENTID")!), { body: commands })
   .catch((err) => console.error(err));
 
 console.log(`Successfully reloaded application (/) commands.`);
@@ -61,5 +61,5 @@ for (const eventFile of eventFiles) {
   }
 }
 
-client.login(env.TOKEN);
+client.login(env.get("TOKEN"));
 console.log(coolBanner);

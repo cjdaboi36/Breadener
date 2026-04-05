@@ -2,7 +2,7 @@ import recipeData from "$static/breadRecipies.json" with { type: "json" };
 import type { ChatInputCommandInteraction } from "discord.js";
 import type { BreadRecipe } from "./types.ts";
 
-export const coolBanner = "  ____                     _                      \n"
+export const coolBanner = "  ____                     _\n"
   + " |  _ \\                   | |                     \n"
   + " | |_) |_ __ ___  __ _  __| | ___ _ __   ___ _ __\n"
   + " |  _ <| '__/ _ \\\/ _` |/ _` |/ _ \ '_ \\ / _ \\ '__|\n"
@@ -11,13 +11,11 @@ export const coolBanner = "  ____                     _                      \n"
 
 export const validGuildGuard = (
   interaction: ChatInputCommandInteraction,
-) =>
-  interaction.guild
-  && interaction.guild.id === "1383472184416272507";
+) => interaction.guild && interaction.guild.id === "1383472184416272507";
 
 export function parseRecipe(breadType: string): BreadRecipe | undefined {
   const recipe = Object.entries(recipeData)
-    .find(([name, _]) => name === breadType) as
+    .find(([name]) => name === breadType) as
       | [string, BreadRecipe]
       | undefined;
 

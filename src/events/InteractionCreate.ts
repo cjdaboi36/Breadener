@@ -2,9 +2,9 @@ import { Events, type Interaction, MessageFlags } from "discord.js";
 import { slashCommands } from "../collectCommands.ts";
 import { BotEvent, type SlashCommand } from "../types.ts";
 
-const slashCommandsRecord: Record<string, SlashCommand> = {};
+const slashCommandsRecord = new Map<string, SlashCommand>();
 for (const slashCommand of slashCommands) {
-  slashCommandsRecord[slashCommand.data.name] = slashCommand;
+  slashCommandsRecord.set(slashCommand.data.name, slashCommand);
 }
 
 export const slashCommandEvent = new BotEvent<Events.InteractionCreate>({
@@ -15,7 +15,7 @@ export const slashCommandEvent = new BotEvent<Events.InteractionCreate>({
       return;
     }
 
-    const slashCommand = slashCommandsRecord[interaction.commandName] as
+    const slashCommand = slashCommandsRecord.get(interaction.commandName) as
       | SlashCommand
       | undefined;
 

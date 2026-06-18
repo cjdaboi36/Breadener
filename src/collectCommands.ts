@@ -19,7 +19,7 @@ for (const commandFile of commandFiles) {
     }
 
     if (command instanceof NonSlashCommand) {
-      nonSlashCommands.push(command as NonSlashCommand);
+      nonSlashCommands.push(command);
       continue;
     }
 

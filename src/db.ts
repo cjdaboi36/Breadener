@@ -3,10 +3,7 @@ import env from "./env.ts";
 import { addSigListener } from "./sighandler.ts";
 
 const basePath = new URL("../", import.meta.url);
-export const db = new Database(
-  // To do: use join() from @std/fs
-  new URL(basePath + env.get("DATABASE_PATH")!),
-);
+export const db = new Database(new URL(basePath + env.get("DATABASE_PATH")!));
 
 const closeListener = (): void => {
   console.log("Closing DB");

@@ -16,31 +16,37 @@ export const slashGetBreadenerLevel = new SlashCommand({
         .setRequired(true)
     ),
   execute: async (interaction) => {
+    const logMessageBase =
+      `${interaction.user.username} used /get-breadener-level: `;
+
     if (!validGuildGuard(interaction)) {
-      await interaction
-        .reply({
-          content: "You cannot run this command here.",
-          withResponse: true,
-        })
-        .catch((err) => console.error(err));
-      return `${interaction.user.username} used /get-breadener-level, but ran it somewhere invalid`;
+      await interaction.reply({
+        content: "You cannot run this command here.",
+        withResponse: true,
+      }).catch((err) => console.error(err));
+      return logMessageBase + "Location not permitted.";
     }
+
+    // killioiden is now playing Roma Fade by Andrew Bird
 
     const user = interaction.options.getUser("user", true);
 
-    const breadCount = db
-      .sql`SELECT COUNT(*) FROM infections WHERE infectorId = ${user.id}`[0][
-        "COUNT(*)"
-      ] as number ?? 0;
-    const index = Math.floor(Math.min(breadCount, 48) / 12);
-    const levelProgress = breadCount % 12;
+    const db = await Deno.openKv(Deno.env.get("DATABASE_PATH"));
+    const infectionCount = (await db.get<number>([
+      "infectionCount",
+      interaction.id,
+    ])).value ?? 0;
+    db.close();
+
+    const index = Math.floor(Math.min(infectionCount, 48) / 12);
+    const levelProgress = infectionCount % 12;
     const progressBar = "█".repeat(levelProgress)
       + "░".repeat(12 - levelProgress);
 
     let progressText =
-      `📊 Progress: ${breadCount}/${breadenerLevels[index].threshold} until ${
-        breadenerLevels[index].nextLevel
-      }\n`
+      `📊 Progress: ${infectionCount}/${
+        breadenerLevels[index].threshold
+      } until ${breadenerLevels[index].nextLevel}\n`
       + `📈 ${progressBar} ${Math.floor(levelProgress / 12 * 100)}%\n`;
 
     if (!("nextLevel" in breadenerLevels[index])) {
@@ -49,19 +55,17 @@ export const slashGetBreadenerLevel = new SlashCommand({
       } 100%\n`;
     }
 
-    await interaction
-      .reply({
-        content:
-          `**${user}** is a **${breadenerLevels[index].emoji} ${
-            breadenerLevels[index].level
-          }**!\n`
-          + `${progressText}`
-          + `🍞 Total breaded: **${breadCount}** people`,
-        flags: MessageFlags.SuppressNotifications, // makes the message silent
-        withResponse: true,
-      })
-      .catch((err) => console.error(err));
-    return `${interaction.user.username} used /get-breadener-level`;
+    await interaction.reply({
+      content:
+        `**${user}** is a **${breadenerLevels[index].emoji} ${
+          breadenerLevels[index].level
+        }**!\n`
+        + progressText
+        + `🍞 Total breaded: **${infectionCount}** people`,
+      flags: MessageFlags.SuppressNotifications, // makes the message silent
+      withResponse: true,
+    }).catch((err) => console.error(err));
+    return logMessageBase + "Command succesful.";
   },
 });
 
@@ -74,9 +78,7 @@ export const slashGetBreadenerLevels = new SlashCommand({
   execute: async (interaction) => {
     let message = "🍞 **Breadener Levels** 🍞\n\n";
 
-    for (let i = 0; i < breadenerLevels.length; i++) {
-      const breadLevel = breadenerLevels[i];
-
+    for (const breadLevel of breadenerLevels) {
       if (!breadLevel.threshold) {
         message +=
           `${breadLevel.emoji} ${breadLevel.level}: 48+ people Breadened!\n`;
@@ -91,12 +93,10 @@ export const slashGetBreadenerLevels = new SlashCommand({
     message +=
       "\n🎯 Use `/get-breadener-level <username>` to check someone's level!";
 
-    await interaction
-      .reply({
-        content: message,
-        withResponse: true,
-      })
-      .catch((err) => console.error(err));
-    return `${interaction.user.username} used /breadener-levels`;
+    await interaction.reply({
+      content: message,
+      withResponse: true,
+    }).catch((err) => console.error(err));
+    return `${interaction.user.username} used /breadener-levels: Command successful`;
   },
 });

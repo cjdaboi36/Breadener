@@ -21,3 +21,6 @@ export function parseRecipe(breadType: string): BreadRecipe | undefined {
 
   return recipe ? recipe[1] : undefined;
 }
+
+// deno-lint-ignore no-explicit-any
+export const logError = (err: any) => console.error(err);

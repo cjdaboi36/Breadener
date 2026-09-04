@@ -3,7 +3,6 @@ import breadenerLevels from "$static/breadenerLevels.json" with {
 };
 import { MessageFlags, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../types.ts";
-import { db } from "../db.ts";
 import { validGuildGuard } from "../utils.ts";
 
 export const slashGetBreadenerLevel = new SlashCommand({
@@ -42,7 +41,7 @@ export const slashGetBreadenerLevel = new SlashCommand({
       `📊 Progress: ${breadCount}/${breadenerLevels[index].threshold} until ${
         breadenerLevels[index].nextLevel
       }\n`
-      + `📈 ${progressBar} ${Math.floor((levelProgress / 12) * 100)}%\n`;
+      + `📈 ${progressBar} ${Math.floor(levelProgress / 12 * 100)}%\n`;
 
     if (!("nextLevel" in breadenerLevels[index])) {
       progressText = `📊 You are at the maximum level!\n📈 ${
@@ -83,6 +82,7 @@ export const slashGetBreadenerLevels = new SlashCommand({
           `${breadLevel.emoji} ${breadLevel.level}: 48+ people Breadened!\n`;
         continue;
       }
+
       message += `${breadLevel.emoji} ${breadLevel.level}: ${
         breadLevel.threshold - 12
       } - ${breadLevel.threshold} people Breadened!\n`;

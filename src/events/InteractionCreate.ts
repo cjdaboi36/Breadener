@@ -11,9 +11,10 @@ export const slashCommandEvent = new BotEvent<Events.InteractionCreate>({
   type: Events.InteractionCreate,
   once: false,
   execute: async (interaction: Interaction) => {
-    if (!(interaction.isChatInputCommand() || interaction.isAutocomplete())) {
-      return;
-    }
+    if (
+      !(interaction.isChatInputCommand()
+        || interaction.isAutocomplete())
+    ) return;
 
     const slashCommand = slashCommandsRecord.get(interaction.commandName) as
       | SlashCommand

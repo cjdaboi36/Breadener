@@ -11,7 +11,7 @@ export const coolBanner = "  ____                     _\n"
 
 export const validGuildGuard = (
   interaction: ChatInputCommandInteraction,
-) => interaction.guild && interaction.guild.id === "1383472184416272507";
+) => interaction.guild && interaction.guild.id === Deno.env.get("GUILDID")!;
 
 export function parseRecipe(breadType: string): BreadRecipe | undefined {
   const recipe = Object.entries(recipeData)

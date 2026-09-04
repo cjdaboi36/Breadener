@@ -1,24 +1,17 @@
 {
-  inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    systems.url = "github:nix-systems/default";
-  };
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs";
 
-  outputs = {
-    systems,
-    nixpkgs,
-    ...
-  }: let
-    eachSystem = nixpkgs.lib.genAttrs (import systems);
-  in {
-    devShells = eachSystem (system: let
+  outputs =
+    { nixpkgs, ... }:
+    let
+      system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
-    in {
-      default = pkgs.mkShell {
-        packages = [
-          pkgs.deno
+    in
+    {
+      devShells.x86_64-linux.default = pkgs.mkShell {
+        nativeBuildInputs = with pkgs; [
+          deno
         ];
       };
-    });
-  };
+    };
 }

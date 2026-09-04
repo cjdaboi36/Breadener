@@ -1,3 +1,4 @@
+import { load } from "@std/dotenv";
 import {
   Client,
   GatewayIntentBits,
@@ -6,9 +7,25 @@ import {
   Routes,
 } from "discord.js";
 import { slashCommands } from "./collectCommands.ts";
-import env from "./env.ts";
 import { BotEvent } from "./types.ts";
 import { coolBanner } from "./utils.ts";
+
+const requiredKeys = [
+  "DATABASE_PATH",
+  "CLIENTID",
+  "GUILDID",
+  "TOKEN",
+  "GITHUB_TOKEN",
+] as const;
+
+const env = await load();
+
+for (const key of requiredKeys) {
+  if (!env[key]) throw new Error(`\x1b[34mMissing .env variable ${key}\x1b[0m`);
+}
+
+// Ensures the database exists
+(await Deno.openKv(Deno.env.get("DATABASE_PATH")!)).close();
 
 const client = new Client({
   intents: [
@@ -25,12 +42,14 @@ for (const slashCommand of slashCommands) {
 }
 
 // Construct and prepare an instance of the REST module
-const rest = new REST().setToken(env.get("TOKEN")!);
+const rest = new REST().setToken(Deno.env.get("TOKEN")!);
 
 console.log(`Started refreshing ${commands.length} application (/) commands`);
 
 await rest
-  .put(Routes.applicationCommands(env.get("CLIENTID")!), { body: commands })
+  .put(Routes.applicationCommands(Deno.env.get("CLIENTID")!), {
+    body: commands,
+  })
   .catch((err) => console.error(err));
 
 console.log(`Successfully reloaded application (/) commands.`);
@@ -61,5 +80,5 @@ for (const eventFile of eventFiles) {
   }
 }
 
-client.login(env.get("TOKEN"));
+client.login(Deno.env.get("TOKEN"));
 console.log(coolBanner);

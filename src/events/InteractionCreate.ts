@@ -34,10 +34,11 @@ export const slashCommandEvent = new BotEvent<Events.InteractionCreate>({
       } catch (error) {
         console.error(error);
         await interaction.reply({
-          content: "There was an error while executing this command!",
+          content: "There was an unexpected error while executing this command!",
           flags: MessageFlags.Ephemeral,
         });
       }
+
       return;
     }
 
@@ -45,7 +46,7 @@ export const slashCommandEvent = new BotEvent<Events.InteractionCreate>({
 
     if (!slashCommand.autocomplete) {
       console.error(
-        `This command ('${slashCommand.data.name}) hasn't implemented autocomplete!`,
+        `This command ('${slashCommand.data.name}) doesn't implement autocomplete!`,
       );
       return;
     }

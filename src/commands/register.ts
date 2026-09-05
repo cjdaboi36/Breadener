@@ -24,7 +24,7 @@ async function registerInfection(
 ): Promise<DatabaseActionResult> {
   if (infector.user.id === infected.id) {
     return {
-      logMessageExtension: `${infected.username} tried to register themselves`,
+      logMessageExtension: `user tried to register themselves`,
       replyOptions: {
         content: "You can't register yourself as yours infector buddy!",
         withResponse: true,
@@ -32,26 +32,14 @@ async function registerInfection(
     };
   }
 
-  const isRegistered = await db.get<string>([
-    "infections",
-    infected.id,
-  ]);
-
-  if (!isRegistered.versionstamp) {
-    return {
-      logMessageExtension: `Something went wrong while getting infection data.`,
-      replyOptions: {
-        content: "Error: something went wrong getting infection data",
-        flags: MessageFlags.SuppressNotifications,
-        withResponse: true,
-      },
-    };
-  }
+  const isRegistered = await db.get<string>(
+    ["infections", infected.id],
+  );
 
   // Check whether infected already has an entry
   if (isRegistered.value) {
     return {
-      logMessageExtension: `${infected.username} already had an entry.`,
+      logMessageExtension: `user already had an entry.`,
       replyOptions: {
         content: "You can't register an infector twice buddy!",
         flags: MessageFlags.SuppressNotifications,
@@ -77,23 +65,23 @@ async function registerInfection(
   }
 
   const getAllInfections = await db.get<number>([
-    "infectionCount",
+    "infectionCounts",
     infector.id,
   ]);
   const newInfectionsCount = getAllInfections.value ?? 0 + 1;
   const updateInfectionCount = await db.set(
-    ["infectionsCount", infector.id],
+    ["infectionCounts", infector.id],
     newInfectionsCount,
   );
 
   if (!updateInfectionCount.ok) {
     return {
+      logMessageExtension:
+        `Something went wrong while writing infection count data`,
       replyOptions: {
         content: "Something went wrong while updating infection count.",
         withResponse: true,
       },
-      logMessageExtension:
-        `Something went wrong while writing infection count data`,
     };
   }
 
@@ -148,13 +136,13 @@ export const slashRegisterInfector = new SlashCommand({
     ),
   execute: async (interaction) => {
     const logMessageBase =
-      `${interaction.user.username} used /register <${interaction.user.username}>`;
+      `${interaction.user.username} used /register <${interaction.user.username}>: `;
 
     if (!validGuildGuard(interaction)) {
       await interaction.reply({
         content: "You cannot run this command here!",
         withResponse: true,
-      }).catch((err) => console.error(err));
+      }).catch(console.error);
       return logMessageBase + "Location not permitted";
     }
 
@@ -172,7 +160,7 @@ export const slashRegisterInfector = new SlashCommand({
 
     db.close();
 
-    await interaction.reply(replyOptions).catch((err) => console.error(err));
+    await interaction.reply(replyOptions).catch(console.error);
     return logMessageBase + logMessageExtension;
   },
 });
@@ -197,24 +185,20 @@ export const slashRegisterInfected = new SlashCommand({
       `${interaction.user.username} used /register-non-joiner: `;
 
     if (!validGuildGuard(interaction)) {
-      await interaction
-        .reply({
-          content: "You cannot run this command here!",
-          withResponse: true,
-        })
-        .catch((err) => console.error(err));
+      await interaction.reply({
+        content: "You cannot run this command here!",
+        withResponse: true,
+      }).catch((err) => console.error(err));
       return logMessageBase + "Location not permitted.";
     }
 
     // Collects all role IDs
     const rawRoleData = interaction.member?.roles;
     if (!(rawRoleData instanceof GuildMemberRoleManager)) {
-      await interaction
-        .reply({
-          content: "Something went wrong!",
-          withResponse: true,
-        })
-        .catch((err) => console.error(err));
+      await interaction.reply({
+        content: "Something went wrong!",
+        withResponse: true,
+      }).catch(console.error);
       return `${interaction.user.username} used /register-non-joiner, but something went wrong while checking their perms`;
     }
 
@@ -229,17 +213,18 @@ export const slashRegisterInfected = new SlashCommand({
         content:
           "You are not permitted to use this command! Perhaps you meant to run `/register` instead?",
         withResponse: true,
-      }).catch((err) => console.error(err));
+      }).catch(console.error);
       return logMessageBase + "Permission denied.";
     }
 
     const infectedUserId = interaction.options.getString("infected_id", true);
-    const infected = await interaction.client.users.fetch(infectedUserId);
+    const infected = await interaction.client.users.fetch(infectedUserId)
+      .catch(() => null);
 
     if (!infected) {
       await interaction.reply({
         content: `There is no user with user id ${infectedUserId}`,
-      }).catch((err) => console.error(err));
+      }).catch(console.error);
       return logMessageBase + "Infected user does not exist.";
     }
 
@@ -248,22 +233,22 @@ export const slashRegisterInfected = new SlashCommand({
     );
 
     if (!infector) {
-      await interaction.reply({ content: "Your infector isn't in the server!" })
-        .catch((err) => console.error(err));
+      await interaction
+        .reply({ content: "Your infector isn't in the server!" })
+        .catch(console.error);
       return logMessageBase + "Infector isn't in server.";
     }
 
     const db = await Deno.openKv(Deno.env.get("DATABASE_PATH"));
 
-    const { logMessageExtension, replyOptions } = await registerInfection(
-      db,
-      infector,
-      infected,
-    );
+    const {
+      logMessageExtension,
+      replyOptions,
+    } = await registerInfection(db, infector, infected);
 
     db.close();
 
-    await interaction.reply(replyOptions).catch((err) => console.error(err));
+    await interaction.reply(replyOptions).catch(console.error);
     return logMessageBase + logMessageExtension;
   },
 });
@@ -272,10 +257,9 @@ async function deleteInfection(
   db: Deno.Kv,
   infected: User,
 ): Promise<DatabaseActionResult> {
-  const infectionEntry = await db.get<string>([
-    "infections",
-    infected.id,
-  ]);
+  const infectionEntry = await db.get<string>(
+    ["infections", infected.id],
+  );
 
   if (!infectionEntry.versionstamp) {
     return {
@@ -285,16 +269,15 @@ async function deleteInfection(
         withResponse: true,
       },
       logMessageExtension:
-        `${infected.username} used /deregister, but doesn't have an infection entry`,
+        `${infected.username} doesn't have an infection entry`,
     };
   }
 
   await db.delete(["infections", infected.id]);
 
-  const infectionCount = await db.get<number>([
-    "infectionCount",
-    infectionEntry.value,
-  ]);
+  const infectionCount = await db.get<number>(
+    ["infectionCounts", infectionEntry.value],
+  );
 
   if (!infectionCount.versionstamp) {
     return {
@@ -309,7 +292,7 @@ async function deleteInfection(
 
   const newInfectionsCount = infectionCount.value - 1;
   const updateInfectionCount = await db.set(
-    ["infectionsCount", infectionEntry.value],
+    ["infectionCounts", infectionEntry.value],
     newInfectionsCount,
   );
 
@@ -348,19 +331,19 @@ export const slashDeregister = new SlashCommand({
       await interaction.reply({
         content: "You cannot run this command here!",
         withResponse: true,
-      }).catch((err) => console.error(err));
+      }).catch(console.error);
       return logMessageBase + "Location not permitted";
     }
 
     const db = await Deno.openKv(Deno.env.get("DATABASE_PATH"));
-    const { logMessageExtension, replyOptions } = await deleteInfection(
-      db,
-      interaction.user,
-    );
+    const {
+      logMessageExtension,
+      replyOptions,
+    } = await deleteInfection(db, interaction.user);
 
     db.close();
 
-    await interaction.reply(replyOptions).catch((err) => console.error(err));
+    await interaction.reply(replyOptions).catch(console.error);
     return logMessageBase + logMessageExtension;
   },
 });

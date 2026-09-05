@@ -1,5 +1,4 @@
 import { NonSlashCommand } from "../types.ts";
-import { logError } from "../utils.ts";
 
 export const botUp = new NonSlashCommand({
   name: "Is the bot up?",
@@ -10,7 +9,9 @@ export const botUp = new NonSlashCommand({
     return Boolean(message.content.match(botUp.command));
   },
   execute: async (message) => {
-    await message.reply({ content: "Yezzir!" }).catch(logError);
+    await message
+      .reply({ content: "Yezzir!" })
+      .catch(console.error);
     return `${message.author.username} used Is the bot up?: Command succesful.`;
   },
 });

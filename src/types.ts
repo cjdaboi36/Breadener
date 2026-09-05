@@ -52,7 +52,7 @@ export class BotEvent<T extends keyof ClientEvents> {
 export type MaybePromiseVoid = void | Promise<void>;
 
 export interface BreadRecipe {
-  breadName?: string;
+  name: string;
   ingredients: string[][];
   expectedTime: number;
   instructions: string[];

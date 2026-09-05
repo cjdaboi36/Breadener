@@ -15,17 +15,13 @@ for (const commandFile of commandFiles) {
   for (const [name, command] of Object.entries(module)) {
     if (command instanceof SlashCommand) {
       slashCommands.push(command);
-      continue;
-    }
-
-    if (command instanceof NonSlashCommand) {
+    } else if (command instanceof NonSlashCommand) {
       nonSlashCommands.push(command);
-      continue;
+    } else {
+      console.warn(
+        `[WARNING] The export ${name} in module ${commandFile.name} doesn't really look like a command..`,
+      );
     }
-
-    console.warn(
-      `[WARNING] The export ${name} in module ${commandFile.name} doesn't really look like a command..`,
-    );
   }
 }
 
@@ -37,27 +33,31 @@ for (const nonSlashCommand of nonSlashCommands) {
   }
 }
 
-nonSlashCommands.push({
-  name: "help",
-  description: "check all available commands",
-  command: ".help",
-  showInHelp: true,
-  match: (message: Message) => message.content === ".help",
-  execute: async (message: Message) => {
-    await message.reply({ content: helpMessage });
-    return `${message.author.username} used .help`;
-  },
-});
+nonSlashCommands.push(
+  new NonSlashCommand({
+    name: "help",
+    description: "check all available commands",
+    command: ".help",
+    showInHelp: true,
+    match: (message: Message) => message.content === ".help",
+    execute: async (message: Message) => {
+      await message.reply({ content: helpMessage });
+      return `${message.author.username} used .help`;
+    },
+  }),
+);
 
-slashCommands.push({
-  data: new SlashCommandBuilder()
-    .setName("help")
-    .setDescription("helps!"),
-  execute: async (interaction) => {
-    await interaction.reply({ content: helpMessage, withResponse: true });
-    return `${interaction.user.username} used /help`;
-  },
-});
+slashCommands.push(
+  new SlashCommand({
+    data: new SlashCommandBuilder()
+      .setName("help")
+      .setDescription("helps!"),
+    execute: async (interaction) => {
+      await interaction.reply({ content: helpMessage, withResponse: true });
+      return `${interaction.user.username} used /help`;
+    },
+  }),
+);
 
 console.log(
   "\x1b[34mSlashCommands: \x1b[0m\n",

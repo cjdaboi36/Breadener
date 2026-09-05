@@ -1,6 +1,4 @@
-import recipeData from "$static/breadRecipies.json" with { type: "json" };
 import type { ChatInputCommandInteraction } from "discord.js";
-import type { BreadRecipe } from "./types.ts";
 
 export const coolBanner = "  ____                     _\n"
   + " |  _ \\                   | |                     \n"
@@ -12,15 +10,3 @@ export const coolBanner = "  ____                     _\n"
 export const validGuildGuard = (
   interaction: ChatInputCommandInteraction,
 ) => interaction.guild && interaction.guild.id === Deno.env.get("GUILDID")!;
-
-export function parseRecipe(breadType: string): BreadRecipe | undefined {
-  const recipe = Object.entries(recipeData)
-    .find(([name]) => name === breadType) as
-      | [string, BreadRecipe]
-      | undefined;
-
-  return recipe ? recipe[1] : undefined;
-}
-
-// deno-lint-ignore no-explicit-any
-export const logError = (err: any) => console.error(err);

@@ -47,9 +47,7 @@ export const slashGetBreadenerLevel = new SlashCommand({
       + `📈 ${progressBar} ${Math.floor(levelProgress / 12 * 100)}%\n`;
 
     if (!("nextLevel" in breadenerLevels[index])) {
-      progressText = `📊 You are at the maximum level!\n📈 ${
-        "█".repeat(12)
-      } 100%\n`;
+      progressText = `📊 You are at the maximum level!\n📈 ████████████ 100%\n`;
     }
 
     await interaction.reply({
@@ -59,7 +57,7 @@ export const slashGetBreadenerLevel = new SlashCommand({
         }**!\n`
         + progressText
         + `🍞 Total breaded: **${infectionCount}** people`,
-      flags: MessageFlags.SuppressNotifications, // makes the message silent
+      flags: MessageFlags.SuppressNotifications,
       withResponse: true,
     }).catch(console.error);
     return logMessageBase + "Command succesful.";

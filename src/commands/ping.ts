@@ -14,7 +14,7 @@ export const ping = new NonSlashCommand({
     await message
       .reply(`Pong! Latency: ${diff}ms`)
       .catch(console.error);
-    return `${message.author.username} used .ping, ping was ${diff}`;
+    return `${message.author.username} used .ping: Command successful`;
   },
 });
 
@@ -28,6 +28,6 @@ export const slashPing = new SlashCommand({
       content: `Pong! Latency: ${diff}ms`,
       withResponse: true,
     }).catch(console.error);
-    return `${interaction.user.username} used .ping, ping was ${diff}`;
+    return `${interaction.user.username} used /ping: Command successful`;
   },
 });

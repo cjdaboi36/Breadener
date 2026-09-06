@@ -64,11 +64,12 @@ async function registerInfection(
     };
   }
 
-  const getAllInfections = await db.get<number>([
-    "infectionCounts",
-    infector.id,
-  ]);
-  const newInfectionsCount = getAllInfections.value ?? 0 + 1;
+  const getAllInfections = await db.get<number>(
+    ["infectionCounts", infector.id],
+  );
+  const newInfectionsCount = getAllInfections.value === null
+    ? 1
+    : getAllInfections.value + 1;
   const updateInfectionCount = await db.set(
     ["infectionCounts", infector.id],
     newInfectionsCount,
@@ -149,9 +150,7 @@ export const slashRegisterInfector = new SlashCommand({
     const infector = await interaction.guild!.members.fetch(
       interaction.options.getUser("infector", true).id,
     );
-
     const db = await Deno.openKv(Deno.env.get("DATABASE_PATH"));
-
     const { logMessageExtension, replyOptions } = await registerInfection(
       db,
       infector,
@@ -188,21 +187,21 @@ export const slashRegisterInfected = new SlashCommand({
       await interaction.reply({
         content: "You cannot run this command here!",
         withResponse: true,
-      }).catch((err) => console.error(err));
+      }).catch(console.error);
       return logMessageBase + "Location not permitted.";
     }
 
     // Collects all role IDs
-    const rawRoleData = interaction.member?.roles;
-    if (!(rawRoleData instanceof GuildMemberRoleManager)) {
+    if (!(interaction.member?.roles instanceof GuildMemberRoleManager)) {
       await interaction.reply({
         content: "Something went wrong!",
         withResponse: true,
       }).catch(console.error);
-      return `${interaction.user.username} used /register-non-joiner, but something went wrong while checking their perms`;
+      return logMessageBase
+        + "Something went wrong while checking their permissions.";
     }
 
-    const roleIDs = rawRoleData.cache.map((role) => role.id);
+    const roleIDs = interaction.member.roles.cache.map((role) => role.id);
 
     // Checks whether command is being ran by a mod
     if (
@@ -239,7 +238,7 @@ export const slashRegisterInfected = new SlashCommand({
       return logMessageBase + "Infector isn't in server.";
     }
 
-    const db = await Deno.openKv(Deno.env.get("DATABASE_PATH"));
+    const db = await Deno.openKv();
 
     const {
       logMessageExtension,

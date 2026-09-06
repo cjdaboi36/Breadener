@@ -37,18 +37,14 @@ export const slashGetBreadenerLevel = new SlashCommand({
 
     const index = Math.floor(Math.min(infectionCount, 48) / 12);
     const levelProgress = infectionCount % 12;
-    const progressBar = "█".repeat(levelProgress)
-      + "░".repeat(12 - levelProgress);
-
-    let progressText =
-      `📊 Progress: ${infectionCount}/${
+    const progressText = index === 5
+      ? "📊 You are at the maximum level!\n📈 ████████████ 100%\n"
+      : `📊 Progress: ${infectionCount}/${
         breadenerLevels[index].threshold
-      } until ${breadenerLevels[index].nextLevel}\n`
-      + `📈 ${progressBar} ${Math.floor(levelProgress / 12 * 100)}%\n`;
-
-    if (!("nextLevel" in breadenerLevels[index])) {
-      progressText = `📊 You are at the maximum level!\n📈 ████████████ 100%\n`;
-    }
+      } until ${breadenerLevels[index + 1] ?? ""}\n📈 ${
+        "█".repeat(levelProgress)
+        + "░".repeat(12 - levelProgress)
+      } ${Math.floor(levelProgress / 12 * 100)}%\n`;
 
     await interaction.reply({
       content:

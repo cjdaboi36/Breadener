@@ -29,12 +29,15 @@ export const slashCommandEvent = new BotEvent<Events.InteractionCreate>({
 
     if (interaction.isChatInputCommand()) {
       try {
-        const returnMessage = await slashCommand.execute(interaction);
-        console.log(`\x1b[36m > \x1b[0m ${returnMessage}`);
+        const logMessage = await slashCommand.execute(interaction);
+        console.log(
+          new Date().toISOString() + `\x1b[36m > \x1b[0m${logMessage}`,
+        );
       } catch (error) {
         console.error(error);
         await interaction.reply({
-          content: "There was an unexpected error while executing this command!",
+          content:
+            "There was an unexpected error while executing this command!",
           flags: MessageFlags.Ephemeral,
         });
       }

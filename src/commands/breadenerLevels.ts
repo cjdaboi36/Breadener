@@ -1,21 +1,13 @@
 import breadenerLevels from "$static/breadenerLevels.json" with {
   type: "json",
 };
-import {
-  type CacheType,
-  type ChatInputCommandInteraction,
-  Guild,
-  MessageFlags,
-  SlashCommandBuilder,
-  type User,
-} from "discord.js";
-import type { SlashCommand } from "../customTypes.ts";
-import { db } from "../db.ts";
-import { guildChecker } from "../utils.ts";
+import { MessageFlags, SlashCommandBuilder } from "discord.js";
+import { SlashCommand } from "../types.ts";
+import { validGuildGuard } from "../utils.ts";
 
-export const slashGetBreadenerLevelSelf: SlashCommand = {
+export const slashGetBreadenerLevel = new SlashCommand({
   data: new SlashCommandBuilder()
-    .setName("get-breadener-level-self")
+    .setName("get-breadener-level")
     .setDescription("See the breadener level of someone")
     .addUserOption((option) =>
       option
@@ -23,101 +15,76 @@ export const slashGetBreadenerLevelSelf: SlashCommand = {
         .setDescription("give the username of the infector")
         .setRequired(true)
     ),
-  execute: async (interaction: ChatInputCommandInteraction<CacheType>) => {
-    if (await guildChecker(interaction)) return;
+  execute: async (interaction) => {
+    const logMessageBase =
+      `${interaction.user.username} used /get-breadener-level: `;
 
-    const user: User = interaction.options.getUser("user", true);
-
-    if (
-      !(interaction.guild instanceof Guild
-        && interaction.guild.id === "1383472184416272507")
-    ) {
-      await interaction
-        .reply({
-          content: "You cannot run this command here.",
-          withResponse: true,
-        })
-        .then(() => console.log("\x1b[47m > \x1b[0m Nuh uh uh"))
-        .catch(console.error);
-      return;
-    }
-
-    const thing: { "COUNT(*)": number } = db
-      .prepare("SELECT COUNT(*) FROM infections WHERE infectorId = ?")
-      .get(user.id) ?? { "COUNT(*)": 0 };
-    const breadCount = thing["COUNT(*)"];
-    const index: number = Math.floor(Math.min(breadCount, 48) / 12);
-    const levelProgress: number = breadCount % 12;
-    const progressBar: string = "█".repeat(levelProgress)
-      + "░".repeat(12 - levelProgress);
-
-    let progressText: string =
-      `📊 Progress: ${breadCount}/${breadenerLevels[index].threshold} until ${
-        breadenerLevels[index].nextLevel
-      }\n`
-      + `📈 ${progressBar} ${Math.floor((levelProgress / 12) * 100)}%\n`;
-
-    if (!("nextLevel" in breadenerLevels[index])) {
-      progressText = `📊 You are at the maximum level!\n`
-        + `📈 ${"█".repeat(12)} 100%\n`;
-    }
-
-    await interaction
-      .reply({
-        content:
-          `**${user}** is a **${breadenerLevels[index].emoji} ${
-            breadenerLevels[index].level
-          }**!\n`
-          + `${progressText}`
-          + `🍞 Total breaded: **${breadCount}** people`,
-        flags: [MessageFlags.SuppressNotifications], // makes the message silent
+    if (!validGuildGuard(interaction)) {
+      await interaction.reply({
+        content: "You cannot run this command here.",
         withResponse: true,
-      })
-      .then((_response) =>
-        console.log(
-          `"${user.username}" level checked - ${
-            breadenerLevels[index].level
-          } (${breadCount} breaded). Requested by "${interaction.user.username}"`,
-        )
-      )
-      .catch(console.error);
-  },
-};
+      }).catch(console.error);
+      return logMessageBase + "Location not permitted.";
+    }
 
-export const slashGetBreadenerLevels: SlashCommand = {
+    const user = interaction.options.getUser("user", true);
+    const db = await Deno.openKv(Deno.env.get("DATABASE_PATH"));
+    const infectionCount = (await db.get<number>([
+      "infectionCounts",
+      user.id,
+    ])).value ?? 0;
+    db.close();
+
+    const index = Math.floor(Math.min(infectionCount, 48) / 12);
+    const levelProgress = infectionCount % 12;
+    const progressText = index === 5
+      ? "📊 You are at the maximum level!\n📈 ████████████ 100%\n"
+      : `📊 Progress: ${infectionCount}/${
+        breadenerLevels[index].threshold
+      } until ${breadenerLevels[index + 1] ?? ""}\n📈 ${
+        "█".repeat(levelProgress)
+        + "░".repeat(12 - levelProgress)
+      } ${Math.floor(levelProgress / 12 * 100)}%\n`;
+
+    await interaction.reply({
+      content:
+        `**${user}** is a **${breadenerLevels[index].emoji} ${
+          breadenerLevels[index].level
+        }**!\n`
+        + progressText
+        + `🍞 Total breaded: **${infectionCount}** people`,
+      flags: MessageFlags.SuppressNotifications,
+      withResponse: true,
+    }).catch(console.error);
+    return logMessageBase + "Command succesful.";
+  },
+});
+
+export const slashGetBreadenerLevels = new SlashCommand({
   data: new SlashCommandBuilder()
     .setName("breadener-levels")
     .setDescription(
       "Show all available breadener levels and their requirements",
     ),
-  execute: async (interaction: ChatInputCommandInteraction<CacheType>) => {
-    let message: string = "🍞 **Breadener Levels** 🍞\n\n";
+  execute: async (interaction) => {
+    let message = "🍞 **Breadener Levels** 🍞\n\n";
 
-    for (let i: number = 0; i < breadenerLevels.length; i++) {
-      const breadLevel = breadenerLevels[i];
-
-      if (breadLevel.threshold) {
-        message += `${breadLevel.emoji} ${breadLevel.level}: ${
+    for (const breadLevel of breadenerLevels) {
+      message += breadLevel.threshold
+        ? `${breadLevel.emoji} ${breadLevel.level}: ${
           breadLevel.threshold - 12
-        } - ${breadLevel.threshold} people Breadened!\n`;
-        continue;
-      }
-      message +=
-        `${breadLevel.emoji} ${breadLevel.level}: 48+ people Breadened!\n`;
+        } - ${breadLevel.threshold} people Breadened!\n`
+        : message +=
+          `${breadLevel.emoji} ${breadLevel.level}: 48+ people Breadened!\n`;
     }
 
     message +=
       "\n🎯 Use `/get-breadener-level <username>` to check someone's level!";
 
-    const logMessage: string =
-      `Breadener levels info requested by "${interaction.user.username}"`;
-
-    await interaction
-      .reply({
-        content: message,
-        withResponse: true,
-      })
-      .then((_response) => console.log(logMessage))
-      .catch(console.error);
+    await interaction.reply({
+      content: message,
+      withResponse: true,
+    }).catch(console.error);
+    return `${interaction.user.username} used /breadener-levels: Command successful`;
   },
-};
+});

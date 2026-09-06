@@ -2,20 +2,130 @@ import breadenerLevels from "$static/breadenerLevels.json" with {
   type: "json",
 };
 import {
-  type CacheType,
-  type ChatInputCommandInteraction,
-  GuildMember,
-  type GuildMemberRoleManager,
+  type GuildMember,
+  GuildMemberRoleManager,
+  type InteractionReplyOptions,
   MessageFlags,
-  type Role,
   SlashCommandBuilder,
   type User,
 } from "discord.js";
-import type { SlashCommand } from "../customTypes.ts";
-import { db } from "../db.ts";
-import { guildChecker } from "../utils.ts";
+import { SlashCommand } from "../types.ts";
+import { validGuildGuard } from "../utils.ts";
 
-export const slashRegisterInfector: SlashCommand = {
+interface DatabaseActionResult {
+  logMessageExtension: string;
+  replyOptions: InteractionReplyOptions;
+}
+
+async function registerInfection(
+  db: Deno.Kv,
+  infector: GuildMember,
+  infected: User,
+): Promise<DatabaseActionResult> {
+  if (infector.user.id === infected.id) {
+    return {
+      logMessageExtension: `user tried to register themselves`,
+      replyOptions: {
+        content: "You can't register yourself as yours infector buddy!",
+        withResponse: true,
+      },
+    };
+  }
+
+  const isRegistered = await db.get<string>(
+    ["infections", infected.id],
+  );
+
+  // Check whether infected already has an entry
+  if (isRegistered.value) {
+    return {
+      logMessageExtension: `user already had an entry.`,
+      replyOptions: {
+        content: "You can't register an infector twice buddy!",
+        flags: MessageFlags.SuppressNotifications,
+        withResponse: true,
+      },
+    };
+  }
+
+  const insertInfection = await db.set(
+    ["infections", infected.id],
+    infector.id,
+  );
+
+  if (!insertInfection.ok) {
+    return {
+      logMessageExtension: `Something went wrong while writing infection data.`,
+      replyOptions: {
+        content:
+          `Something went wrong while writing to database values: infections ${infected.id} ${infector.id}`,
+        withResponse: true,
+      },
+    };
+  }
+
+  const getAllInfections = await db.get<number>(
+    ["infectionCounts", infector.id],
+  );
+  const newInfectionsCount = getAllInfections.value === null
+    ? 1
+    : getAllInfections.value + 1;
+  const updateInfectionCount = await db.set(
+    ["infectionCounts", infector.id],
+    newInfectionsCount,
+  );
+
+  if (!updateInfectionCount.ok) {
+    return {
+      logMessageExtension:
+        `Something went wrong while writing infection count data`,
+      replyOptions: {
+        content: "Something went wrong while updating infection count.",
+        withResponse: true,
+      },
+    };
+  }
+
+  const index = Math.floor(Math.min(newInfectionsCount, 48) / 12);
+
+  try {
+    // Give the new Breadener role
+    const newRoleId = breadenerLevels[index].id;
+    infector.roles.add(newRoleId);
+
+    // Removes all Breadener Roles except the correct one / the one we just assigned
+    for (let i = 0; i <= 4; i++) {
+      if (breadenerLevels[i].id !== newRoleId) {
+        infector.roles.remove(breadenerLevels[i].id);
+      }
+    }
+  } catch (err) {
+    console.error(err);
+    return {
+      logMessageExtension:
+        `Something went wrong while updating roles of ${infector.user.username}`,
+      replyOptions: {
+        content:
+          `Something went wrong while updating roles! The infector count has been updated.`,
+        flags: MessageFlags.SuppressNotifications,
+        withResponse: true,
+      },
+    };
+  }
+
+  return {
+    logMessageExtension:
+      `Registered <${infector.user.username}> as the infector of <${infected.username}>`,
+    replyOptions: {
+      content:
+        `Registered <@${infector.id}> as the infector of <@${infected.id}>.`,
+      flags: MessageFlags.SuppressNotifications,
+      withResponse: true,
+    },
+  };
+}
+
+export const slashRegisterInfector = new SlashCommand({
   data: new SlashCommandBuilder()
     .setName("register")
     .setDescription("Register your infector!")
@@ -25,125 +135,36 @@ export const slashRegisterInfector: SlashCommand = {
         .setDescription("give the preferred username")
         .setRequired(true)
     ),
+  execute: async (interaction) => {
+    const logMessageBase =
+      `${interaction.user.username} used /register <${interaction.user.username}>: `;
 
-  execute: async (interaction: ChatInputCommandInteraction<CacheType>) => {
-    if (
-      !(interaction.guild && interaction.guild.id === "1383472184416272507")
-    ) {
-      await interaction
-        .reply({
-          content: "You cannot run this command here!",
-          withResponse: true,
-        })
-        .then(() =>
-          console.log(
-            `\x1b[47m > \x1b[0m ${interaction.user.username} tried to fool the system, but turned out to be one themselves`,
-          )
-        )
-        .catch(console.error);
-      return;
-    }
-
-    const infector_: User = interaction.options.getUser("infector", true);
-    // Get infector as GuildMember
-    const infector: GuildMember = await interaction.guild.members.fetch(
-      infector_.id,
-    );
-
-    // check whether infector is in the server:
-    if (!infector) {
-      await interaction
-        .reply({
-          content: "Your infector is not in this server!", // sounds like the other sentences so i'll go with it.
-          withResponse: true,
-        })
-        .then(() =>
-          console.log(
-            `\x1b[47m > \x1b[0m ${interaction.user.username}'s isn't in the server`,
-          )
-        )
-        .catch(console.error);
-      return;
-    }
-
-    // Checks whether infector is the same is infected
-    if (infector.id === interaction.user.id) {
-      await interaction
-        .reply({
-          content: "You can't register yourself as your own infector buddy!", // sounds like the other sentences so i'll go with it.
-          withResponse: true,
-        })
-        .then(() =>
-          console.log(
-            `\x1b[47m > \x1b[0m ${interaction.user.username} tried to fool the system, but turned out to be one themselves`,
-          )
-        )
-        .catch(console.error);
-      return;
-    }
-
-    const registerCount: { "COUNT(*)": number } = db
-      .prepare("SELECT COUNT(*) FROM infections WHERE infectedId = ?")
-      .get(interaction.user.id) ?? { "COUNT(*)": 0 }; // Checks whether command runner already has an entry
-
-    if (registerCount["COUNT(*)"] !== 0) {
-      await interaction
-        .reply({
-          content: "You can't register an infector twice buddy!",
-          flags: MessageFlags.SuppressNotifications, // makes the message silent
-          withResponse: true,
-        })
-        .then(() =>
-          console.log(
-            `\x1b[47m > \x1b[0m ${interaction.user.username} tried to fool the system, but turned out to be one themselves`,
-          )
-        )
-        .catch(console.error);
-      return;
-    }
-
-    db.prepare(
-      "INSERT INTO infections (infectorId, infectedId) VALUES (?, ?)",
-    ).run(infector.id, interaction.user.id);
-
-    // Assign roles n stuff
-    const breadCount: { "COUNT(*)": number } = db
-      .prepare("SELECT COUNT(*) FROM infections WHERE infectorId = ?")
-      .get(infector.id) ?? { "COUNT(*)": 0 }; // if it can't find anything, use 0
-
-    const index: number = Math.floor(Math.min(breadCount["COUNT(*)"], 48) / 12);
-
-    // Adds the correct role (back)
-    const newRoleId: string = breadenerLevels[index].id;
-    infector.roles.add(
-      newRoleId,
-      `New breadener level role: ${breadenerLevels[index].level}`,
-    );
-    console.log(`New breadener level role: ${breadenerLevels[index].level}`);
-
-    // Removes all Breadener Roles except the correct one
-    for (let i: number = 0; i <= 4; i++) {
-      if (breadenerLevels[i].id === newRoleId) continue;
-      infector.roles.remove(breadenerLevels[i].id);
-    }
-
-    await interaction
-      .reply({
-        content:
-          `Registered <@${infector.id}> as the infector of <@${interaction.user.id}>.`,
-        flags: MessageFlags.SuppressNotifications, // makes the message silent
+    if (!validGuildGuard(interaction)) {
+      await interaction.reply({
+        content: "You cannot run this command here!",
         withResponse: true,
-      })
-      .then(() =>
-        console.log(
-          `\x1b[47m > \x1b[0m Registered "${infector.user.username}" as the infector of "${interaction.user.username}".`,
-        )
-      )
-      .catch(console.error);
-  },
-};
+      }).catch(console.error);
+      return logMessageBase + "Location not permitted";
+    }
 
-export const slashRegisterInfected: SlashCommand = {
+    const infector = await interaction.guild!.members.fetch(
+      interaction.options.getUser("infector", true).id,
+    );
+    const db = await Deno.openKv(Deno.env.get("DATABASE_PATH"));
+    const { logMessageExtension, replyOptions } = await registerInfection(
+      db,
+      infector,
+      interaction.user,
+    );
+
+    db.close();
+
+    await interaction.reply(replyOptions).catch(console.error);
+    return logMessageBase + logMessageExtension;
+  },
+});
+
+export const slashRegisterInfected = new SlashCommand({
   data: new SlashCommandBuilder()
     .setName("register-non-joiner")
     .setDescription("Register someone you infected but didn't join!")
@@ -158,178 +179,170 @@ export const slashRegisterInfected: SlashCommand = {
         .setDescription("give the user id")
         .setRequired(true)
     ),
+  execute: async (interaction) => {
+    const logMessageBase =
+      `${interaction.user.username} used /register-non-joiner: `;
 
-  execute: async (interaction: ChatInputCommandInteraction<CacheType>) => {
-    if (
-      !(interaction.guild && interaction.guild.id === "1383472184416272507"
-        && interaction.member instanceof GuildMember)
-    ) {
-      await interaction
-        .reply({
-          content: "You cannot run this command here!",
-          withResponse: true,
-        })
-        .then(() =>
-          console.log(
-            `\x1b[47m > \x1b[0m ${interaction.user.username} tried to fool the system, but turned out to be one themselves`,
-          )
-        )
-        .catch(console.error);
-      return;
+    if (!validGuildGuard(interaction)) {
+      await interaction.reply({
+        content: "You cannot run this command here!",
+        withResponse: true,
+      }).catch(console.error);
+      return logMessageBase + "Location not permitted.";
     }
 
     // Collects all role IDs
-    const rawRoleData: GuildMemberRoleManager = interaction.member.roles;
-    const roleIDs: string[] = [];
-    rawRoleData.cache.each(
-      (value: Role) => {
-        roleIDs.push(value.id);
-      },
-    );
+    if (!(interaction.member?.roles instanceof GuildMemberRoleManager)) {
+      await interaction.reply({
+        content: "Something went wrong!",
+        withResponse: true,
+      }).catch(console.error);
+      return logMessageBase
+        + "Something went wrong while checking their permissions.";
+    }
+
+    const roleIDs = interaction.member.roles.cache.map((role) => role.id);
 
     // Checks whether command is being ran by a mod
     if (
-      !(roleIDs.includes("1383472356319559731")
+      !(roleIDs.includes("1383472356319559731") // Todo: move these ID's from code to .env
         || roleIDs.includes("1408239632822304900"))
     ) {
-      await interaction
-        .reply({
-          content:
-            "You are not permitted to use this command! Perhaps you meant to run `/register` instead?",
-          withResponse: true,
-        })
-        .then(() =>
-          console.log(
-            `\x1b[47m > \x1b[0m ${interaction.user.username} was not permitted to use /register-non-joiner`,
-          )
-        )
-        .catch(console.error);
-      return;
-    }
-
-    const infector_: User = interaction.options.getUser("infector", true);
-    const infectedId: string = interaction.options.getString(
-      "infected_id",
-      true,
-    );
-    const infector: GuildMember = await interaction.guild?.members.fetch(
-      infector_.id,
-    );
-
-    if (
-      infectedId === infector.id
-    ) {
-      await interaction
-        .reply({
-          content: "You cannot infect yourself!",
-          withResponse: true,
-        })
-        .then(() =>
-          console.log(
-            `\x1b[47m > \x1b[0m ${interaction.user.username} tried to infect themselves with /register-non-joiner`,
-          )
-        )
-        .catch(console.error);
-      return;
-    }
-
-    // Checks whether infected person already has an entry
-    const infectedEntry: { "COUNT(*)": number } = db
-      .prepare("SELECT COUNT(*) FROM infections WHERE infectedId = ?")
-      .get(infectedId) ?? { "COUNT(*)": 0 };
-
-    if (infectedEntry["COUNT(*)"] !== 0) {
-      await interaction
-        .reply({
-          content: "This person already has an entry!",
-          withResponse: true,
-        })
-        .then(() =>
-          console.log(
-            `\x1b[47m > \x1b[0m ${interaction.user.username} tried to register infectedId ${infectedId}, but was already infected!`,
-          )
-        )
-        .catch(console.error);
-      return;
-    }
-
-    // If the person is not yet in the db
-    db.prepare(
-      "INSERT INTO infections (infectorId, infectedId) VALUES (?, ?)",
-    ).run(infector.user.id, infectedId);
-
-    // Assign roles n stuff
-    const breadCount: { "COUNT(*)": number } = db
-      .prepare("SELECT COUNT(*) FROM infections WHERE infectorId = ?")
-      .get(infector.user.id) ?? { "COUNT(*)": 0 }; // if it can't find anything, use 0
-
-    const index: number = Math.floor(Math.min(breadCount["COUNT(*)"], 48) / 12);
-
-    // Adds the correct role (back)
-    const newRoleId: string = breadenerLevels[index].id;
-    infector.roles.add(
-      newRoleId,
-      `New breadener level role: ${breadenerLevels[index].level}`,
-    );
-    console.log(`New breadener level role: ${breadenerLevels[index].level}`);
-
-    // Removes all Breadener Roles except the correct one
-    for (let i: number = 0; i <= 4; i++) {
-      if (breadenerLevels[i].id === newRoleId) continue;
-      infector.roles.remove(breadenerLevels[i].id);
-    }
-
-    await interaction
-      .reply({
+      await interaction.reply({
         content:
-          `Registered <@${infector.id}> as the infector of the user with user_id of "${infectedId}"`,
+          "You are not permitted to use this command! Perhaps you meant to run `/register` instead?",
+        withResponse: true,
+      }).catch(console.error);
+      return logMessageBase + "Permission denied.";
+    }
+
+    const infectedUserId = interaction.options.getString("infected_id", true);
+    const infected = await interaction.client.users.fetch(infectedUserId)
+      .catch(() => null);
+
+    if (!infected) {
+      await interaction.reply({
+        content: `There is no user with user id ${infectedUserId}`,
+      }).catch(console.error);
+      return logMessageBase + "Infected user does not exist.";
+    }
+
+    const infector = await interaction.guild?.members.fetch(
+      interaction.options.getUser("infector", true).id,
+    );
+
+    if (!infector) {
+      await interaction
+        .reply({ content: "Your infector isn't in the server!" })
+        .catch(console.error);
+      return logMessageBase + "Infector isn't in server.";
+    }
+
+    const db = await Deno.openKv();
+
+    const {
+      logMessageExtension,
+      replyOptions,
+    } = await registerInfection(db, infector, infected);
+
+    db.close();
+
+    await interaction.reply(replyOptions).catch(console.error);
+    return logMessageBase + logMessageExtension;
+  },
+});
+
+async function deleteInfection(
+  db: Deno.Kv,
+  infected: User,
+): Promise<DatabaseActionResult> {
+  const infectionEntry = await db.get<string>(
+    ["infections", infected.id],
+  );
+
+  if (!infectionEntry.versionstamp) {
+    return {
+      replyOptions: {
+        content: "Your entry cannot be removed if it doesn't exist!",
         flags: MessageFlags.SuppressNotifications,
         withResponse: true,
-      })
-      .then(() =>
-        console.log(
-          `\x1b[47m > \x1b[0m ${interaction.user.username} approved the infection of user "${infectedId}" by ${infector.user.username}`,
-        )
-      )
-      .catch(console.error);
-  },
-};
+      },
+      logMessageExtension:
+        `${infected.username} doesn't have an infection entry`,
+    };
+  }
 
-export const slashDeregisterInfector: SlashCommand = {
+  await db.delete(["infections", infected.id]);
+
+  const infectionCount = await db.get<number>(
+    ["infectionCounts", infectionEntry.value],
+  );
+
+  if (!infectionCount.versionstamp) {
+    return {
+      replyOptions: {
+        content: "What the fuck this shouldn't ever happen",
+        flags: MessageFlags.SuppressNotifications,
+        withResponse: true,
+      },
+      logMessageExtension: `Shit happens`,
+    };
+  }
+
+  const newInfectionsCount = infectionCount.value - 1;
+  const updateInfectionCount = await db.set(
+    ["infectionCounts", infectionEntry.value],
+    newInfectionsCount,
+  );
+
+  return updateInfectionCount.versionstamp
+    ? {
+      replyOptions: {
+        content:
+          `Entry successfully removed! You can now reassign your infector.`,
+        flags: MessageFlags.SuppressNotifications,
+        withResponse: true,
+      },
+      logMessageExtension: "Command successful",
+    }
+    : {
+      replyOptions: {
+        content:
+          `Something went wrong while decrementing ${infectionEntry.value}'s infection count.`,
+        flags: MessageFlags.SuppressNotifications,
+        withResponse: true,
+      },
+      logMessageExtension:
+        `Something went wrong while decrementing ${infectionEntry.value}'s infection count.`,
+    };
+}
+
+export const slashDeregister = new SlashCommand({
   data: new SlashCommandBuilder()
     .setName("deregister")
     .setDescription(
       "deregister your infector in case you made a mistake or something",
     ),
+  execute: async (interaction) => {
+    const logMessageBase = `${interaction.user.username} used /deregister: `;
 
-  execute: async (interaction: ChatInputCommandInteraction<CacheType>) => {
-    if (await guildChecker(interaction)) return;
-
-    const breadCount: { "COUNT(*)": number } = db
-      .prepare("SELECT COUNT(*) FROM infections WHERE infectedId = ?")
-      .get(interaction.user.id) ?? { "COUNT(*)": 0 };
-
-    let message: string = "Your entry cannot be removed if it doesn't exist!";
-    let logMessage: string =
-      `\x1b[47m > \x1b[0m ${interaction.user.username} tried to remove their infection entry that did not even exist!`;
-
-    if (breadCount["COUNT(*)"] !== 0) {
-      message =
-        `Entry succesfully removed! You can now reassign your infector.`;
-      logMessage =
-        `\x1b[47m > \x1b[0m ${interaction.user.username}'s Entry succesfully removed.`;
-      db.prepare(
-        "DELETE FROM infections WHERE infectedId = ?",
-      ).run(interaction.user.id);
+    if (!validGuildGuard(interaction)) {
+      await interaction.reply({
+        content: "You cannot run this command here!",
+        withResponse: true,
+      }).catch(console.error);
+      return logMessageBase + "Location not permitted";
     }
 
-    await interaction
-      .reply({
-        content: message,
-        flags: MessageFlags.SuppressNotifications,
-        withResponse: true,
-      })
-      .then(() => console.log(logMessage))
-      .catch(console.error);
+    const db = await Deno.openKv(Deno.env.get("DATABASE_PATH"));
+    const {
+      logMessageExtension,
+      replyOptions,
+    } = await deleteInfection(db, interaction.user);
+
+    db.close();
+
+    await interaction.reply(replyOptions).catch(console.error);
+    return logMessageBase + logMessageExtension;
   },
-};
+});

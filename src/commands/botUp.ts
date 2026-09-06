@@ -1,14 +1,17 @@
-import type { Message } from "discord.js";
-import type { NonSlashCommand } from "../customTypes.ts";
+import { NonSlashCommand } from "../types.ts";
 
-export const ping: NonSlashCommand = {
+export const botUp = new NonSlashCommand({
   name: "Is the bot up?",
-  match: (message: Message) =>
-    /(I|i)s the bot up\??/g.exec(message.content) !== null,
-  execute: (message: Message): void => {
-    message.reply("Yezzir!");
-    console.log(
-      `\x1b[46m > \x1b[0m Reminded ${message.author.username} that the bot is up.`,
-    );
+  description: "check whether the bot is up",
+  command: /^is (the bot|<@1383534555960442880>) up\??$/i,
+  showInHelp: true,
+  match(message): boolean {
+    return Boolean(message.content.match(botUp.command));
   },
-};
+  execute: async (message) => {
+    await message
+      .reply({ content: "Yezzir!" })
+      .catch(console.error);
+    return `${message.author.username} used Is the bot up?: Command succesful.`;
+  },
+});

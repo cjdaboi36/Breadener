@@ -1,11 +1,19 @@
-import type { breadRecipe, SlashCommand } from "../customTypes.ts";
-import { parseRecipe } from "../utils.ts";
 import breadRecipies from "$static/breadRecipies.json" with {
   type: "json",
 };
 import { SlashCommandBuilder } from "discord.js";
+import { type BreadRecipe, SlashCommand } from "../types.ts";
 
-export const slashGetRecipe: SlashCommand = {
+export function parseRecipe(breadType: string): BreadRecipe | null {
+  const recipe = Object.entries(breadRecipies)
+    .find(([name]) => name === breadType) as
+      | [string, Omit<BreadRecipe, "name">]
+      | undefined;
+
+  return recipe ? { ...recipe[1], name: recipe[0] } : null;
+}
+
+export const slashGetRecipe = new SlashCommand({
   data: new SlashCommandBuilder()
     .setName("get-recipes")
     .setDescription("Get recipes for the most delicious pieces of bread!")
@@ -18,59 +26,54 @@ export const slashGetRecipe: SlashCommand = {
           .setAutocomplete(true),
     ),
   execute: async (interaction) => {
-    const requestedBreadType: string = interaction.options.getString(
+    const requestedBreadType = interaction.options.getString(
       "bread-type",
       true,
     );
-    const breadType: breadRecipe = parseRecipe(requestedBreadType);
-    const ingredientsLength: number = breadType.ingredients.length;
-    const instructionsLength: number = breadType.instructions.length;
-    const recipeLink: string = breadType.recipeLink;
+    const logMessage =
+      `${interaction.user.username} used /get-recipe <${requestedBreadType}>: `;
 
-    let message: string =
-      `# Recipe for ${breadType.breadName}! \nIngredients:\n`;
+    const recipe = parseRecipe(requestedBreadType);
 
-    for (let i: number = 0; i <= ingredientsLength - 1; i++) {
-      message += `${i + 1}. ${breadType.ingredients[i][1]} of ${
-        breadType.ingredients[i][0]
-      }\n`;
-    }
-
-    message += "## Instructions\n";
-
-    for (let i: number = 0; i <= instructionsLength - 1; i++) {
-      message += `${i + 1}. ${breadType.instructions[i]}\n`;
-    }
-
-    message += `## Recipe Link\n${recipeLink}\n`;
-
-    let logMessage: string =
-      `\x1b[47m > \x1b[0m ${interaction.user.username} requested the ${requestedBreadType}-recipe.`;
-
-    if (!breadType.breadName) {
-      message =
-        `It doesn't seem like we have a recipe for ${requestedBreadType}. Maybe you misspelled it, or we just dont have it yet!\nDon't feel bad, if you can think of a recipe, make a pull request on my repository!`;
-      logMessage =
-        `\x1b[47m > \x1b[0m ${interaction.user.username} requested a ${requestedBreadType}-recipe, but none were found.`;
-    }
-
-    await interaction
-      .reply({
-        content: message,
+    if (!recipe) {
+      await interaction.reply({
+        content:
+          `It doesn't seem like we have a recipe for ${requestedBreadType}. Maybe you misspelled it, or we just dont have it yet! Don't feel bad, if you can think of a recipe, make a pull request on my repository!`,
         withResponse: true,
-      })
-      .then(() => console.log(logMessage))
-      .catch(console.error);
-  },
+      }).catch(console.error);
+      return logMessage + "No recipe was found.";
+    }
 
+    const { name, ingredients, expectedTime, instructions, recipeLink } =
+      recipe;
+
+    let message = `# Recipe for ${name}! \nIngredients:\n`;
+
+    for (let i = 0; i < ingredients.length; i++) {
+      message += `${i + 1}. ${ingredients[i][1]} of ${ingredients[i][0]}\n`;
+    }
+
+    message += `Expected time spent: ${expectedTime}\n## Instructions\n`;
+
+    for (let i = 0; i < instructions.length; i++) {
+      message += `${i + 1}. ${instructions[i]}\n`;
+    }
+
+    message += `## [Recipe Link](${recipeLink})\n`;
+
+    await interaction.reply({
+      content: message,
+      withResponse: true,
+    }).catch(console.error);
+    return logMessage + "Command successful.";
+  },
   autocomplete: async (interaction) => {
     const focusedValue = interaction.options.getFocused();
-    // Object.keys gets the keys of the jśon. added tolowercase to remove case sensitivity
     const filtered = Object.keys(breadRecipies).filter((choice) =>
       choice.toLowerCase().startsWith(focusedValue.toLowerCase())
     );
     await interaction.respond(
-      filtered.map((choice) => ({ name: choice, value: choice })).slice(0, 24), // maximum of 24 items for autocomplete or smt
+      filtered.map((choice) => ({ name: choice, value: choice })).slice(0, 24),
     );
   },
-};
+});

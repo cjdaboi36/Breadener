@@ -5,3 +5,5 @@ config.json
 secretData.json
 daataabaasaa.db
 .direnv
+kv.sqlite3
+test.ts

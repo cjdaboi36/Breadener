@@ -1,24 +1,29 @@
-import { slashCommands } from "./collectCommands.ts";
-import { env } from "./config.ts";
-import {
-  type BotEvent,
-  BotEventGuard,
-  type SlashCommand,
-} from "./customTypes.ts";
+import { load } from "@std/dotenv";
 import {
   Client,
-  Collection,
   GatewayIntentBits,
   REST,
   type RESTPostAPIChatInputApplicationCommandsJSONBody,
   Routes,
 } from "discord.js";
-import fs from "node:fs";
-import path from "node:path";
+import { slashCommands } from "./collectCommands.ts";
+import { BotEvent } from "./types.ts";
 import { coolBanner } from "./utils.ts";
 
-// Grab all the command folders from the commands directory you created earlier
-const client: Client<boolean> = new Client({
+const requiredKeys = [
+  "DATABASE_PATH",
+  "CLIENTID",
+  "GUILDID",
+  "TOKEN",
+] as const;
+
+const env = await load();
+
+for (const key of requiredKeys) {
+  if (!env[key]) throw new Error(`\x1b[34mMissing .env variable ${key}\x1b[0m`);
+}
+
+const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
@@ -26,62 +31,41 @@ const client: Client<boolean> = new Client({
   ],
 });
 
-client.commands = new Collection<string, SlashCommand>();
-
 // This type name is fucking brilliant
 const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
 for (const slashCommand of slashCommands) {
   commands.push(slashCommand.data.toJSON());
-  client.commands.set(slashCommand.data.name, slashCommand);
 }
+
+console.log(`Started refreshing ${commands.length} application (/) commands`);
 
 // Construct and prepare an instance of the REST module
-const rest: REST = new REST().setToken(env.TOKEN);
+await new REST().setToken(Deno.env.get("TOKEN")!).put(
+  Routes.applicationCommands(Deno.env.get("CLIENTID")!),
+  { body: commands },
+).catch(console.error);
 
-// and deploy your commands!
-try {
-  console.log(
-    `Started refreshing ${commands.length} application (/) commands.`,
-  );
+console.log(`Successfully reloaded application (/) commands.`);
 
-  // The put method is used to fully refresh all commands in the guild with the current set
-  await rest.put(Routes.applicationCommands(env.CLIENTID), {
-    body: commands,
-  });
+const eventFiles = Deno
+  .readDirSync("src/events")
+  .filter((file) => file.name.endsWith(".ts"));
 
-  console.log(`Successfully reloaded application (/) commands.`);
-} catch (error: unknown) {
-  console.error(error);
-}
+for (const eventFile of eventFiles) {
+  const module = await import(`./events/${eventFile.name}`) as object;
 
-const eventsPath: string = path.join(import.meta.dirname ?? "", "events");
-const eventFiles: string[] = fs
-  .readdirSync(eventsPath)
-  .filter((file: string) => file.endsWith(".ts"));
-
-for (const file of eventFiles) {
-  const filePath: string = path.join(eventsPath, file);
-  const module: object = await import(`file:///${filePath}`);
-
-  for (const entry of Object.entries(module)) {
-    if (BotEventGuard(entry[1])) {
-      const event: BotEvent = entry[1] as BotEvent;
-
-      if (event.once) {
-        client.once(event.type as string, (...args) => event.execute(...args));
-        continue;
-      }
-
-      client.on(event.type as string, (...args) => event.execute(...args));
-      continue;
+  for (const [name, entry] of Object.entries(module)) {
+    if (!(entry instanceof BotEvent)) {
+      console.warn(
+        `[WARNING] The export ${name} in module ${eventFile.name} doesn't really look like an event..`,
+      );
+    } else if (entry.once) {
+      client.once(entry.type, entry.execute);
+    } else {
+      client.on(entry.type, entry.execute);
     }
-
-    console.error(
-      `[WARNING] The module at ${filePath} is doesn't really look like an event..`,
-    );
   }
 }
 
-// Dit runt
-client.login(env.TOKEN);
-coolBanner();
+client.login(Deno.env.get("TOKEN"));
+console.log(coolBanner);
